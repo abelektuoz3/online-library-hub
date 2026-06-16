@@ -480,6 +480,7 @@
 
         <div id="form-message"></div>
 
+        <!-- IMPORTANT: NO method or action attributes - JavaScript handles it -->
         <form id="registerForm" novalidate>
           <div class="form-group">
             <label for="name">Full name</label>
@@ -580,7 +581,7 @@
         </div>
 
         <div class="login-link">
-          Already have an account? <a href="../pages/login.html">Sign in</a>
+          Already have an account? <a href="login.html">Sign in</a>
         </div>
       </div>
     </main>
@@ -798,8 +799,12 @@
         console.log("✅ registerForm found");
 
         registerForm.addEventListener("submit", async function (e) {
+          // CRITICAL: Prevent the form from submitting normally
           e.preventDefault();
-          console.log("📝 Registration form submitted");
+          e.stopPropagation();
+
+          console.log("📝 Registration form submitted - preventing default");
+
           clearAllFieldErrors();
 
           var nameInput = document.getElementById("name");
