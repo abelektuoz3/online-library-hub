@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Online Library Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .logo a span {
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
+        }
+
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        .btn-primary-nav {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-primary-nav:hover {
+            background: #1d4ed8;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 2rem;
+            width: 100%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .about-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .about-section p {
+            color: #475569;
+            line-height: 1.6;
+            font-size: 0.875rem;
+        }
+
+        .about-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .about-section li {
+            color: #475569;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .about-section li:last-child {
+            border-bottom: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+        }
+
+        .stat h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat p {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../index.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="study-tools.html">Study Tools</a></li>
+                <li><a href="reserve.html">Reserve</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="login.html" class="btn-outline">Sign In</a></li>
+                <li><a href="register.html" class="btn-primary-nav">Join Free</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>About LibraryHub</h1>
+            <p>Empowering learners through accessible knowledge</p>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-bullseye" style="color: #2563eb;"></i> Our Mission</h2>
+            <p>To provide free, accessible, and high-quality educational resources to learners of all ages. We believe that knowledge should be available to everyone, anywhere, at any time.</p>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-book-open" style="color: #2563eb;"></i> Our Story</h2>
+            <p>Founded in 2020, Online Library Hub started as a small digital archive and has grown into a comprehensive e-learning resource center serving thousands of students, educators, and lifelong learners worldwide.</p>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-gem" style="color: #2563eb;"></i> What We Offer</h2>
+            <ul>
+                <li><i class="fas fa-book" style="color: #2563eb; width: 1.5rem;"></i> Thousands of books and e-books across all subjects</li>
+                <li><i class="fas fa-chalkboard-user" style="color: #2563eb; width: 1.5rem;"></i> Study tools and productivity resources</li>
+                <li><i class="fas fa-door-open" style="color: #2563eb; width: 1.5rem;"></i> Study room reservations</li>
+                <li><i class="fas fa-cloud" style="color: #2563eb; width: 1.5rem;"></i> 24/7 access to digital resources</li>
+                <li><i class="fas fa-graduation-cap" style="color: #2563eb; width: 1.5rem;"></i> Research assistance and citation tools</li>
+            </ul>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-users" style="color: #2563eb;"></i> Our Team</h2>
+            <p>We are a dedicated group of librarians, educators, and developers passionate about making learning accessible to everyone.</p>
+        </div>
+
+        <div class="about-section">
+            <h2><i class="fas fa-chart-line" style="color: #2563eb;"></i> Our Impact</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <h3>5,000+</h3>
+                    <p>Resources</p>
+                </div>
+                <div class="stat">
+                    <h3>10,000+</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat">
+                    <h3>50+</h3>
+                    <p>Subjects</p>
+                </div>
+                <div class="stat">
+                    <h3>24/7</h3>
+                    <p>Access</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
+
+    <script src="../scripts/main.js"></script>
+</body>
+</html>

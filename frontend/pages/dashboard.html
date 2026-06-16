@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Online Library Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .logo a span {
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .welcome-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-text p {
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .welcome-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-chip {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+        }
+
+        .stat-chip .number {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .stat-chip .label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: #2563eb;
+        }
+
+        .card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .quick-action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #334155;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .resource-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .resource-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .resource-item:last-child {
+            border-bottom: none;
+        }
+
+        .resource-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .resource-details {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        .btn-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .welcome-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .two-col-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="dashboard.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks"></ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="welcome-banner" id="welcomeBanner">
+            <div class="welcome-text">
+                <h1 id="welcomeTitle">Loading...</h1>
+                <p id="welcomeMessage">Welcome to your personalized dashboard</p>
+            </div>
+            <div class="welcome-stats" id="welcomeStats">
+                <div class="stat-chip">
+                    <div class="number" id="resourceCount">-</div>
+                    <div class="label">Resources</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Quick Actions Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="quick-action-buttons">
+                    <a href="catalog.html" class="quick-btn">
+                        <i class="fas fa-search"></i> Browse Catalog
+                    </a>
+                    <a href="study-tools.html" class="quick-btn">
+                        <i class="fas fa-tools"></i> Open Study Tools
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recommended Resources Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-star"></i>
+                    <h3>Recommended for You</h3>
+                </div>
+                <div id="recommendedList" class="resource-list">
+                    <div class="loading">Loading recommendations...</div>
+                </div>
+                <a href="catalog.html" class="btn-link">
+                    View all resources <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="two-col-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Study Activity</h3>
+                </div>
+                <div id="studyActivity">
+                    <div class="empty-state">
+                        <i class="fas fa-chart-simple" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        <p>Start using study tools to see your progress!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-bell"></i>
+                    <h3>Announcements</h3>
+                </div>
+                <div id="announcements">
+                    <div class="loading">Loading announcements...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
+
+    <script src="/scripts/api-config.js"></script>
+    <script src="../scripts/main.js"></script>
+    <script>
+        const API_URL = window.API_BASE || '/api';
+        
+        function getFirstName(fullName) {
+            if (!fullName) return 'User';
+            return fullName.split(' ')[0];
+        }
+        
+        function getCurrentUser() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                try {
+                    return JSON.parse(user);
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        async function loadDashboard() {
+            const user = getCurrentUser();
+            
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const firstName = getFirstName(user.name);
+            document.getElementById('welcomeTitle').textContent = `Welcome back, ${firstName}! 👋`;
+            document.getElementById('welcomeMessage').textContent = "Here's what's happening with your library account today.";
+            
+            await loadRecommendedResources();
+            await loadResourceCount();
+            await loadAnnouncements();
+        }
+        
+        async function loadRecommendedResources() {
+            const container = document.getElementById('recommendedList');
+            
+            try {
+                const response = await fetch(`${API_URL}/catalog/featured/limit`);
+                const resources = await response.json();
+                
+                if (resources.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-book-open" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                            <p>No resources available in the catalog.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = resources.slice(0, 5).map(res => `
+                    <div class="resource-item">
+                        <div class="resource-title">📚 ${escapeHtml(res.title)}</div>
+                        <div class="resource-details">
+                            <span>✍️ ${escapeHtml(res.author || 'Various')}</span>
+                            <span>📁 ${escapeHtml(res.category || 'General')}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading recommendations:', err);
+                container.innerHTML = '<div class="empty-state"><p>Unable to load recommendations</p></div>';
+            }
+        }
+        
+        async function loadResourceCount() {
+            try {
+                const response = await fetch(`${API_URL}/catalog`);
+                if (response.ok) {
+                    const resources = await response.json();
+                    document.getElementById('resourceCount').textContent = resources.length;
+                } else {
+                    document.getElementById('resourceCount').textContent = '0';
+                }
+            } catch (err) {
+                console.error('Error loading resource count:', err);
+                document.getElementById('resourceCount').textContent = '-';
+            }
+        }
+
+        async function loadAnnouncements() {
+            const container = document.getElementById('announcements');
+            try {
+                const response = await fetch(`${API_URL}/announcements`);
+                if (response.ok) {
+                    const announcements = await response.json();
+                    if (announcements.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-bell-slash" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                                <p>No announcements at this time.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    container.innerHTML = announcements.slice(0, 5).map(ann => `
+                        <div class="resource-item">
+                            <div class="resource-title">📢 ${escapeHtml(ann.title)}</div>
+                            <div class="resource-details">${escapeHtml(ann.content)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="empty-state"><p>Unable to load announcements.</p></div>';
+                }
+            } catch (err) {
+                console.error('Error loading announcements:', err);
+                container.innerHTML = '<div class="empty-state"><p>Unable to load announcements.</p></div>';
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                loadDashboard();
+            }
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+</html>

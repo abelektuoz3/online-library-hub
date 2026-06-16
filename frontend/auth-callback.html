@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completing Login | Online Library Hub</title>
+    <meta name="description" content="Completing your sign in to Online Library Hub">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Navbar ===== */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .logo a span {
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
+        }
+
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        .btn-primary-nav {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-primary-nav:hover {
+            background: #1d4ed8;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        /* ===== Main Layout ===== */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+        }
+
+        /* ===== Callback Card ===== */
+        .callback-card {
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .loader {
+            margin: 0 auto 1.5rem;
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+        }
+
+        .warning-icon {
+            font-size: 4rem;
+            color: #f59e0b;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-text {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .user-info {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-info strong {
+            color: #1a1a2e;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-info span {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .redirect-note {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
+
+        .redirect-note a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .redirect-note a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .callback-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="login.html" class="btn-outline">Sign In</a></li>
+                <li><a href="register.html" class="btn-primary-nav">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="callback-card" id="callbackCard">
+            <div id="loader" class="loader"></div>
+            <div id="content"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+        
+        // Set current year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Get parameters from URL
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        const name = params.get('name');
+        const email = params.get('email');
+        const userId = params.get('id');
+        const error = params.get('error');
+        const provider = params.get('provider') || 'google';
+        
+        const loaderDiv = document.getElementById('loader');
+        const contentDiv = document.getElementById('content');
+        
+        if (error) {
+            loaderDiv.style.display = 'none';
+            contentDiv.innerHTML = `
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h2>Sign In Failed</h2>
+                <p class="message-text">There was an issue signing in with ${provider === 'github' ? 'GitHub' : 'Google'}.</p>
+                <div class="user-info">
+                    <strong>Error Details</strong>
+                    <span>${error.replace(/_/g, ' ')}</span>
+                </div>
+                <p class="redirect-note">Redirecting to login page... <a href="login.html">Click here</a> if not redirected.</p>
+            `;
+            
+            setTimeout(() => {
+                window.location.href = '/login.html?error=' + error;
+            }, 3000);
+        } 
+        else if (token && name && email) {
+            // Store user data in localStorage
+            const decodedName = decodeURIComponent(name);
+            const decodedEmail = decodeURIComponent(email);
+            
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify({
+                name: decodedName,
+                email: decodedEmail,
+                id: userId
+            }));
+            
+            loaderDiv.style.display = 'none';
+            const providerName = provider === 'github' ? 'GitHub' : 'Google';
+            contentDiv.innerHTML = `
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Welcome, ${decodedName}!</h2>
+                <p class="message-text">You have successfully signed in with ${providerName}.</p>
+                <div class="user-info">
+                    <strong>${decodedEmail}</strong>
+                    <span>Signed in with ${providerName}</span>
+                </div>
+                <p class="redirect-note">Redirecting to your dashboard... <a href="/pages/dashboard.html">Click here</a> if not redirected.</p>
+            `;
+            
+            setTimeout(() => {
+                const redirectTo = localStorage.getItem('redirectAfterLogin') || '/pages/dashboard.html';
+                localStorage.removeItem('redirectAfterLogin');
+                window.location.href = redirectTo;
+            }, 2000);
+        }
+        else {
+            loaderDiv.style.display = 'none';
+            contentDiv.innerHTML = `
+                <div class="warning-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h2>Something's Missing</h2>
+                <p class="message-text">We couldn't complete your sign in.</p>
+                <div class="user-info">
+                    <strong>Missing login information</strong>
+                    <span>Please try signing in again</span>
+                </div>
+                <p class="redirect-note">Redirecting to login page... <a href="login.html">Click here</a> if not redirected.</p>
+            `;
+            
+            setTimeout(() => {
+                window.location.href = '/login.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Admin Account | Online Library Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .logo a span {
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
+        }
+
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        .btn-primary-nav {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-primary-nav:hover {
+            background: #1d4ed8;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .register-card {
+            max-width: 480px;
+            width: 100%;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-header p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            color: #92400e;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-wrapper .toggle-password {
+            position: absolute;
+            right: 0.875rem;
+            left: auto;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .toggle-password:hover {
+            color: #64748b;
+        }
+
+        .password-strength {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            flex: 1;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .strength-bar.weak {
+            background: #ef4444;
+        }
+
+        .strength-bar.medium {
+            background: #f59e0b;
+        }
+
+        .strength-bar.strong {
+            background: #10b981;
+        }
+
+        .btn-register {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-register:hover {
+            background: #1d4ed8;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        .login-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        #form-message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .message.success {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .register-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="register-card">
+            <div class="register-header">
+                <h1>Create Admin Account</h1>
+                <p>Set up the super administrator account</p>
+            </div>
+
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i> This page is only for creating the FIRST admin account. If an admin already exists, this registration will fail.
+            </div>
+
+            <div id="form-message" style="display: none;"></div>
+
+            <form id="adminRegisterForm" novalidate>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" name="name" placeholder="Super Admin" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="admin@libraryhub.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                    </div>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                        <div class="strength-bar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                        <i class="fas fa-eye toggle-password" id="toggleConfirmPassword"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register">Create Admin Account</button>
+            </form>
+
+            <div class="login-link">
+                Already have an admin account? <a href="admin-login.html">Sign in</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
+
+    <script src="/scripts/api-config.js"></script>
+    <script src="../scripts/main.js"></script>
+    <script>
+        const API_BASE = window.API_BASE || '/api';
+        
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        
+        if (toggleConfirmPassword && confirmPasswordInput) {
+            toggleConfirmPassword.addEventListener('click', function() {
+                const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+                confirmPasswordInput.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        // Password strength meter
+        const strengthBars = document.querySelectorAll('.strength-bar');
+        
+        function checkStrength(password) {
+            let strength = 0;
+            if (password.length >= 4) strength = 1;
+            if (password.length >= 8) strength = 2;
+            if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password)) strength = 3;
+            
+            strengthBars.forEach((bar, i) => {
+                bar.className = 'strength-bar';
+                if (i < strength) {
+                    if (strength === 1) bar.classList.add('weak');
+                    else if (strength === 2) bar.classList.add('medium');
+                    else if (strength === 3) bar.classList.add('strong');
+                }
+            });
+        }
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                checkStrength(this.value);
+            });
+        }
+
+        // Real-time password match
+        if (confirmPasswordInput && passwordInput) {
+            confirmPasswordInput.addEventListener('input', function() {
+                if (passwordInput.value !== this.value) {
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    this.style.borderColor = '#10b981';
+                }
+            });
+        }
+
+        function showMessage(message, type) {
+            const msgDiv = document.getElementById('form-message');
+            msgDiv.style.display = 'block';
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            setTimeout(() => {
+                msgDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        const form = document.getElementById('adminRegisterForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+            
+            if (!name || !email || !password || !confirm_password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showMessage('Password must be at least 4 characters', 'error');
+                return;
+            }
+            
+            if (password !== confirm_password) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, confirm_password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('admin', JSON.stringify(data.admin));
+                    showMessage('Admin account created successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1500);
+                } else {
+                    showMessage(data.error || 'Failed to create admin account', 'error');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Server error. Please make sure the backend is running.', 'error');
+            }
+        });
+        
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

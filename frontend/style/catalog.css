@@ -1,0 +1,106 @@
+.catalog-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.filters {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-group select {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+}
+
+.results-count {
+    margin-bottom: 1rem;
+    color: #7f8c8d;
+}
+
+.catalog-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.resource-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.resource-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.resource-card .description {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
+
+.resource-card .grade {
+    display: inline-block;
+    background: #e8f4fd;
+    color: #3498db;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.resource-card .type {
+    display: inline-block;
+    background: #f0e6ff;
+    color: #8e44ad;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+}
+
+.resource-card .availability {
+    display: block;
+    margin-top: 0.75rem;
+    font-weight: bold;
+}
+
+.resource-card .available {
+    color: #27ae60;
+}
+
+.resource-card .unavailable {
+    color: #e74c3c;
+}
+
+@media (max-width: 768px) {
+    .filter-group {
+        flex-direction: column;
+    }
+    
+    .catalog-container {
+        grid-template-columns: 1fr;
+    }
+}

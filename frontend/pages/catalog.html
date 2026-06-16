@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog | Online Library Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .logo a span {
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
+        }
+
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        .btn-primary-nav {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-primary-nav:hover {
+            background: #1d4ed8;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 2rem;
+            width: 100%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* Filters */
+        .filters-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            margin-bottom: 1rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group select {
+            flex: 1;
+            padding: 0.625rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .results-count {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .catalog-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .resource-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .resource-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .resource-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-card .category {
+            display: inline-block;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-card .grade {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .resource-card .description {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin: 0.75rem 0;
+            line-height: 1.5;
+        }
+
+        .availability {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+
+        .availability.available {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .availability.unavailable {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .view-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            background: #2563eb;
+            color: white !important;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+            width: fit-content;
+            margin-top: 0.25rem;
+        }
+
+        .view-link:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .view-link i {
+            font-size: 0.7rem;
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+
+            .filter-group {
+                flex-direction: column;
+            }
+
+            .catalog-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../index.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="study-tools.html">Study Tools</a></li>
+                <li><a href="reserve.html">Reserve</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="login.html" class="btn-outline">Sign In</a></li>
+                <li><a href="register.html" class="btn-primary-nav">Join Free</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Resource Catalog</h1>
+            <p>Browse our collection of books, e-books, and learning materials</p>
+        </div>
+
+        <div class="filters-card">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search by title or description...">
+            </div>
+            <div class="filter-group">
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Programming">Programming</option>
+                    <option value="History">History</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="English">English</option>
+                    <option value="Arts">Arts</option>
+                </select>
+                <select id="grade-filter">
+                    <option value="all">All Grade Levels</option>
+                    <option value="Grade 8-10">Grade 8-10</option>
+                    <option value="Grade 9-11">Grade 9-11</option>
+                    <option value="Grade 9-12">Grade 9-12</option>
+                    <option value="Grade 10-12">Grade 10-12</option>
+                    <option value="Grade 11-12">Grade 11-12</option>
+                </select>
+                <select id="type-filter">
+                    <option value="all">All Types</option>
+                    <option value="Book">Book</option>
+                    <option value="E-Book">E-Book</option>
+                    <option value="Textbook">Textbook</option>
+                    <option value="Reference">Reference</option>
+                    <option value="Lab Manual">Lab Manual</option>
+                    <option value="Video">Video</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="results-count" id="resultsCount"></div>
+        <div class="catalog-container" id="catalog-container">
+            <div class="loading">Loading resources...</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
+
+    <script src="/scripts/api-config.js"></script>
+    <script src="../scripts/main.js"></script>
+    <script src="../scripts/catalog.js"></script>
+</body>
+</html>
