@@ -480,7 +480,7 @@
 
         <div id="form-message"></div>
 
-        <!-- IMPORTANT: NO method or action attributes - JavaScript handles it -->
+        <!-- FIX: No method or action attributes — JS handles submission -->
         <form id="registerForm" novalidate>
           <div class="form-group">
             <label for="name">Full name</label>
@@ -598,35 +598,35 @@
       // ===== ALL SCRIPTS INLINE - NO DUPLICATES =====
       console.log("📝 Register page loaded");
 
-      // Use API_BASE from api-config.js (window.API_BASE)
-      const API_BASE_URL =
+      // FIX 1: Changed from const to var to avoid re-declaration conflict with api-config.js
+      var API_BASE_URL =
         window.API_BASE || "https://online-library-hub.onrender.com/api";
-      const BACKEND_BASE =
+      var BACKEND_BASE =
         window.BACKEND_BASE || "https://online-library-hub.onrender.com";
 
       console.log("📡 API Base:", API_BASE_URL);
 
       // ==================== NAVBAR ====================
       function renderNavbar() {
-        const navLinks = document.getElementById("navLinks");
+        var navLinks = document.getElementById("navLinks");
         if (!navLinks) return;
 
-        const token = localStorage.getItem("token");
-        const user = localStorage.getItem("user");
-        const isLoggedIn = !!(token && user);
+        var token = localStorage.getItem("token");
+        var user = localStorage.getItem("user");
+        var isLoggedIn = !!(token && user);
 
         if (isLoggedIn) {
           navLinks.innerHTML = `
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="catalog.html">Catalog</a></li>
-                    <li><a href="study-tools.html">Study Tools</a></li>
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="#" id="logoutBtn" style="color:#dc2626;">Logout</a></li>
-                `;
-          const logoutBtn = document.getElementById("logoutBtn");
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="catalog.html">Catalog</a></li>
+            <li><a href="study-tools.html">Study Tools</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="#" id="logoutBtn" style="color:#dc2626;">Logout</a></li>
+          `;
+          var logoutBtn = document.getElementById("logoutBtn");
           if (logoutBtn) {
             logoutBtn.addEventListener("click", function (e) {
               e.preventDefault();
@@ -637,18 +637,19 @@
           }
         } else {
           navLinks.innerHTML = `
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="catalog.html">Catalog</a></li>
-                    <li><a href="study-tools.html">Study Tools</a></li>
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="login.html" class="btn-outline">Sign In</a></li>
-                    <li><a href="register.html" class="btn-primary-nav">Join Free</a></li>
-                `;
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="catalog.html">Catalog</a></li>
+            <li><a href="study-tools.html">Study Tools</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="login.html" class="btn-outline">Sign In</a></li>
+            <li><a href="register.html" class="btn-primary-nav">Join Free</a></li>
+          `;
         }
 
-        const hamburger = document.getElementById("hamburger");
+        // Hamburger menu
+        var hamburger = document.getElementById("hamburger");
         if (hamburger) {
           hamburger.addEventListener("click", function () {
             navLinks.classList.toggle("active");
@@ -656,10 +657,12 @@
         }
       }
 
-      // ==================== PASSWORD TOGGLE ====================
+      // ==================== PASSWORD TOGGLE & STRENGTH ====================
       (function () {
-        var togglePwd = document.getElementById("togglePassword");
         var pwdInput = document.getElementById("password");
+        var confirmInput = document.getElementById("confirm_password");
+        var togglePwd = document.getElementById("togglePassword");
+        var toggleConfirm = document.getElementById("toggleConfirmPassword");
 
         if (togglePwd && pwdInput) {
           togglePwd.addEventListener("click", function () {
@@ -669,9 +672,6 @@
             this.classList.toggle("fa-eye-slash");
           });
         }
-
-        var toggleConfirm = document.getElementById("toggleConfirmPassword");
-        var confirmInput = document.getElementById("confirm_password");
 
         if (toggleConfirm && confirmInput) {
           toggleConfirm.addEventListener("click", function () {
@@ -799,7 +799,7 @@
         console.log("✅ registerForm found");
 
         registerForm.addEventListener("submit", async function (e) {
-          // CRITICAL: Prevent the form from submitting normally
+          // FIX 2: Prevent default form submission (stops URL query string behavior)
           e.preventDefault();
           e.stopPropagation();
 
@@ -945,6 +945,13 @@
         document.getElementById("current-year").textContent =
           new Date().getFullYear();
       });
+
+      // Also call renderNavbar immediately in case DOMContentLoaded already fired
+      if (document.readyState !== "loading") {
+        renderNavbar();
+        var yearEl = document.getElementById("current-year");
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
     </script>
   </body>
 </html>
