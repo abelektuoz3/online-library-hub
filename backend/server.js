@@ -26,6 +26,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // ==================== CORS CONFIGURATION ====================
+// Get allowed origins from environment or use defaults
 const allowedOrigins = [
   "http://localhost:5000",
   "http://localhost:3000",
@@ -37,16 +38,24 @@ const allowedOrigins = [
 
 console.log("✅ Allowed origins:", allowedOrigins);
 
+// CORS middleware
 app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        return callback(null, true);
+      }
+      // Check if origin is allowed
       if (allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
+        return callback(null, true);
       } else {
         console.log("❌ CORS blocked origin:", origin);
-        callback(new Error("Not allowed by CORS"));
+        // In development, allow any origin for testing
+        if (process.env.NODE_ENV !== "production") {
+          return callback(null, true);
+        }
+        return callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -56,12 +65,14 @@ app.use(
       "Authorization",
       "X-Requested-With",
       "Accept",
+      "Origin",
     ],
+    exposedHeaders: ["Content-Range", "X-Content-Range"],
   }),
 );
 
-// Handle preflight requests
-app.options("*", cors());
+// Handle preflight requests manually for all routes
+app.options("/api/*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -115,11 +126,15 @@ app.use("/api", githubAuthRoutes);
 app.post("/api/otp/send", async (req, res) => {
   try {
     const { email, name } = req.body;
-    if (!email) return res.status(400).json({ error: "Email is required" });
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    if (!global.verificationOtpStore) global.verificationOtpStore = {};
+    if (!global.verificationOtpStore) {
+      global.verificationOtpStore = {};
+    }
     global.verificationOtpStore[email] = {
       otp,
       expiresAt: Date.now() + 10 * 60 * 1000,
@@ -136,15 +151,20 @@ app.post("/api/otp/send", async (req, res) => {
 app.post("/api/otp/verify", async (req, res) => {
   try {
     const { email, otp } = req.body;
-    if (!email || !otp)
+    if (!email || !otp) {
       return res.status(400).json({ error: "Email and OTP are required" });
+    }
 
     const record = global.verificationOtpStore[email];
-    if (!record) return res.status(400).json({ error: "No OTP found" });
-    if (Date.now() > record.expiresAt)
+    if (!record) {
+      return res.status(400).json({ error: "No OTP found" });
+    }
+    if (Date.now() > record.expiresAt) {
       return res.status(400).json({ error: "OTP expired" });
-    if (record.otp !== otp.trim())
+    }
+    if (record.otp !== otp.trim()) {
       return res.status(400).json({ error: "Incorrect OTP" });
+    }
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (user) {
@@ -152,7 +172,9 @@ app.post("/api/otp/verify", async (req, res) => {
       await user.save();
       try {
         await sendWelcomeEmail(email, user.name);
-      } catch (e) {}
+      } catch (e) {
+        console.error("Welcome email error:", e);
+      }
     }
 
     delete global.verificationOtpStore[email];
@@ -166,10 +188,14 @@ app.post("/api/otp/verify", async (req, res) => {
 app.post("/api/otp/send-reset", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: "Email is required" });
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
 
     const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) return res.status(404).json({ error: "No account found" });
+    if (!user) {
+      return res.status(404).json({ error: "No account found" });
+    }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     global.resetOtpStore[email] = {
@@ -189,15 +215,20 @@ app.post("/api/otp/verify-reset", (req, res) => {
   try {
     const { email, otp } = req.body;
     const record = global.resetOtpStore[email];
-    if (!record) return res.status(400).json({ error: "No reset code found" });
-    if (Date.now() > record.expiresAt)
+    if (!record) {
+      return res.status(400).json({ error: "No reset code found" });
+    }
+    if (Date.now() > record.expiresAt) {
       return res.status(400).json({ error: "Code expired" });
-    if (record.otp !== otp.trim())
+    }
+    if (record.otp !== otp.trim()) {
       return res.status(400).json({ error: "Incorrect code" });
+    }
 
     global.resetOtpStore[email].verified = true;
     res.json({ success: true, message: "OTP verified" });
   } catch (err) {
+    console.error("OTP verify-reset error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -205,10 +236,18 @@ app.post("/api/otp/verify-reset", (req, res) => {
 app.post("/api/auth/reset-password", async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
     const record = global.resetOtpStore[email];
-    if (!record) return res.status(400).json({ error: "No reset code found" });
-    if (record.otp !== otp)
+    if (!record) {
+      return res.status(400).json({ error: "No reset code found" });
+    }
+    if (record.otp !== otp) {
       return res.status(400).json({ error: "Invalid code" });
+    }
 
     const bcrypt = require("bcryptjs");
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -220,6 +259,7 @@ app.post("/api/auth/reset-password", async (req, res) => {
     delete global.resetOtpStore[email];
     res.json({ success: true, message: "Password reset successful" });
   } catch (err) {
+    console.error("Reset password error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -228,9 +268,15 @@ app.post("/api/auth/reset-password", async (req, res) => {
 app.post("/api/setup/first-admin", async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
     const existingAdminCount = await Admin.countDocuments();
-    if (existingAdminCount > 0)
+    if (existingAdminCount > 0) {
       return res.status(403).json({ error: "Admin already exists" });
+    }
 
     const admin = new Admin({
       name: name.trim(),
@@ -244,6 +290,7 @@ app.post("/api/setup/first-admin", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
+
     res.json({
       success: true,
       token,
@@ -270,6 +317,12 @@ app.use("/api", (req, res) => {
   res.status(404).json({ error: "API route not found" });
 });
 
+// ==================== ERROR HANDLING ====================
+app.use((err, req, res, next) => {
+  console.error("Server error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
 // ==================== START SERVER ====================
 app.listen(PORT, () => {
   console.log(`\n🚀 Server running on http://localhost:${PORT}`);
@@ -278,4 +331,5 @@ app.listen(PORT, () => {
   );
   console.log(`🔌 API base: http://localhost:${PORT}/api`);
   console.log(`✅ CORS enabled for:`, allowedOrigins);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
 });
