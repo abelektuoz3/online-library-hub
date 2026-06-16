@@ -1,9 +1,21 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 # Environment variables
-*.env
-*.env.local
-*.env.development
-*.env.production
-*.env.test
-backend/.env
-node_modules
 .env
+.env.*
+!.env.example
+
+# MongoDB
+*.db
+*.sqlite
+
+# Uploads
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
