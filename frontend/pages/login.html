@@ -83,6 +83,10 @@
         color: #2563eb !important;
       }
 
+      .btn-outline:hover {
+        background: #eff6ff;
+      }
+
       .btn-primary-nav {
         background: #2563eb;
         color: white !important;
@@ -453,7 +457,8 @@
         </div>
 
         <div class="register-link">
-          Don't have an account? <a href="register.html">Create account</a>
+          Don't have an account?
+          <a href="../pages/register.html">Create account</a>
         </div>
       </div>
     </main>
@@ -465,12 +470,18 @@
       </p>
     </footer>
 
-    <!-- ===== ALL SCRIPTS INLINE ===== -->
+    <script src="/scripts/api-config.js"></script>
     <script>
-      // API Configuration
-      const API_BASE = "https://online-library-hub.onrender.com/api";
+      // ===== ALL SCRIPTS INLINE - Use window.API_BASE =====
+      console.log("🔑 Login page loaded");
 
-      console.log("🔑 Login page loaded - API:", API_BASE);
+      // Use API_BASE from api-config.js (window.API_BASE)
+      const API_BASE =
+        window.API_BASE || "https://online-library-hub.onrender.com/api";
+      const BACKEND_BASE =
+        window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+
+      console.log("📡 API Base:", API_BASE);
 
       // ==================== NAVBAR ====================
       function renderNavbar() {
@@ -514,7 +525,6 @@
                 `;
         }
 
-        // Hamburger
         const hamburger = document.getElementById("hamburger");
         if (hamburger) {
           hamburger.addEventListener("click", function () {
@@ -566,7 +576,6 @@
         console.log("✅ loginForm found - attaching submit listener");
 
         loginForm.addEventListener("submit", function (e) {
-          // CRITICAL: Stop the form from submitting normally
           e.preventDefault();
           e.stopPropagation();
 
@@ -581,7 +590,6 @@
             return;
           }
 
-          // Remember me
           if (rememberCheckbox && rememberCheckbox.checked) {
             localStorage.setItem("rememberedEmail", email);
           } else {
@@ -633,15 +641,13 @@
       document
         .getElementById("googleLoginBtn")
         ?.addEventListener("click", function () {
-          window.location.href =
-            "https://online-library-hub.onrender.com/auth/google";
+          window.location.href = BACKEND_BASE + "/auth/google";
         });
 
       document
         .getElementById("githubLoginBtn")
         ?.addEventListener("click", function () {
-          window.location.href =
-            "https://online-library-hub.onrender.com/auth/github";
+          window.location.href = BACKEND_BASE + "/auth/github";
         });
 
       // ==================== INIT ====================

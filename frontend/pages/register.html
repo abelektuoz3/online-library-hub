@@ -580,7 +580,7 @@
         </div>
 
         <div class="login-link">
-          Already have an account? <a href="login.html">Sign in</a>
+          Already have an account? <a href="../pages/login.html">Sign in</a>
         </div>
       </div>
     </main>
@@ -593,11 +593,70 @@
     </footer>
 
     <script src="/scripts/api-config.js"></script>
-    <script src="../scripts/main.js"></script>
     <script>
-      // ===== Password toggle & strength (register-page specific) =====
+      // ===== ALL SCRIPTS INLINE - NO DUPLICATES =====
+      console.log("📝 Register page loaded");
+
+      // Use API_BASE from api-config.js (window.API_BASE)
+      const API_BASE_URL =
+        window.API_BASE || "https://online-library-hub.onrender.com/api";
+      const BACKEND_BASE =
+        window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+
+      console.log("📡 API Base:", API_BASE_URL);
+
+      // ==================== NAVBAR ====================
+      function renderNavbar() {
+        const navLinks = document.getElementById("navLinks");
+        if (!navLinks) return;
+
+        const token = localStorage.getItem("token");
+        const user = localStorage.getItem("user");
+        const isLoggedIn = !!(token && user);
+
+        if (isLoggedIn) {
+          navLinks.innerHTML = `
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="catalog.html">Catalog</a></li>
+                    <li><a href="study-tools.html">Study Tools</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="#" id="logoutBtn" style="color:#dc2626;">Logout</a></li>
+                `;
+          const logoutBtn = document.getElementById("logoutBtn");
+          if (logoutBtn) {
+            logoutBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "../index.html";
+            });
+          }
+        } else {
+          navLinks.innerHTML = `
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="catalog.html">Catalog</a></li>
+                    <li><a href="study-tools.html">Study Tools</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="login.html" class="btn-outline">Sign In</a></li>
+                    <li><a href="register.html" class="btn-primary-nav">Join Free</a></li>
+                `;
+        }
+
+        const hamburger = document.getElementById("hamburger");
+        if (hamburger) {
+          hamburger.addEventListener("click", function () {
+            navLinks.classList.toggle("active");
+          });
+        }
+      }
+
+      // ==================== PASSWORD TOGGLE ====================
       (function () {
-        // Toggle password visibility
         var togglePwd = document.getElementById("togglePassword");
         var pwdInput = document.getElementById("password");
 
@@ -674,13 +733,8 @@
           });
         }
       })();
-    </script>
 
-    <!-- Registration validation - Redirects to OTP verification page -->
-    <script>
-      const API_BASE_URL =
-        window.API_BASE || "https://online-library-hub.onrender.com/api";
-
+      // ==================== MESSAGE HELPER ====================
       function showMessage(message, type, containerId) {
         containerId = containerId || "form-message";
         var msgDiv = document.getElementById(containerId);
@@ -738,10 +792,14 @@
 
       var EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+      // ==================== REGISTRATION FORM ====================
       var registerForm = document.getElementById("registerForm");
       if (registerForm) {
+        console.log("✅ registerForm found");
+
         registerForm.addEventListener("submit", async function (e) {
           e.preventDefault();
+          console.log("📝 Registration form submitted");
           clearAllFieldErrors();
 
           var nameInput = document.getElementById("name");
@@ -809,6 +867,11 @@
           }
 
           try {
+            console.log(
+              "📡 Sending registration request to:",
+              API_BASE_URL + "/auth/register",
+            );
+
             var response = await fetch(API_BASE_URL + "/auth/register", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -821,19 +884,17 @@
             });
 
             var data = await response.json();
+            console.log("📨 Registration response:", data);
 
             if (response.ok && data.success) {
-              // Store user data for OTP verification
               localStorage.setItem("pendingVerificationEmail", email);
               localStorage.setItem("pendingVerificationName", name);
 
-              // Show success message
               showMessage(
                 "Account created! Please verify your email.",
                 "success",
               );
 
-              // Redirect to OTP verification page after 1.5 seconds
               setTimeout(function () {
                 window.location.href = `otp-verification.html?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
               }, 1500);
@@ -856,34 +917,29 @@
             }
           }
         });
+      } else {
+        console.error("❌ registerForm not found!");
       }
 
-      const BACKEND_BASE =
-        window.BACKEND_BASE ||
-        API_BASE_URL.replace(/\/api$/, "") ||
-        "https://online-library-hub.onrender.com";
-
-      // Google Sign Up - Redirect to OAuth
-      var googleRegisterBtn = document.getElementById("googleRegisterBtn");
-      if (googleRegisterBtn) {
-        googleRegisterBtn.addEventListener("click", function () {
-          localStorage.setItem("redirectAfterLogin", "/pages/dashboard.html");
-          window.location.href = `${BACKEND_BASE}/auth/google`;
+      // ==================== SOCIAL LOGIN ====================
+      document
+        .getElementById("googleRegisterBtn")
+        ?.addEventListener("click", function () {
+          window.location.href = BACKEND_BASE + "/auth/google";
         });
-      }
 
-      // GitHub Sign Up - Redirect to OAuth
-      var githubRegisterBtn = document.getElementById("githubRegisterBtn");
-      if (githubRegisterBtn) {
-        githubRegisterBtn.addEventListener("click", function () {
-          localStorage.setItem("redirectAfterLogin", "/pages/dashboard.html");
-          window.location.href = `${BACKEND_BASE}/auth/github`;
+      document
+        .getElementById("githubRegisterBtn")
+        ?.addEventListener("click", function () {
+          window.location.href = BACKEND_BASE + "/auth/github";
         });
-      }
 
-      // Set current year in footer
-      document.getElementById("current-year").textContent =
-        new Date().getFullYear();
+      // ==================== INIT ====================
+      document.addEventListener("DOMContentLoaded", function () {
+        renderNavbar();
+        document.getElementById("current-year").textContent =
+          new Date().getFullYear();
+      });
     </script>
   </body>
 </html>
