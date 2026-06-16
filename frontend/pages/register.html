@@ -598,13 +598,11 @@
       // ===== ALL SCRIPTS INLINE - NO DUPLICATES =====
       console.log("📝 Register page loaded");
 
-      // FIX 1: Changed from const to var to avoid re-declaration conflict with api-config.js
-      var API_BASE_URL =
-        window.API_BASE || "https://online-library-hub.onrender.com/api";
-      var BACKEND_BASE =
-        window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+      // FIX: Use window.API_BASE directly - NO REDECLARATION
+      // REMOVED: const API_BASE_URL = window.API_BASE || ...
+      // REMOVED: const BACKEND_BASE = window.BACKEND_BASE || ...
 
-      console.log("📡 API Base:", API_BASE_URL);
+      console.log("📡 API Base:", window.API_BASE);
 
       // ==================== NAVBAR ====================
       function renderNavbar() {
@@ -648,7 +646,6 @@
           `;
         }
 
-        // Hamburger menu
         var hamburger = document.getElementById("hamburger");
         if (hamburger) {
           hamburger.addEventListener("click", function () {
@@ -682,7 +679,6 @@
           });
         }
 
-        // Password strength meter
         var bars = document.querySelectorAll(".strength-bar");
         var strengthLabel = document.getElementById("strengthLabel");
 
@@ -721,7 +717,6 @@
           });
         }
 
-        // Real-time password match indicator
         if (confirmInput && pwdInput) {
           confirmInput.addEventListener("input", function () {
             if (this.value.length === 0) {
@@ -799,7 +794,6 @@
         console.log("✅ registerForm found");
 
         registerForm.addEventListener("submit", async function (e) {
-          // FIX 2: Prevent default form submission (stops URL query string behavior)
           e.preventDefault();
           e.stopPropagation();
 
@@ -872,12 +866,15 @@
           }
 
           try {
+            // FIX: Use window.API_BASE instead of redeclared variable
+            var apiBase =
+              window.API_BASE || "https://online-library-hub.onrender.com/api";
             console.log(
               "📡 Sending registration request to:",
-              API_BASE_URL + "/auth/register",
+              apiBase + "/auth/register",
             );
 
-            var response = await fetch(API_BASE_URL + "/auth/register", {
+            var response = await fetch(apiBase + "/auth/register", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -930,13 +927,17 @@
       document
         .getElementById("googleRegisterBtn")
         ?.addEventListener("click", function () {
-          window.location.href = BACKEND_BASE + "/auth/google";
+          var backendBase =
+            window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+          window.location.href = backendBase + "/auth/google";
         });
 
       document
         .getElementById("githubRegisterBtn")
         ?.addEventListener("click", function () {
-          window.location.href = BACKEND_BASE + "/auth/github";
+          var backendBase =
+            window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+          window.location.href = backendBase + "/auth/github";
         });
 
       // ==================== INIT ====================
@@ -946,7 +947,6 @@
           new Date().getFullYear();
       });
 
-      // Also call renderNavbar immediately in case DOMContentLoaded already fired
       if (document.readyState !== "loading") {
         renderNavbar();
         var yearEl = document.getElementById("current-year");

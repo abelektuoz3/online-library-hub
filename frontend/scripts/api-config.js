@@ -4,16 +4,16 @@
 // ============================================
 // PRODUCTION (Render) - USE THIS FOR DEPLOYMENT
 // ============================================
-const API_BASE_URL = "https://online-library-hub.onrender.com/api";
-const BACKEND_BASE = "https://online-library-hub.onrender.com";
-const UPLOADS_BASE = "https://online-library-hub.onrender.com/uploads";
+var API_BASE_URL = "https://online-library-hub.onrender.com/api";
+var BACKEND_BASE = "https://online-library-hub.onrender.com";
+var UPLOADS_BASE = "https://online-library-hub.onrender.com/uploads";
 
 // ============================================
 // DEVELOPMENT (Local) - UNCOMMENT FOR LOCAL TESTING
 // ============================================
-// const API_BASE_URL = 'http://localhost:5000/api';
-// const BACKEND_BASE = 'http://localhost:5000';
-// const UPLOADS_BASE = 'http://localhost:5000/uploads';
+// var API_BASE_URL = 'http://localhost:5000/api';
+// var BACKEND_BASE = 'http://localhost:5000';
+// var UPLOADS_BASE = 'http://localhost:5000/uploads';
 
 // Make available globally
 window.API_BASE = API_BASE_URL;
