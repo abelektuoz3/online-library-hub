@@ -1,0 +1,33 @@
+# frontend/netlify.toml
+
+[build]
+  publish = "."
+
+# Redirect all 404s to index.html for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API redirects to your Render backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://online-library-hub.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# OAuth redirects to Render backend
+[[redirects]]
+  from = "/auth/*"
+  to = "https://online-library-hub.onrender.com/auth/:splat"
+  status = 200
+  force = true
+
+# Headers for security and CORS
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer-when-downgrade"

@@ -1,0 +1,10 @@
+# frontend/_redirects
+
+# API redirects to Render
+/api/* https://online-library-hub.onrender.com/api/:splat 200
+
+# OAuth redirects to Render
+/auth/* https://online-library-hub.onrender.com/auth/:splat 200
+
+# SPA routing - all routes go to index.html
+/* /index.html 200
