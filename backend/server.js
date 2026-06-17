@@ -1,9 +1,19 @@
 const dotenv = require("dotenv");
-dotenv.config();
+const path = require("path");
+
+// Force dotenv to load .env from the correct location
+const envPath = path.join(__dirname, '.env');
+console.log('📂 Looking for .env at:', envPath);
+dotenv.config({ path: envPath });
+
+// Also try loading from parent directory if not found
+if (!process.env.BREVO_API_KEY) {
+    console.log('⚠️ BREVO_API_KEY not found, trying parent directory...');
+    dotenv.config({ path: path.join(__dirname, '../.env') });
+}
 
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const jwt = require("jsonwebtoken");
 const connectDB = require("./config/db");
 const Admin = require("./models/Admin");
@@ -11,6 +21,10 @@ const User = require("./models/User");
 const { sendOTPEmail, sendWelcomeEmail } = require("./utils/email");
 
 console.log("🚀 Starting server...");
+console.log("📧 Environment variables loaded:");
+console.log(`   BREVO_API_KEY: ${process.env.BREVO_API_KEY ? '✅ SET' : '❌ NOT SET'}`);
+console.log(`   SENDER_EMAIL: ${process.env.SENDER_EMAIL || '❌ NOT SET'}`);
+console.log(`   MONGO_URI: ${process.env.MONGO_URI ? '✅ SET' : '❌ NOT SET'}`);
 
 // Connect to MongoDB
 connectDB();
@@ -26,7 +40,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // ==================== CORS CONFIGURATION ====================
-// Allow all origins for testing (will restrict later)
 const allowedOrigins = [
   "http://localhost:5000",
   "http://localhost:3000",
@@ -37,10 +50,9 @@ const allowedOrigins = [
 
 console.log("✅ Allowed origins:", allowedOrigins);
 
-// SIMPLE CORS - Allow all origins temporarily for testing
 app.use(
   cors({
-    origin: true, // Allow any origin for testing
+    origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: [
@@ -51,10 +63,8 @@ app.use(
       "Origin",
     ],
     exposedHeaders: ["Content-Range", "X-Content-Range"],
-  }),
+  })
 );
-
-// REMOVED: app.options('*', ...) - NOT NEEDED, cors() handles this
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -74,7 +84,7 @@ app.get("/scripts/api-config.js", (req, res) => {
   res
     .type("application/javascript")
     .send(
-      `window.API_BASE='${apiBase}';\nwindow.UPLOADS_BASE='${uploadsBase}';\n`,
+      `window.API_BASE='${apiBase}';\nwindow.UPLOADS_BASE='${uploadsBase}';\n`
     );
 });
 
@@ -118,6 +128,7 @@ app.post("/api/otp/send", async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000,
     };
 
+    console.log(`📧 Sending OTP to ${email}`);
     await sendOTPEmail(email, name || "User", otp, "verify");
     res.json({ success: true, message: "OTP sent to your email" });
   } catch (err) {
@@ -207,7 +218,7 @@ app.post("/api/auth/reset-password", async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await User.findOneAndUpdate(
       { email: email.toLowerCase() },
-      { password: hashedPassword },
+      { password: hashedPassword }
     );
 
     delete global.resetOtpStore[email];
@@ -235,7 +246,7 @@ app.post("/api/setup/first-admin", async (req, res) => {
     const token = jwt.sign(
       { id: admin.id, email: admin.email, role: "admin" },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" },
+      { expiresIn: "7d" }
     );
     res.json({
       success: true,
@@ -273,7 +284,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 Server running on http://localhost:${PORT}`);
   console.log(
-    `📚 Frontend: ${process.env.FRONTEND_URL || `http://localhost:${PORT}/index.html`}`,
+    `📚 Frontend: ${process.env.FRONTEND_URL || `http://localhost:${PORT}/index.html`}`
   );
   console.log(`🔌 API base: http://localhost:${PORT}/api`);
   console.log(`✅ CORS enabled (all origins allowed for testing)`);
