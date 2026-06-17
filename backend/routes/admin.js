@@ -13,7 +13,6 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate input
         if (!email || !password) {
             return res.status(400).json({ 
                 success: false, 
@@ -21,7 +20,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Find admin by email
         const admin = await Admin.findOne({ email: email.toLowerCase() });
         if (!admin) {
             return res.status(401).json({ 
@@ -30,7 +28,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Check password
         const isMatch = await admin.comparePassword(password);
         if (!isMatch) {
             return res.status(401).json({ 
@@ -39,7 +36,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Generate JWT token
         const token = jwt.sign(
             { 
                 id: admin._id, 
@@ -81,10 +77,8 @@ const authMiddleware = async (req, res, next) => {
             });
         }
 
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Find admin
         const admin = await Admin.findById(decoded.id);
         if (!admin) {
             return res.status(401).json({ 
@@ -98,7 +92,6 @@ const authMiddleware = async (req, res, next) => {
     } catch (error) {
         console.error('Auth error:', error);
         
-        // Handle specific JWT errors
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({ 
                 success: false, 
@@ -136,6 +129,197 @@ router.get('/verify', authMiddleware, async (req, res) => {
         res.status(500).json({ 
             success: false, 
             error: 'Failed to verify token' 
+        });
+    }
+});
+
+// ==================== RESOURCE/COURSE ROUTES ====================
+
+// GET all resources
+router.get('/resources', authMiddleware, async (req, res) => {
+    try {
+        // If you have a Resource model, use it
+        // For now, we'll use the Book model as resources
+        const resources = await Book.find().sort({ createdAt: -1 });
+        res.json({ success: true, resources });
+    } catch (error) {
+        console.error('Error fetching resources:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch resources' 
+        });
+    }
+});
+
+// POST new resource (course)
+router.post('/resources', authMiddleware, async (req, res) => {
+    try {
+        const {
+            title,
+            author,
+            description,
+            category,
+            coverImage,
+            fileUrl,
+            price,
+            pages,
+            publisher,
+            publicationYear,
+            language,
+            isbn,
+            featured
+        } = req.body;
+
+        // Validate required fields
+        if (!title || !author || !description || !coverImage || !fileUrl) {
+            return res.status(400).json({
+                success: false,
+                error: 'Title, author, description, cover image, and file URL are required'
+            });
+        }
+
+        // Create new resource/book
+        const newResource = new Book({
+            title: title.trim(),
+            author: author.trim(),
+            description: description.trim(),
+            category: category || 'Other',
+            coverImage: coverImage.trim(),
+            fileUrl: fileUrl.trim(),
+            price: price || 0,
+            pages: pages || null,
+            publisher: publisher || '',
+            publicationYear: publicationYear || null,
+            language: language || 'English',
+            isbn: isbn || '',
+            featured: featured || false,
+            uploadedBy: req.admin._id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        await newResource.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Resource created successfully',
+            resource: newResource
+        });
+    } catch (error) {
+        console.error('Error creating resource:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to create resource'
+        });
+    }
+});
+
+// UPDATE resource
+router.put('/resources/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            title,
+            author,
+            description,
+            category,
+            coverImage,
+            fileUrl,
+            price,
+            pages,
+            publisher,
+            publicationYear,
+            language,
+            isbn,
+            featured
+        } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid resource ID format'
+            });
+        }
+
+        const updatedResource = await Book.findByIdAndUpdate(
+            id,
+            {
+                title: title?.trim(),
+                author: author?.trim(),
+                description: description?.trim(),
+                category: category || 'Other',
+                coverImage: coverImage?.trim(),
+                fileUrl: fileUrl?.trim(),
+                price: price || 0,
+                pages: pages || null,
+                publisher: publisher || '',
+                publicationYear: publicationYear || null,
+                language: language || 'English',
+                isbn: isbn || '',
+                featured: featured || false,
+                updatedAt: new Date()
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedResource) {
+            return res.status(404).json({
+                success: false,
+                error: 'Resource not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Resource updated successfully',
+            resource: updatedResource
+        });
+    } catch (error) {
+        console.error('Error updating resource:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update resource'
+        });
+    }
+});
+
+// DELETE resource
+router.delete('/resources/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id || id === 'undefined' || id === 'null') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid resource ID' 
+            });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid resource ID format' 
+            });
+        }
+
+        const resource = await Book.findByIdAndDelete(id);
+        
+        if (!resource) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Resource not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Resource deleted successfully' 
+        });
+    } catch (error) {
+        console.error('Error deleting resource:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to delete resource' 
         });
     }
 });
@@ -311,6 +495,43 @@ router.get('/announcements', authMiddleware, async (req, res) => {
     } catch (error) {
         console.error('Error fetching announcements:', error);
         res.status(500).json({ error: 'Failed to fetch announcements' });
+    }
+});
+
+// POST new announcement
+router.post('/announcements', authMiddleware, async (req, res) => {
+    try {
+        const { title, content, type, isActive, expiresAt } = req.body;
+
+        if (!title || !content) {
+            return res.status(400).json({
+                success: false,
+                error: 'Title and content are required'
+            });
+        }
+
+        const newAnnouncement = new Announcement({
+            title: title.trim(),
+            content: content.trim(),
+            type: type || 'info',
+            isActive: isActive !== undefined ? isActive : true,
+            createdBy: req.admin._id,
+            expiresAt: expiresAt || null
+        });
+
+        await newAnnouncement.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Announcement created successfully',
+            announcement: newAnnouncement
+        });
+    } catch (error) {
+        console.error('Error creating announcement:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to create announcement'
+        });
     }
 });
 
