@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
+        trim: true,
     },
     password: {
         type: String,
@@ -31,10 +32,12 @@ const UserSchema = new mongoose.Schema({
     googleId: {
         type: String,
         sparse: true,
+        unique: true,
     },
     githubId: {
         type: String,
         sparse: true,
+        unique: true,
     },
     authProvider: {
         type: String,
@@ -45,6 +48,9 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    lastLogin: {
+        type: Date,
+    }
 });
 
 // Hash password before saving (only if password is provided)
@@ -55,5 +61,11 @@ UserSchema.pre('save', async function(next) {
     }
     next();
 });
+
+// Compare password method
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+    if (!this.password) return false;
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 module.exports = mongoose.model('User', UserSchema);
