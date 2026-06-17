@@ -1,10 +1,13 @@
 // Catalog API — base URL is provided by backend/server.js via /scripts/api-config.js
 
-const API_BASE = window.API_BASE || '/api';
-const BACKEND_BASE = window.BACKEND_BASE || 'https://online-library-hub.onrender.com';
+// Use the global API_BASE and BACKEND_BASE from api-config.js
+// DO NOT redeclare them with const or var
 
 function getFileUrl(fileUrl) {
     if (!fileUrl) return '';
+    
+    // Use the global BACKEND_BASE from api-config.js
+    const backendBase = window.BACKEND_BASE || 'https://online-library-hub.onrender.com';
     
     // If fileUrl already starts with http, return as-is (it's a full URL)
     if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
@@ -13,26 +16,28 @@ function getFileUrl(fileUrl) {
     
     // If fileUrl starts with /uploads/, use it with backend base
     if (fileUrl.startsWith('/uploads/')) {
-        return `${BACKEND_BASE}${fileUrl}`;
+        return `${backendBase}${fileUrl}`;
     }
     
     // If fileUrl starts with uploads/ (no leading slash), add the leading slash
     if (fileUrl.startsWith('uploads/')) {
-        return `${BACKEND_BASE}/${fileUrl}`;
+        return `${backendBase}/${fileUrl}`;
     }
     
     // If it starts with a slash, use it with backend base
     if (fileUrl.startsWith('/')) {
-        return `${BACKEND_BASE}${fileUrl}`;
+        return `${backendBase}${fileUrl}`;
     }
     
     // Default: assume it's just a filename in the uploads folder
-    return `${BACKEND_BASE}/uploads/${fileUrl}`;
+    return `${backendBase}/uploads/${fileUrl}`;
 }
 
 async function loadCatalog() {
     try {
-        const response = await fetch(`${API_BASE}/catalog`);
+        // Use the global API_BASE from api-config.js
+        const apiBase = window.API_BASE || '/api';
+        const response = await fetch(`${apiBase}/catalog`);
         const resources = await response.json();
         displayResources(resources);
         return resources;
@@ -104,7 +109,8 @@ function setupFilters() {
         const params = new URLSearchParams({ search, category, grade_level, resource_type });
         
         try {
-            const response = await fetch(`${API_BASE}/catalog?${params}`);
+            const apiBase = window.API_BASE || '/api';
+            const response = await fetch(`${apiBase}/catalog?${params}`);
             const resources = await response.json();
             displayResources(resources);
         } catch (err) {
