@@ -158,7 +158,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
         console.log('Request body:', req.body);
         console.log('Uploaded file:', req.file);
 
-        // Get form data from body
         const { 
             title, 
             category, 
@@ -168,7 +167,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             available 
         } = req.body;
 
-        // Check if body exists
         if (!req.body || Object.keys(req.body).length === 0) {
             console.log('❌ Request body is empty');
             return res.status(400).json({
@@ -185,7 +183,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             description 
         });
 
-        // Validate required fields
         if (!title || !category || !grade_level || !resource_type) {
             console.log('❌ Missing required fields:', { 
                 title: !!title, 
@@ -199,19 +196,16 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             });
         }
 
-        // Handle file upload if present
         let fileUrl = '';
         let coverImage = '';
         
         if (req.file) {
             console.log('📎 File uploaded:', req.file.originalname);
-            // Generate URLs for the uploaded file
             const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
             fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
             coverImage = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
-        // Create new resource/book
         const newResource = new Book({
             title: title.trim(),
             author: 'Admin Upload',
@@ -250,7 +244,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             errors: error.errors
         });
         
-        // Check for validation errors
         if (error.name === 'ValidationError') {
             const validationErrors = {};
             for (const field in error.errors) {
@@ -263,7 +256,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             });
         }
 
-        // Check for multer errors
         if (error.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
                 success: false,
@@ -299,7 +291,6 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
             });
         }
 
-        // Build update object
         const updateData = {
             title: title?.trim(),
             category: category || 'Other',
@@ -307,7 +298,6 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
             updatedAt: new Date()
         };
 
-        // If new file uploaded, update file URL
         if (req.file) {
             const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
             updateData.fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
@@ -341,15 +331,16 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
     }
 });
 
-// DELETE resource
+// ==================== DELETE RESOURCE - FIXED ====================
 router.delete('/resources/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('🗑️ Deleting resource with ID:', id);
         
         if (!id || id === 'undefined' || id === 'null') {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Invalid resource ID' 
+                error: 'Invalid resource ID provided' 
             });
         }
 
@@ -369,6 +360,7 @@ router.delete('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
+        console.log('✅ Resource deleted successfully:', id);
         res.json({ 
             success: true, 
             message: 'Resource deleted successfully' 
@@ -395,10 +387,11 @@ router.get('/users', authMiddleware, async (req, res) => {
     }
 });
 
-// DELETE user
+// ==================== DELETE USER - FIXED ====================
 router.delete('/users/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('🗑️ Deleting user with ID:', id);
         
         if (!id || id === 'undefined' || id === 'null') {
             return res.status(400).json({ 
@@ -423,6 +416,7 @@ router.delete('/users/:id', authMiddleware, async (req, res) => {
             });
         }
 
+        console.log('✅ User deleted successfully:', id);
         res.json({ 
             success: true, 
             message: 'User deleted successfully' 
@@ -502,10 +496,11 @@ router.get('/books', authMiddleware, async (req, res) => {
     }
 });
 
-// DELETE book
+// ==================== DELETE BOOK - FIXED ====================
 router.delete('/books/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('🗑️ Deleting book with ID:', id);
         
         if (!id || id === 'undefined' || id === 'null') {
             return res.status(400).json({ 
@@ -530,6 +525,7 @@ router.delete('/books/:id', authMiddleware, async (req, res) => {
             });
         }
 
+        console.log('✅ Book deleted successfully:', id);
         res.json({ 
             success: true, 
             message: 'Book deleted successfully' 
@@ -593,10 +589,11 @@ router.post('/announcements', authMiddleware, async (req, res) => {
     }
 });
 
-// DELETE announcement
+// ==================== DELETE ANNOUNCEMENT - FIXED ====================
 router.delete('/announcements/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('🗑️ Deleting announcement with ID:', id);
         
         if (!id || id === 'undefined' || id === 'null') {
             return res.status(400).json({ 
@@ -621,6 +618,7 @@ router.delete('/announcements/:id', authMiddleware, async (req, res) => {
             });
         }
 
+        console.log('✅ Announcement deleted successfully:', id);
         res.json({ 
             success: true, 
             message: 'Announcement deleted successfully' 
@@ -659,6 +657,186 @@ router.get('/stats', authMiddleware, async (req, res) => {
     } catch (error) {
         console.error('Error fetching stats:', error);
         res.status(500).json({ error: 'Failed to fetch stats' });
+    }
+});
+
+// ==================== ADDITIONAL USER MANAGEMENT ROUTES ====================
+
+// Make user admin
+router.put('/users/:id/make-admin', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid user ID format'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            id,
+            { role: 'admin' },
+            { new: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'User promoted to admin successfully',
+            user
+        });
+    } catch (error) {
+        console.error('Error making admin:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to make user admin'
+        });
+    }
+});
+
+// Toggle user suspension
+router.put('/users/:id/suspension', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { suspended } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid user ID format'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            id,
+            { isSuspended: suspended },
+            { new: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `User ${suspended ? 'suspended' : 'unsuspended'} successfully`,
+            user
+        });
+    } catch (error) {
+        console.error('Error toggling suspension:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to toggle user suspension'
+        });
+    }
+});
+
+// ==================== MESSAGE ROUTES ====================
+
+// GET all messages
+router.get('/messages', authMiddleware, async (req, res) => {
+    try {
+        const Contact = require('../models/Contact');
+        const messages = await Contact.find().sort({ createdAt: -1 });
+        res.json({ success: true, messages });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+// Mark message as read
+router.put('/messages/:id/read', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const Contact = require('../models/Contact');
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid message ID format'
+            });
+        }
+
+        const message = await Contact.findByIdAndUpdate(
+            id,
+            { is_read: true },
+            { new: true }
+        );
+
+        if (!message) {
+            return res.status(404).json({
+                success: false,
+                error: 'Message not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Message marked as read',
+            data: message
+        });
+    } catch (error) {
+        console.error('Error marking message read:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to mark message as read'
+        });
+    }
+});
+
+// DELETE message
+router.delete('/messages/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const Contact = require('../models/Contact');
+        
+        console.log('🗑️ Deleting message with ID:', id);
+        
+        if (!id || id === 'undefined' || id === 'null') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid message ID' 
+            });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid message ID format' 
+            });
+        }
+
+        const message = await Contact.findByIdAndDelete(id);
+        
+        if (!message) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Message not found' 
+            });
+        }
+
+        console.log('✅ Message deleted successfully:', id);
+        res.json({ 
+            success: true, 
+            message: 'Message deleted successfully' 
+        });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to delete message' 
+        });
     }
 });
 
