@@ -1,15 +1,61 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs');
 const Admin = require('../models/Admin');
 const User = require('../models/User');
 const Resource = require('../models/Resource');
-
 const Feedback = require('../models/Feedback');
 const Announcement = require('../models/Announcement');
 const router = express.Router();
-const upload = require('../middleware/upload');
-const path = require('path');
 
+// ==================== MULTER CONFIGURATION (Directly in this file) ====================
+const multer = require('multer');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('📁 Created uploads directory:', uploadsDir);
+}
+
+// Configure multer storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, uniqueSuffix + ext);
+    }
+});
+
+// File filter for allowed types
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'application/pdf',
+        'video/mp4', 'video/mpeg', 'video/quicktime',
+        'audio/mpeg', 'audio/wav', 'audio/ogg'
+    ];
+    
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error(`Invalid file type: ${file.mimetype}. Only images, PDFs, videos, and audio are allowed.`), false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 50 * 1024 * 1024 // 50MB limit
+    }
+});
+
+// ==================== MIDDLEWARE ====================
 // Middleware to verify admin access
 const verifyAdmin = async (req, res, next) => {
     try {
@@ -244,7 +290,12 @@ router.get('/resources', verifyAdmin, async (req, res) => {
     }
 });
 
+// POST /api/admin/resources - Add new resource with file upload
 router.post('/resources', verifyAdmin, upload.single('file'), async (req, res) => {
+    console.log('📡 POST /api/admin/resources called');
+    console.log('📝 Request body:', req.body);
+    console.log('📎 File:', req.file ? req.file.filename : 'No file uploaded');
+    
     try {
         const { title, author, category, grade_level, resource_type, description, available } = req.body;
 
@@ -258,51 +309,82 @@ router.post('/resources', verifyAdmin, upload.single('file'), async (req, res) =
         if (req.file) {
             fileUrl = `/uploads/${req.file.filename}`;
             const ext = req.file.originalname.split('.').pop().toLowerCase();
-            if (ext === 'pdf') fileType = 'pdf';
-            else if (['mp4', 'mov', 'mkv', 'avi', 'mpeg'].includes(ext)) fileType = 'video';
-            else if (['mp3', 'wav'].includes(ext)) fileType = 'audio';
+            const mimeType = req.file.mimetype;
+            
+            if (mimeType === 'application/pdf' || ext === 'pdf') {
+                fileType = 'pdf';
+            } else if (mimeType.startsWith('video/') || ['mp4', 'mov', 'mkv', 'avi', 'mpeg'].includes(ext)) {
+                fileType = 'video';
+            } else if (mimeType.startsWith('audio/') || ['mp3', 'wav', 'ogg'].includes(ext)) {
+                fileType = 'audio';
+            } else if (mimeType.startsWith('image/')) {
+                fileType = 'image';
+            }
+            console.log(`📎 File type detected: ${fileType}`);
         }
 
-        const resource = new Resource({
-            title,
+        const resourceData = {
+            title: title.trim(),
             author: author || 'Unknown',
             category: category || 'General',
             grade_level: grade_level || 'All grades',
             resource_type: resource_type || 'Book',
             description: description || '',
-            available: available !== undefined ? available : true,
+            available: available !== undefined ? (available === 'true' || available === true) : true,
             file_url: fileUrl,
             file_type: fileType
-        });
+        };
 
+        const resource = new Resource(resourceData);
         await resource.save();
-        res.json({ success: true, message: 'Resource added successfully', resource });
+        
+        console.log('✅ Resource saved:', resource.title);
+        res.json({ 
+            success: true, 
+            message: 'Resource added successfully', 
+            resource,
+            file: req.file ? { filename: req.file.filename, url: fileUrl, type: fileType } : null
+        });
     } catch (err) {
-        console.error('Error adding resource:', err);
-        res.status(500).json({ error: 'Server error' });
+        console.error('❌ Error adding resource:', err);
+        res.status(500).json({ error: err.message || 'Server error' });
     }
 });
 
+// PUT /api/admin/resources/:resourceId - Update resource with file upload
 router.put('/resources/:resourceId', verifyAdmin, upload.single('file'), async (req, res) => {
+    console.log('📡 PUT /api/admin/resources/' + req.params.resourceId);
+    console.log('📝 Request body:', req.body);
+    console.log('📎 File:', req.file ? req.file.filename : 'No file uploaded');
+    
     try {
         const { title, author, category, grade_level, resource_type, description, available } = req.body;
         
         const updateData = {
-            title,
-            author,
-            category,
-            grade_level,
-            resource_type,
-            description,
+            title: title?.trim(),
+            author: author || 'Unknown',
+            category: category || 'General',
+            grade_level: grade_level || 'All grades',
+            resource_type: resource_type || 'Book',
+            description: description || '',
             available: available !== undefined ? (available === 'true' || available === true) : true
         };
 
         if (req.file) {
             updateData.file_url = `/uploads/${req.file.filename}`;
             const ext = req.file.originalname.split('.').pop().toLowerCase();
-            if (ext === 'pdf') updateData.file_type = 'pdf';
-            else if (['mp4', 'mov', 'mkv', 'avi', 'mpeg'].includes(ext)) updateData.file_type = 'video';
-            else if (['mp3', 'wav'].includes(ext)) updateData.file_type = 'audio';
+            const mimeType = req.file.mimetype;
+            
+            if (mimeType === 'application/pdf' || ext === 'pdf') {
+                updateData.file_type = 'pdf';
+            } else if (mimeType.startsWith('video/') || ['mp4', 'mov', 'mkv', 'avi', 'mpeg'].includes(ext)) {
+                updateData.file_type = 'video';
+            } else if (mimeType.startsWith('audio/') || ['mp3', 'wav', 'ogg'].includes(ext)) {
+                updateData.file_type = 'audio';
+            } else if (mimeType.startsWith('image/')) {
+                updateData.file_type = 'image';
+            }
+            console.log(`📎 File type detected: ${updateData.file_type}`);
         }
 
         const resource = await Resource.findByIdAndUpdate(
@@ -314,10 +396,17 @@ router.put('/resources/:resourceId', verifyAdmin, upload.single('file'), async (
         if (!resource) {
             return res.status(404).json({ error: 'Resource not found' });
         }
-        res.json({ success: true, message: 'Resource updated successfully', resource });
+        
+        console.log('✅ Resource updated:', resource.title);
+        res.json({ 
+            success: true, 
+            message: 'Resource updated successfully', 
+            resource,
+            file: req.file ? { filename: req.file.filename, url: updateData.file_url, type: updateData.file_type } : null
+        });
     } catch (err) {
-        console.error('Error updating resource:', err);
-        res.status(500).json({ error: 'Server error' });
+        console.error('❌ Error updating resource:', err);
+        res.status(500).json({ error: err.message || 'Server error' });
     }
 });
 
