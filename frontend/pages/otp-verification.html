@@ -124,9 +124,7 @@
         width: 100%;
         background: white;
         border-radius: 1rem;
-        box-shadow:
-          0 1px 3px 0 rgba(0, 0, 0, 0.1),
-          0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
         padding: 2rem;
       }
 
@@ -372,13 +370,14 @@
     <script src="/scripts/api-config.js"></script>
     <script src="../scripts/main.js"></script>
     <script>
-      const API_BASE_URL =
-        window.API_BASE || "https://online-library-hub.onrender.com/api";
+      // ===== FIX: REMOVED duplicate API_BASE_URL declaration =====
+      // Use window.API_BASE directly
+      console.log("🔐 OTP Verification page loaded");
+      console.log("📡 API Base:", window.API_BASE);
+
       let countdownInterval;
       let canResend = true;
       let resendCountdown = 60;
-
-      console.log("🔐 OTP Verification page loaded");
 
       // Get email from URL parameter or localStorage
       const urlParams = new URLSearchParams(window.location.search);
@@ -448,7 +447,9 @@
         try {
           showMessage("Sending verification code...", "info");
 
-          const response = await fetch(`${API_BASE_URL}/otp/send`, {
+          // FIX: Use window.API_BASE directly
+          const apiBase = window.API_BASE || "https://online-library-hub.onrender.com/api";
+          const response = await fetch(apiBase + "/otp/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -509,7 +510,9 @@
           verifyBtn.textContent = "Verifying...";
 
           try {
-            const response = await fetch(`${API_BASE_URL}/otp/verify`, {
+            // FIX: Use window.API_BASE directly
+            const apiBase = window.API_BASE || "https://online-library-hub.onrender.com/api";
+            const response = await fetch(apiBase + "/otp/verify", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email: userEmail, otp: otp }),
