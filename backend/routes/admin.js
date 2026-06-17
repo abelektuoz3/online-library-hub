@@ -307,7 +307,8 @@ router.post('/resources', verifyAdmin, upload.single('file'), async (req, res) =
         let fileUrl = '';
         let fileType = 'none';
         if (req.file) {
-            fileUrl = `/uploads/${req.file.filename}`;
+            // FIX: Store as uploads/filename instead of /uploads/filename to avoid duplication
+            fileUrl = `uploads/${req.file.filename}`;
             const ext = req.file.originalname.split('.').pop().toLowerCase();
             const mimeType = req.file.mimetype;
             
@@ -321,6 +322,7 @@ router.post('/resources', verifyAdmin, upload.single('file'), async (req, res) =
                 fileType = 'image';
             }
             console.log(`📎 File type detected: ${fileType}`);
+            console.log(`📎 File URL stored: ${fileUrl}`);
         }
 
         const resourceData = {
@@ -371,7 +373,8 @@ router.put('/resources/:resourceId', verifyAdmin, upload.single('file'), async (
         };
 
         if (req.file) {
-            updateData.file_url = `/uploads/${req.file.filename}`;
+            // FIX: Store as uploads/filename instead of /uploads/filename
+            updateData.file_url = `uploads/${req.file.filename}`;
             const ext = req.file.originalname.split('.').pop().toLowerCase();
             const mimeType = req.file.mimetype;
             
@@ -385,6 +388,7 @@ router.put('/resources/:resourceId', verifyAdmin, upload.single('file'), async (
                 updateData.file_type = 'image';
             }
             console.log(`📎 File type detected: ${updateData.file_type}`);
+            console.log(`📎 File URL stored: ${updateData.file_url}`);
         }
 
         const resource = await Resource.findByIdAndUpdate(
