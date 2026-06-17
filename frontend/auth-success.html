@@ -94,20 +94,29 @@
             margin-bottom: 15px;
             border: 1px solid #feb2b2;
         }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="success-icon">✅</span>
-        <h1>Authentication Successful!</h1>
-        <p>You have been successfully authenticated. Redirecting you to your dashboard...</p>
-        <div class="spinner"></div>
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
-        </div>
-        <p style="font-size: 14px; margin-top: 20px; color: #a0aec0;">
-            You will be redirected automatically in a few seconds.
-        </p>
+    <div class="container" id="mainContainer">
+        <!-- Content will be dynamically inserted by JavaScript -->
     </div>
     
     <script>
@@ -119,6 +128,8 @@
         console.log('🔐 Auth success page loaded');
         console.log('Token present:', !!token);
         console.log('Error present:', !!error);
+        
+        const container = document.getElementById('mainContainer');
         
         // Handle errors first
         if (error) {
@@ -132,73 +143,56 @@
             
             const errorMessage = errorMessages[error] || 'Authentication failed. Please try again.';
             
-            // Show error in the UI
-            document.querySelector('.container').innerHTML = `
+            container.innerHTML = `
                 <span class="success-icon">❌</span>
                 <h1>Authentication Failed</h1>
                 <div class="error-message">${errorMessage}</div>
-                <button onclick="window.location.href='/login.html'" 
-                        style="
-                            background: #667eea;
-                            color: white;
-                            border: none;
-                            padding: 12px 30px;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            cursor: pointer;
-                            margin-top: 10px;
-                            transition: background 0.3s;
-                        "
-                        onmouseover="this.style.background='#5a67d8'"
-                        onmouseout="this.style.background='#667eea'">
-                    Go to Login
-                </button>
+                <a href="/login.html" class="btn">Go to Login</a>
             `;
-            return;
-        }
-        
-        // Handle token
-        if (token) {
+        } else if (token) {
+            // Success - store token and redirect
             try {
                 // Store token
                 localStorage.setItem('authToken', token);
                 console.log('✅ Token stored successfully');
                 
+                // Show success message with spinner
+                container.innerHTML = `
+                    <span class="success-icon">✅</span>
+                    <h1>Authentication Successful!</h1>
+                    <p>You have been successfully authenticated. Redirecting you to your dashboard...</p>
+                    <div class="spinner"></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <p style="font-size: 14px; margin-top: 20px; color: #a0aec0;">
+                        You will be redirected automatically in a few seconds.
+                    </p>
+                `;
+                
                 // Redirect to dashboard after 2.5 seconds
-                setTimeout(() => {
+                setTimeout(function() {
                     console.log('🔄 Redirecting to dashboard...');
                     window.location.href = '/dashboard.html';
                 }, 2500);
+                
             } catch (err) {
                 console.error('Error storing token:', err);
-                // Fallback redirect
-                setTimeout(() => {
-                    window.location.href = '/dashboard.html';
-                }, 2500);
+                container.innerHTML = `
+                    <span class="success-icon">⚠️</span>
+                    <h1>Error</h1>
+                    <p>There was an error processing your authentication.</p>
+                    <a href="/login.html" class="btn">Go to Login</a>
+                `;
             }
         } else {
             // No token received
             console.warn('⚠️ No token received in URL');
-            document.querySelector('.container').innerHTML = `
+            container.innerHTML = `
                 <span class="success-icon">⚠️</span>
                 <h1>No Authentication Token</h1>
                 <p>We couldn't find an authentication token. Please try logging in again.</p>
-                <button onclick="window.location.href='/login.html'" 
-                        style="
-                            background: #667eea;
-                            color: white;
-                            border: none;
-                            padding: 12px 30px;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            cursor: pointer;
-                            margin-top: 10px;
-                            transition: background 0.3s;
-                        "
-                        onmouseover="this.style.background='#5a67d8'"
-                        onmouseout="this.style.background='#667eea'">
-                    Go to Login
-                </button>
+                <a href="/login.html" class="btn">Go to Login</a>
             `;
         }
     </script>
