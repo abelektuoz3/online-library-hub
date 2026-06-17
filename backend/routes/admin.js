@@ -9,7 +9,7 @@ const Book = require('../models/Book');
 const Announcement = require('../models/Announcement');
 const upload = require('../config/multer');
 
-// ==================== ADMIN LOGIN (NO AUTH REQUIRED) ====================
+// ==================== ADMIN LOGIN ====================
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -113,7 +113,7 @@ const authMiddleware = async (req, res, next) => {
     }
 };
 
-// ==================== VERIFY TOKEN ROUTE ====================
+// ==================== VERIFY TOKEN ====================
 router.get('/verify', authMiddleware, async (req, res) => {
     try {
         res.json({
@@ -134,7 +134,7 @@ router.get('/verify', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== RESOURCE/COURSE ROUTES ====================
+// ==================== RESOURCE ROUTES ====================
 
 // GET all resources
 router.get('/resources', authMiddleware, async (req, res) => {
@@ -150,13 +150,42 @@ router.get('/resources', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource (course) - WITH MULTER FOR FILE UPLOAD
+// GET single resource
+router.get('/resources/:id', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid resource ID format'
+            });
+        }
+
+        const resource = await Book.findById(id);
+        if (!resource) {
+            return res.status(404).json({
+                success: false,
+                error: 'Resource not found'
+            });
+        }
+
+        res.json({ success: true, resource });
+    } catch (error) {
+        console.error('Error fetching resource:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch resource'
+        });
+    }
+});
+
+// POST new resource
 router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         console.log('📝 Creating new resource...');
-        console.log('Content-Type:', req.headers['content-type']);
         console.log('Request body:', req.body);
-        console.log('Uploaded file:', req.file);
+        console.log('File:', req.file);
 
         const { 
             title, 
@@ -167,30 +196,8 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             available 
         } = req.body;
 
-        if (!req.body || Object.keys(req.body).length === 0) {
-            console.log('❌ Request body is empty');
-            return res.status(400).json({
-                success: false,
-                error: 'No form data received. Please check your form submission.'
-            });
-        }
-
-        console.log('📋 Form data received:', { 
-            title, 
-            category, 
-            grade_level, 
-            resource_type, 
-            description,
-            available
-        });
-
+        // Validate required fields
         if (!title || !category || !grade_level || !resource_type) {
-            console.log('❌ Missing required fields:', { 
-                title: !!title, 
-                category: !!category, 
-                grade_level: !!grade_level, 
-                resource_type: !!resource_type 
-            });
             return res.status(400).json({
                 success: false,
                 error: 'Title, category, grade level, and resource type are required'
@@ -214,7 +221,7 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             category: category || 'Other',
             grade_level: grade_level || 'Other',
             resource_type: resource_type || 'Other',
-            available: available === 'true' || available === true,
+            available: available === 'true' || available === true || true,
             coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
             fileUrl: fileUrl || 'https://example.com/sample.pdf',
             price: 0,
@@ -229,8 +236,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             updatedAt: new Date()
         });
 
-        console.log('📚 Book object to save:', newResource);
-
         await newResource.save();
         console.log('✅ Resource created successfully:', newResource._id);
 
@@ -241,12 +246,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
         });
     } catch (error) {
         console.error('❌ Error creating resource:', error);
-        console.error('Error details:', {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
-            errors: error.errors
-        });
         
         if (error.name === 'ValidationError') {
             const validationErrors = {};
@@ -257,13 +256,6 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
                 success: false,
                 error: 'Validation failed',
                 details: validationErrors
-            });
-        }
-
-        if (error.code === 'LIMIT_FILE_SIZE') {
-            return res.status(400).json({
-                success: false,
-                error: 'File too large. Maximum size is 100MB.'
             });
         }
 
@@ -279,6 +271,14 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
 router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid resource ID format'
+            });
+        }
+
         const { 
             title, 
             category, 
@@ -287,13 +287,6 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
             description,
             available 
         } = req.body;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid resource ID format'
-            });
-        }
 
         const updateData = {
             title: title?.trim(),
@@ -344,7 +337,7 @@ router.delete('/resources/:id', authMiddleware, async (req, res) => {
         const { id } = req.params;
         console.log('🗑️ Deleting resource with ID:', id);
         
-        if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null' || id === '') {
             return res.status(400).json({ 
                 success: false, 
                 error: 'Invalid resource ID provided' 
@@ -400,7 +393,7 @@ router.delete('/users/:id', authMiddleware, async (req, res) => {
         const { id } = req.params;
         console.log('🗑️ Deleting user with ID:', id);
         
-        if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null' || id === '') {
             return res.status(400).json({ 
                 success: false, 
                 error: 'Invalid user ID provided' 
@@ -442,13 +435,6 @@ router.patch('/users/:id/role', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const { role } = req.body;
-
-        if (!id || id === 'undefined' || id === 'null') {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Invalid user ID' 
-            });
-        }
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ 
@@ -569,62 +555,6 @@ router.put('/users/:id/suspension', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== BOOK ROUTES ====================
-
-// GET all books
-router.get('/books', authMiddleware, async (req, res) => {
-    try {
-        const books = await Book.find().sort({ createdAt: -1 });
-        res.json({ success: true, books });
-    } catch (error) {
-        console.error('Error fetching books:', error);
-        res.status(500).json({ error: 'Failed to fetch books' });
-    }
-});
-
-// DELETE book
-router.delete('/books/:id', authMiddleware, async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log('🗑️ Deleting book with ID:', id);
-        
-        if (!id || id === 'undefined' || id === 'null') {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Invalid book ID' 
-            });
-        }
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'Invalid book ID format' 
-            });
-        }
-
-        const book = await Book.findByIdAndDelete(id);
-        
-        if (!book) {
-            return res.status(404).json({ 
-                success: false, 
-                error: 'Book not found' 
-            });
-        }
-
-        console.log('✅ Book deleted successfully:', id);
-        res.json({ 
-            success: true, 
-            message: 'Book deleted successfully' 
-        });
-    } catch (error) {
-        console.error('Error deleting book:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Failed to delete book' 
-        });
-    }
-});
-
 // ==================== ANNOUNCEMENT ROUTES ====================
 
 // GET all announcements
@@ -681,7 +611,7 @@ router.delete('/announcements/:id', authMiddleware, async (req, res) => {
         const { id } = req.params;
         console.log('🗑️ Deleting announcement with ID:', id);
         
-        if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null' || id === '') {
             return res.status(400).json({ 
                 success: false, 
                 error: 'Invalid announcement ID' 
@@ -780,7 +710,7 @@ router.delete('/messages/:id', authMiddleware, async (req, res) => {
         
         console.log('🗑️ Deleting message with ID:', id);
         
-        if (!id || id === 'undefined' || id === 'null') {
+        if (!id || id === 'undefined' || id === 'null' || id === '') {
             return res.status(400).json({ 
                 success: false, 
                 error: 'Invalid message ID' 
@@ -837,6 +767,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
                 totalAdmins,
                 verifiedUsers,
                 unverifiedUsers: totalUsers - verifiedUsers,
+                totalResources: totalBooks,
                 totalBooks,
                 totalAnnouncements,
                 unreadMessages,
