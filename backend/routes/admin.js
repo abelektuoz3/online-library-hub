@@ -138,8 +138,6 @@ router.get('/verify', authMiddleware, async (req, res) => {
 // GET all resources
 router.get('/resources', authMiddleware, async (req, res) => {
     try {
-        // If you have a Resource model, use it
-        // For now, we'll use the Book model as resources
         const resources = await Book.find().sort({ createdAt: -1 });
         res.json({ success: true, resources });
     } catch (error) {
@@ -151,54 +149,90 @@ router.get('/resources', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource (course)
+// POST new resource (course) - FIXED for FormData
 router.post('/resources', authMiddleware, async (req, res) => {
     try {
-        const {
-            title,
-            author,
+        console.log('📝 Creating new resource...');
+        console.log('Content-Type:', req.headers['content-type']);
+        console.log('Request body:', req.body);
+        
+        // Get form data from body
+        const { 
+            title, 
+            category, 
+            grade_level, 
+            resource_type, 
             description,
-            category,
-            coverImage,
-            fileUrl,
-            price,
-            pages,
-            publisher,
-            publicationYear,
-            language,
-            isbn,
-            featured
+            available 
         } = req.body;
 
-        // Validate required fields
-        if (!title || !author || !description || !coverImage || !fileUrl) {
+        // Check if body exists
+        if (!req.body || Object.keys(req.body).length === 0) {
+            console.log('❌ Request body is empty');
             return res.status(400).json({
                 success: false,
-                error: 'Title, author, description, cover image, and file URL are required'
+                error: 'No form data received. Please check your form submission.'
             });
+        }
+
+        console.log('📋 Form data received:', { 
+            title, 
+            category, 
+            grade_level, 
+            resource_type, 
+            description 
+        });
+
+        // Validate required fields
+        if (!title || !category || !grade_level || !resource_type) {
+            console.log('❌ Missing required fields:', { 
+                title: !!title, 
+                category: !!category, 
+                grade_level: !!grade_level, 
+                resource_type: !!resource_type 
+            });
+            return res.status(400).json({
+                success: false,
+                error: 'Title, category, grade level, and resource type are required'
+            });
+        }
+
+        // Handle file upload if present
+        let fileUrl = '';
+        let coverImage = '';
+        
+        // If there's a file uploaded, we'd handle it here
+        // For now, we'll use a placeholder
+        if (req.file) {
+            console.log('📎 File uploaded:', req.file.originalname);
+            fileUrl = req.file.path || req.file.location || '';
+            coverImage = req.file.path || req.file.location || '';
         }
 
         // Create new resource/book
         const newResource = new Book({
             title: title.trim(),
-            author: author.trim(),
-            description: description.trim(),
+            author: 'Admin Upload',
+            description: description || 'No description provided',
             category: category || 'Other',
-            coverImage: coverImage.trim(),
-            fileUrl: fileUrl.trim(),
-            price: price || 0,
-            pages: pages || null,
-            publisher: publisher || '',
-            publicationYear: publicationYear || null,
-            language: language || 'English',
-            isbn: isbn || '',
-            featured: featured || false,
+            coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
+            fileUrl: fileUrl || 'https://example.com/sample.pdf',
+            price: 0,
+            pages: null,
+            publisher: 'Online Library Hub',
+            publicationYear: new Date().getFullYear(),
+            language: 'English',
+            isbn: '',
+            featured: false,
             uploadedBy: req.admin._id,
             createdAt: new Date(),
             updatedAt: new Date()
         });
 
+        console.log('📚 Book object to save:', newResource);
+
         await newResource.save();
+        console.log('✅ Resource created successfully:', newResource._id);
 
         res.status(201).json({
             success: true,
@@ -206,32 +240,46 @@ router.post('/resources', authMiddleware, async (req, res) => {
             resource: newResource
         });
     } catch (error) {
-        console.error('Error creating resource:', error);
+        console.error('❌ Error creating resource:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            errors: error.errors
+        });
+        
+        // Check for validation errors
+        if (error.name === 'ValidationError') {
+            const validationErrors = {};
+            for (const field in error.errors) {
+                validationErrors[field] = error.errors[field].message;
+            }
+            return res.status(400).json({
+                success: false,
+                error: 'Validation failed',
+                details: validationErrors
+            });
+        }
+
         res.status(500).json({
             success: false,
-            error: 'Failed to create resource'
+            error: 'Failed to create resource',
+            details: error.message
         });
     }
 });
 
-// UPDATE resource
+// UPDATE resource - FIXED for FormData
 router.put('/resources/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
-        const {
-            title,
-            author,
+        const { 
+            title, 
+            category, 
+            grade_level, 
+            resource_type, 
             description,
-            category,
-            coverImage,
-            fileUrl,
-            price,
-            pages,
-            publisher,
-            publicationYear,
-            language,
-            isbn,
-            featured
+            available 
         } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -245,18 +293,8 @@ router.put('/resources/:id', authMiddleware, async (req, res) => {
             id,
             {
                 title: title?.trim(),
-                author: author?.trim(),
-                description: description?.trim(),
                 category: category || 'Other',
-                coverImage: coverImage?.trim(),
-                fileUrl: fileUrl?.trim(),
-                price: price || 0,
-                pages: pages || null,
-                publisher: publisher || '',
-                publicationYear: publicationYear || null,
-                language: language || 'English',
-                isbn: isbn || '',
-                featured: featured || false,
+                description: description || '',
                 updatedAt: new Date()
             },
             { new: true, runValidators: true }
