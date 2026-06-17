@@ -15,6 +15,8 @@ if (!process.env.BREVO_API_KEY) {
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const session = require("express-session");
+const passport = require("passport");
 const connectDB = require("./config/db");
 const Admin = require("./models/Admin");
 const User = require("./models/User");
@@ -25,6 +27,8 @@ console.log("📧 Environment variables loaded:");
 console.log(`   BREVO_API_KEY: ${process.env.BREVO_API_KEY ? '✅ SET' : '❌ NOT SET'}`);
 console.log(`   SENDER_EMAIL: ${process.env.SENDER_EMAIL || '❌ NOT SET'}`);
 console.log(`   MONGO_URI: ${process.env.MONGO_URI ? '✅ SET' : '❌ NOT SET'}`);
+console.log(`   GITHUB_CLIENT_ID: ${process.env.GITHUB_CLIENT_ID ? '✅ SET' : '❌ NOT SET'}`);
+console.log(`   GOOGLE_CLIENT_ID: ${process.env.GOOGLE_CLIENT_ID ? '✅ SET' : '❌ NOT SET'}`);
 
 // Connect to MongoDB
 connectDB();
@@ -39,6 +43,21 @@ if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
 }
 
+// ==================== SESSION CONFIGURATION ====================
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_session_secret_here',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// ==================== PASSPORT INITIALIZATION ====================
+app.use(passport.initialize());
+app.use(passport.session());
+
 // ==================== CORS CONFIGURATION ====================
 const allowedOrigins = [
     "http://localhost:5000",
@@ -52,7 +71,15 @@ console.log("✅ Allowed origins:", allowedOrigins);
 
 app.use(
     cors({
-        origin: true,
+        origin: function (origin, callback) {
+            // Allow requests with no origin (like mobile apps or curl requests)
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== "production") {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
         allowedHeaders: [
@@ -99,20 +126,29 @@ const authRoutes = require("./routes/auth");
 const catalogRoutes = require("./routes/catalog");
 const contactRoutes = require("./routes/contact");
 const announcementRoutes = require("./routes/announcement");
-const adminRoutes = require("./routes/admin"); // ✅ Make sure this is correct
+const adminRoutes = require("./routes/admin");
 const googleAuthRoutes = require("./routes/google-auth");
 const githubAuthRoutes = require("./routes/github-auth");
+
+// ==================== PASSPORT STRATEGIES ====================
+// Initialize Passport strategies
+require("./config/passport")(passport);
 
 // ==================== API ROUTES ====================
 app.use("/api/auth", authRoutes);
 app.use("/api/catalog", catalogRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/announcements", announcementRoutes);
-app.use("/api/admin", adminRoutes); // ✅ This registers the admin routes
-app.use("/", googleAuthRoutes);
-app.use("/", githubAuthRoutes);
-app.use("/api", googleAuthRoutes);
-app.use("/api", githubAuthRoutes);
+app.use("/api/admin", adminRoutes);
+
+// ==================== OAUTH ROUTES ====================
+// GitHub Routes
+app.use("/api/auth/github", githubAuthRoutes);
+app.use("/auth/github", githubAuthRoutes);
+
+// Google Routes
+app.use("/api/auth/google", googleAuthRoutes);
+app.use("/auth/google", googleAuthRoutes);
 
 // ==================== OTP ROUTES ====================
 app.post("/api/otp/send", async (req, res) => {
