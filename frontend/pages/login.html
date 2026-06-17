@@ -475,13 +475,10 @@
       // ===== ALL SCRIPTS INLINE - Use window.API_BASE =====
       console.log("🔑 Login page loaded");
 
-      // Use API_BASE from api-config.js (window.API_BASE)
-      const API_BASE =
-        window.API_BASE || "https://online-library-hub.onrender.com/api";
-      const BACKEND_BASE =
-        window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+      // FIX: REMOVED const API_BASE - use window.API_BASE directly
+      // const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
 
-      console.log("📡 API Base:", API_BASE);
+      console.log("📡 API Base:", window.API_BASE);
 
       // ==================== NAVBAR ====================
       function renderNavbar() {
@@ -599,9 +596,11 @@
           loginBtn.disabled = true;
           loginBtn.textContent = "Signing in...";
 
-          console.log("📡 Sending login request to:", API_BASE + "/auth/login");
+          // FIX: Use window.API_BASE directly
+          const apiBase = window.API_BASE || "https://online-library-hub.onrender.com/api";
+          console.log("📡 Sending login request to:", apiBase + "/auth/login");
 
-          fetch(API_BASE + "/auth/login", {
+          fetch(apiBase + "/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: email, password: password }),
@@ -641,13 +640,15 @@
       document
         .getElementById("googleLoginBtn")
         ?.addEventListener("click", function () {
-          window.location.href = BACKEND_BASE + "/auth/google";
+          const backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+          window.location.href = backendBase + "/auth/google";
         });
 
       document
         .getElementById("githubLoginBtn")
         ?.addEventListener("click", function () {
-          window.location.href = BACKEND_BASE + "/auth/github";
+          const backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+          window.location.href = backendBase + "/auth/github";
         });
 
       // ==================== INIT ====================
@@ -656,6 +657,12 @@
         document.getElementById("current-year").textContent =
           new Date().getFullYear();
       });
+
+      if (document.readyState !== "loading") {
+        renderNavbar();
+        var yearEl = document.getElementById("current-year");
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+      }
     </script>
   </body>
 </html>

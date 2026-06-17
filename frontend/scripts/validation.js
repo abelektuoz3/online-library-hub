@@ -1,6 +1,10 @@
 // API base is served from backend/server.js via /scripts/api-config.js
-const API_BASE_URL =
-  window.API_BASE || "https://online-library-hub.onrender.com/api";
+// REMOVED: const API_BASE_URL = window.API_BASE || "https://online-library-hub.onrender.com/api";
+
+// Use window.API_BASE directly
+function getApiBase() {
+    return window.API_BASE || "https://online-library-hub.onrender.com/api";
+}
 
 /**
  * Make an authenticated API request.
@@ -23,6 +27,7 @@ async function apiRequest(endpoint, method, data) {
     options.body = JSON.stringify(data);
   }
 
+  const API_BASE_URL = getApiBase();
   const response = await fetch(API_BASE_URL + endpoint, options);
   const result = await response.json();
 
@@ -198,6 +203,7 @@ if (registerForm) {
     }
 
     try {
+      var API_BASE_URL = getApiBase();
       var response = await fetch(API_BASE_URL + "/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -289,6 +295,7 @@ if (loginForm) {
     }
 
     try {
+      var API_BASE_URL = getApiBase();
       var response = await fetch(API_BASE_URL + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -377,6 +384,7 @@ if (contactForm) {
     }
 
     try {
+      var API_BASE_URL = getApiBase();
       var response = await fetch(API_BASE_URL + "/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
