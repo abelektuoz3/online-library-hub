@@ -180,7 +180,8 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             category, 
             grade_level, 
             resource_type, 
-            description 
+            description,
+            available
         });
 
         if (!title || !category || !grade_level || !resource_type) {
@@ -211,6 +212,9 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             author: 'Admin Upload',
             description: description || 'No description provided',
             category: category || 'Other',
+            grade_level: grade_level || 'Other',
+            resource_type: resource_type || 'Other',
+            available: available === 'true' || available === true,
             coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
             fileUrl: fileUrl || 'https://example.com/sample.pdf',
             price: 0,
@@ -294,7 +298,10 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
         const updateData = {
             title: title?.trim(),
             category: category || 'Other',
+            grade_level: grade_level || 'Other',
+            resource_type: resource_type || 'Other',
             description: description || '',
+            available: available === 'true' || available === true,
             updatedAt: new Date()
         };
 
@@ -331,7 +338,7 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
     }
 });
 
-// ==================== DELETE RESOURCE - FIXED ====================
+// DELETE resource
 router.delete('/resources/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -387,7 +394,7 @@ router.get('/users', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== DELETE USER - FIXED ====================
+// DELETE user
 router.delete('/users/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -483,6 +490,85 @@ router.patch('/users/:id/role', authMiddleware, async (req, res) => {
     }
 });
 
+// Make user admin
+router.put('/users/:id/make-admin', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid user ID format'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            id,
+            { role: 'admin' },
+            { new: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'User promoted to admin successfully',
+            user
+        });
+    } catch (error) {
+        console.error('Error making admin:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to make user admin'
+        });
+    }
+});
+
+// Toggle user suspension
+router.put('/users/:id/suspension', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { suspended } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid user ID format'
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            id,
+            { isSuspended: suspended },
+            { new: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `User ${suspended ? 'suspended' : 'unsuspended'} successfully`,
+            user
+        });
+    } catch (error) {
+        console.error('Error toggling suspension:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to toggle user suspension'
+        });
+    }
+});
+
 // ==================== BOOK ROUTES ====================
 
 // GET all books
@@ -496,7 +582,7 @@ router.get('/books', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== DELETE BOOK - FIXED ====================
+// DELETE book
 router.delete('/books/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -589,7 +675,7 @@ router.post('/announcements', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== DELETE ANNOUNCEMENT - FIXED ====================
+// DELETE announcement
 router.delete('/announcements/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -628,115 +714,6 @@ router.delete('/announcements/:id', authMiddleware, async (req, res) => {
         res.status(500).json({ 
             success: false, 
             error: 'Failed to delete announcement' 
-        });
-    }
-});
-
-// ==================== STATS ROUTES ====================
-
-// GET admin stats
-router.get('/stats', authMiddleware, async (req, res) => {
-    try {
-        const totalUsers = await User.countDocuments();
-        const totalAdmins = await Admin.countDocuments();
-        const verifiedUsers = await User.countDocuments({ isVerified: true });
-        const totalBooks = await Book.countDocuments();
-        const totalAnnouncements = await Announcement.countDocuments();
-
-        res.json({
-            success: true,
-            stats: {
-                totalUsers,
-                totalAdmins,
-                verifiedUsers,
-                unverifiedUsers: totalUsers - verifiedUsers,
-                totalBooks,
-                totalAnnouncements,
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching stats:', error);
-        res.status(500).json({ error: 'Failed to fetch stats' });
-    }
-});
-
-// ==================== ADDITIONAL USER MANAGEMENT ROUTES ====================
-
-// Make user admin
-router.put('/users/:id/make-admin', authMiddleware, async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid user ID format'
-            });
-        }
-
-        const user = await User.findByIdAndUpdate(
-            id,
-            { role: 'admin' },
-            { new: true }
-        ).select('-password');
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: 'User promoted to admin successfully',
-            user
-        });
-    } catch (error) {
-        console.error('Error making admin:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to make user admin'
-        });
-    }
-});
-
-// Toggle user suspension
-router.put('/users/:id/suspension', authMiddleware, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { suspended } = req.body;
-
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid user ID format'
-            });
-        }
-
-        const user = await User.findByIdAndUpdate(
-            id,
-            { isSuspended: suspended },
-            { new: true }
-        ).select('-password');
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: `User ${suspended ? 'suspended' : 'unsuspended'} successfully`,
-            user
-        });
-    } catch (error) {
-        console.error('Error toggling suspension:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to toggle user suspension'
         });
     }
 });
@@ -837,6 +814,37 @@ router.delete('/messages/:id', authMiddleware, async (req, res) => {
             success: false, 
             error: 'Failed to delete message' 
         });
+    }
+});
+
+// ==================== STATS ROUTES ====================
+
+// GET admin stats
+router.get('/stats', authMiddleware, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const totalAdmins = await Admin.countDocuments();
+        const verifiedUsers = await User.countDocuments({ isVerified: true });
+        const totalBooks = await Book.countDocuments();
+        const totalAnnouncements = await Announcement.countDocuments();
+        const Contact = require('../models/Contact');
+        const unreadMessages = await Contact.countDocuments({ is_read: false });
+
+        res.json({
+            success: true,
+            stats: {
+                totalUsers,
+                totalAdmins,
+                verifiedUsers,
+                unverifiedUsers: totalUsers - verifiedUsers,
+                totalBooks,
+                totalAnnouncements,
+                unreadMessages,
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ error: 'Failed to fetch stats' });
     }
 });
 

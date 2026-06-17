@@ -814,12 +814,15 @@
         <select id="resourceCategory">
           <option value="">Select Category *</option>
           <option value="Fiction">Fiction</option>
+          <option value="Non-Fiction">Non-Fiction</option>
           <option value="Programming">Programming</option>
           <option value="History">History</option>
           <option value="Mathematics">Mathematics</option>
           <option value="Science">Science</option>
           <option value="English">English</option>
           <option value="Arts">Arts</option>
+          <option value="Technology">Technology</option>
+          <option value="Other">Other</option>
         </select>
         <select id="resourceGrade">
           <option value="">Select Grade Level *</option>
@@ -828,6 +831,9 @@
           <option value="Grade 9-12">Grade 9-12</option>
           <option value="Grade 10-12">Grade 10-12</option>
           <option value="Grade 11-12">Grade 11-12</option>
+          <option value="College">College</option>
+          <option value="University">University</option>
+          <option value="Other">Other</option>
         </select>
         <select id="resourceType">
           <option value="">Select Resource Type *</option>
@@ -837,6 +843,9 @@
           <option value="Reference">Reference</option>
           <option value="Lab Manual">Lab Manual</option>
           <option value="Video">Video</option>
+          <option value="Audio">Audio</option>
+          <option value="Course">Course</option>
+          <option value="Other">Other</option>
         </select>
         <textarea
           id="resourceDesc"
@@ -946,16 +955,16 @@
             document.getElementById("totalUsers").textContent =
               data.stats.totalUsers;
             document.getElementById("totalResources").textContent =
-              data.stats.totalResources;
+              data.stats.totalBooks || data.stats.totalResources || 0;
             document.getElementById("unreadMessages").textContent =
-              data.stats.unreadMessages;
+              data.stats.unreadMessages || 0;
           }
         } catch (err) {
           console.error("Error loading stats:", err);
         }
       }
 
-      // Load resources
+      // ==================== UPDATED: Load Resources with Proper Status ====================
       async function loadResources() {
         const token = getToken();
         try {
@@ -967,21 +976,30 @@
 
           if (data.success && data.resources && data.resources.length) {
             tbody.innerHTML = data.resources
-              .map(
-                (r) => `
-                    <tr>
-                        <td><strong>${escapeHtml(r.title)}</strong></td>
-                        <td>${escapeHtml(r.category || "-")}</td>
-                        <td>${escapeHtml(r.grade_level || "-")}</td>
-                        <td>${escapeHtml(r.resource_type || "-")}</td>
-                        <td>${r.available ? "✅ Available" : "❌ Unavailable"}</td>
-                        <td>
-                            <button class="btn-icon" onclick="editResource('${r.id}')" title="Edit resource"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon btn-delete" onclick="deleteResource('${r.id}')" title="Delete resource"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `
-              )
+              .map((r) => {
+                // Properly display status
+                const isAvailable = r.available !== false;
+                const statusHtml = isAvailable 
+                  ? '<span class="status-badge status-approved">✅ Available</span>' 
+                  : '<span class="status-badge status-suspended">❌ Unavailable</span>';
+                
+                // Use _id or id
+                const resourceId = r._id || r.id;
+                
+                return `
+                  <tr>
+                    <td><strong>${escapeHtml(r.title)}</strong></td>
+                    <td>${escapeHtml(r.category || "-")}</td>
+                    <td>${escapeHtml(r.grade_level || "-")}</td>
+                    <td>${escapeHtml(r.resource_type || "-")}</td>
+                    <td>${statusHtml}</td>
+                    <td>
+                      <button class="btn-icon" onclick="editResource('${resourceId}')" title="Edit resource"><i class="fas fa-edit"></i></button>
+                      <button class="btn-icon btn-delete" onclick="deleteResource('${resourceId}')" title="Delete resource"><i class="fas fa-trash"></i></button>
+                    </td>
+                  </tr>
+                `;
+              })
               .join("");
           } else {
             tbody.innerHTML =
@@ -994,6 +1012,7 @@
         }
       }
 
+      // ==================== EDIT RESOURCE ====================
       window.editResource = function (id) {
         editingResourceId = id;
         document.getElementById("modalTitle").textContent = "Edit Resource";
@@ -1022,47 +1041,50 @@
         }
       }
 
+      // ==================== DELETE RESOURCE ====================
       window.deleteResource = async function (id) {
         if (!confirm("Delete this resource?")) return;
         const token = getToken();
         try {
-          await fetch(`${API_BASE}/admin/resources/${id}`, {
+          const response = await fetch(`${API_BASE}/admin/resources/${id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
           });
-          loadResources();
-          loadStats();
+          const data = await response.json();
+          if (response.ok && data.success) {
+            loadResources();
+            loadStats();
+            alert("Resource deleted successfully!");
+          } else {
+            alert(data.error || "Failed to delete resource.");
+          }
         } catch (err) {
           console.error("Error deleting resource:", err);
+          alert("Error deleting resource. Please try again.");
         }
       };
 
-      // ===== FIXED: SAVE RESOURCE FUNCTION =====
+      // ==================== SAVE RESOURCE ====================
       async function saveResource() {
-        // 1. Get token first
         const token = getToken();
         
-        // 2. Check if token exists
         if (!token) {
           alert("Your admin session has expired. Please login again.");
           window.location.href = "admin-login.html";
           return;
         }
         
-        // 3. Get form values
         const title = document.getElementById("resourceTitle").value.trim();
         const category = document.getElementById("resourceCategory").value;
         const gradeLevel = document.getElementById("resourceGrade").value;
         const resourceType = document.getElementById("resourceType").value;
         const description = document.getElementById("resourceDesc").value.trim();
 
-        // 4. Validate required fields
         if (!title || !category || !gradeLevel || !resourceType) {
           alert("Please fill in title, category, grade level, and resource type.");
           return;
         }
 
-        // 5. Create FormData for file upload
         const formData = new FormData();
         formData.append("title", title);
         formData.append("category", category);
@@ -1071,16 +1093,12 @@
         formData.append("description", description);
         formData.append("available", "true");
 
-        // 6. Add file if selected
         const fileInput = document.getElementById("resourceFile");
         if (fileInput && fileInput.files && fileInput.files.length > 0) {
           formData.append("file", fileInput.files[0]);
           console.log("📎 File selected:", fileInput.files[0].name, fileInput.files[0].size);
-        } else {
-          console.log("📎 No file selected");
         }
 
-        // 7. Determine URL and method
         const url = editingResourceId
           ? `${API_BASE}/admin/resources/${editingResourceId}`
           : `${API_BASE}/admin/resources`;
@@ -1089,19 +1107,17 @@
         try {
           console.log(`📡 ${method} request to:`, url);
           
-          // 8. Send request with proper headers
           const response = await fetch(url, {
             method: method,
             headers: {
-              "Authorization": `Bearer ${token}` // IMPORTANT: This is the only header needed
+              "Authorization": `Bearer ${token}`
             },
-            body: formData // Browser sets Content-Type automatically for FormData
+            body: formData
           });
 
           const data = await response.json();
           console.log("📨 Response:", data);
 
-          // 9. Handle 401 Unauthorized
           if (response.status === 401) {
             localStorage.removeItem("adminToken");
             localStorage.removeItem("admin");
@@ -1116,7 +1132,7 @@
             loadStats();
             alert(data.message || "Resource saved successfully!");
           } else {
-            alert(data.error || "Failed to save resource. Please try again.");
+            alert(data.error || data.details || "Failed to save resource. Please try again.");
           }
         } catch (err) {
           console.error("❌ Error saving resource:", err);
@@ -1124,7 +1140,7 @@
         }
       }
 
-      // Load users
+      // ==================== LOAD USERS ====================
       async function loadUsers() {
         const token = getToken();
         try {
@@ -1136,28 +1152,23 @@
 
           if (data.success && data.users && data.users.length) {
             tbody.innerHTML = data.users
-              .map(
-                (u) => `
-                    <tr>
-                        <td><strong>${escapeHtml(u.name)}</strong></td>
-                        <td>${escapeHtml(u.email)}</td>
-                        <td>${new Date(u.createdAt).toLocaleDateString()}</td>
-                        <td>${u.isAdmin ? "👑 Admin" : "👤 User"}</td>
-                        <td><span class="status-badge ${u.isSuspended ? "status-suspended" : "status-active"}">${u.isSuspended ? "Suspended" : "Active"}</span></td>
-                        <td>
-                            ${!u.isAdmin ? `<button class="btn-icon" onclick="makeAdmin('${u.id}')" title="Make Admin"><i class="fas fa-crown"></i></button>` : ""}
-                            ${
-                              !u.isAdmin ?
-                                u.isSuspended ?
-                                  `<button class="btn-icon" onclick="toggleUserSuspension('${u.id}', false)" title="Unsuspend user"><i class="fas fa-user-check"></i></button>`
-                                : `<button class="btn-icon btn-delete" onclick="toggleUserSuspension('${u.id}', true)" title="Suspend user"><i class="fas fa-user-slash"></i></button>`
-                              : ""
-                            }
-                            <button class="btn-icon btn-delete" onclick="deleteUser('${u.id}')" title="Delete user"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `
-              )
+              .map((u) => {
+                const userId = u._id || u.id;
+                return `
+                  <tr>
+                    <td><strong>${escapeHtml(u.name)}</strong></td>
+                    <td>${escapeHtml(u.email)}</td>
+                    <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td>${u.role === "admin" ? "👑 Admin" : "👤 User"}</td>
+                    <td><span class="status-badge ${u.isSuspended ? "status-suspended" : "status-active"}">${u.isSuspended ? "Suspended" : "Active"}</span></td>
+                    <td>
+                      ${u.role !== "admin" ? `<button class="btn-icon" onclick="makeAdmin('${userId}')" title="Make Admin"><i class="fas fa-crown"></i></button>` : ""}
+                      ${u.role !== "admin" ? (u.isSuspended ? `<button class="btn-icon" onclick="toggleUserSuspension('${userId}', false)" title="Unsuspend user"><i class="fas fa-user-check"></i></button>` : `<button class="btn-icon btn-delete" onclick="toggleUserSuspension('${userId}', true)" title="Suspend user"><i class="fas fa-user-slash"></i></button>`) : ""}
+                      <button class="btn-icon btn-delete" onclick="deleteUser('${userId}')" title="Delete user"><i class="fas fa-trash"></i></button>
+                    </td>
+                  </tr>
+                `;
+              })
               .join("");
           } else {
             tbody.innerHTML =
@@ -1174,13 +1185,20 @@
         if (!confirm("Make this user an admin?")) return;
         const token = getToken();
         try {
-          await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
+          const response = await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
             method: "PUT",
             headers: { Authorization: `Bearer ${token}` },
           });
-          loadUsers();
+          const data = await response.json();
+          if (response.ok && data.success) {
+            loadUsers();
+            alert("User promoted to admin successfully!");
+          } else {
+            alert(data.error || "Failed to promote user.");
+          }
         } catch (err) {
           console.error("Error making admin:", err);
+          alert("Error making admin. Please try again.");
         }
       };
 
@@ -1205,6 +1223,7 @@
 
           if (response.ok && data.success) {
             loadUsers();
+            alert(`User ${action}ed successfully!`);
           } else {
             alert(data.error || `Failed to ${action} user.`);
           }
@@ -1218,18 +1237,25 @@
         if (!confirm("Delete this user?")) return;
         const token = getToken();
         try {
-          await fetch(`${API_BASE}/admin/users/${userId}`, {
+          const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
           });
-          loadUsers();
-          loadStats();
+          const data = await response.json();
+          if (response.ok && data.success) {
+            loadUsers();
+            loadStats();
+            alert("User deleted successfully!");
+          } else {
+            alert(data.error || "Failed to delete user.");
+          }
         } catch (err) {
           console.error("Error deleting user:", err);
+          alert("Error deleting user. Please try again.");
         }
       };
 
-      // Load messages
+      // ==================== LOAD MESSAGES ====================
       async function loadMessages() {
         const token = getToken();
         try {
@@ -1241,21 +1267,22 @@
 
           if (data.success && data.messages && data.messages.length) {
             tbody.innerHTML = data.messages
-              .map(
-                (m) => `
-                    <tr>
-                        <td><strong>${escapeHtml(m.name)}</strong></td>
-                        <td>${escapeHtml(m.email)}</td>
-                        <td>${escapeHtml(m.message)}</td>
-                        <td>${new Date(m.createdAt).toLocaleDateString()}</td>
-                        <td>${m.is_read ? "✅ Read" : "📧 Unread"}</td>
-                        <td>
-                            ${!m.is_read ? `<button class="btn-icon" onclick="markMessageRead('${m.id}')" title="Mark read"><i class="fas fa-check"></i></button>` : ""}
-                            <button class="btn-icon btn-delete" onclick="deleteMessage('${m.id}')" title="Delete message"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `
-              )
+              .map((m) => {
+                const messageId = m._id || m.id;
+                return `
+                  <tr>
+                    <td><strong>${escapeHtml(m.name)}</strong></td>
+                    <td>${escapeHtml(m.email)}</td>
+                    <td>${escapeHtml(m.message)}</td>
+                    <td>${new Date(m.createdAt).toLocaleDateString()}</td>
+                    <td>${m.is_read ? "✅ Read" : "📧 Unread"}</td>
+                    <td>
+                      ${!m.is_read ? `<button class="btn-icon" onclick="markMessageRead('${messageId}')" title="Mark read"><i class="fas fa-check"></i></button>` : ""}
+                      <button class="btn-icon btn-delete" onclick="deleteMessage('${messageId}')" title="Delete message"><i class="fas fa-trash"></i></button>
+                    </td>
+                  </tr>
+                `;
+              })
               .join("");
           } else {
             tbody.innerHTML =
@@ -1271,14 +1298,20 @@
       window.markMessageRead = async function (id) {
         const token = getToken();
         try {
-          await fetch(`${API_BASE}/admin/messages/${id}/read`, {
+          const response = await fetch(`${API_BASE}/admin/messages/${id}/read`, {
             method: "PUT",
             headers: { Authorization: `Bearer ${token}` },
           });
-          loadMessages();
-          loadStats();
+          const data = await response.json();
+          if (response.ok && data.success) {
+            loadMessages();
+            loadStats();
+          } else {
+            alert(data.error || "Failed to mark message as read.");
+          }
         } catch (err) {
           console.error("Error marking message read:", err);
+          alert("Error marking message as read. Please try again.");
         }
       };
 
@@ -1286,18 +1319,25 @@
         if (!confirm("Delete this message?")) return;
         const token = getToken();
         try {
-          await fetch(`${API_BASE}/admin/messages/${id}`, {
+          const response = await fetch(`${API_BASE}/admin/messages/${id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
           });
-          loadMessages();
-          loadStats();
+          const data = await response.json();
+          if (response.ok && data.success) {
+            loadMessages();
+            loadStats();
+            alert("Message deleted successfully!");
+          } else {
+            alert(data.error || "Failed to delete message.");
+          }
         } catch (err) {
           console.error("Error deleting message:", err);
+          alert("Error deleting message. Please try again.");
         }
       };
 
-      // Load announcements
+      // ==================== LOAD ANNOUNCEMENTS ====================
       async function loadAnnouncements() {
         const token = getToken();
         const tbody = document.getElementById("announcementsTableBody");
@@ -1310,19 +1350,20 @@
           if (data.success && data.announcements && data.announcements.length) {
             announcementsCache = data.announcements;
             tbody.innerHTML = data.announcements
-              .map(
-                (a) => `
-                    <tr>
-                        <td><strong>${escapeHtml(a.title)}</strong></td>
-                        <td>${escapeHtml(a.content)}</td>
-                        <td>${new Date(a.createdAt).toLocaleDateString()}</td>
-                        <td>
-                            <button class="btn-icon" onclick="editAnnouncement('${a.id || a._id}')" title="Edit announcement"><i class="fas fa-edit"></i></button>
-                            <button class="btn-icon btn-delete" onclick="deleteAnnouncement('${a.id || a._id}')" title="Delete announcement"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `
-              )
+              .map((a) => {
+                const announcementId = a._id || a.id;
+                return `
+                  <tr>
+                    <td><strong>${escapeHtml(a.title)}</strong></td>
+                    <td>${escapeHtml(a.content)}</td>
+                    <td>${new Date(a.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <button class="btn-icon" onclick="editAnnouncement('${announcementId}')" title="Edit announcement"><i class="fas fa-edit"></i></button>
+                      <button class="btn-icon btn-delete" onclick="deleteAnnouncement('${announcementId}')" title="Delete announcement"><i class="fas fa-trash"></i></button>
+                    </td>
+                  </tr>
+                `;
+              })
               .join("");
           } else {
             announcementsCache = [];
@@ -1338,7 +1379,7 @@
 
       window.editAnnouncement = function (id) {
         const announcement = announcementsCache.find(
-          (a) => (a.id || a._id) === id
+          (a) => (a._id || a.id) === id
         );
         if (!announcement) return;
 
@@ -1356,13 +1397,20 @@
         if (!confirm("Delete this announcement?")) return;
         const token = getToken();
         try {
-          await fetch(`${API_BASE}/admin/announcements/${id}`, {
+          const response = await fetch(`${API_BASE}/admin/announcements/${id}`, {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
           });
-          loadAnnouncements();
+          const data = await response.json();
+          if (response.ok && data.success) {
+            loadAnnouncements();
+            alert("Announcement deleted successfully!");
+          } else {
+            alert(data.error || "Failed to delete announcement.");
+          }
         } catch (err) {
           console.error("Error deleting announcement:", err);
+          alert("Error deleting announcement. Please try again.");
         }
       };
 
@@ -1398,6 +1446,7 @@
           if (response.ok && data.success) {
             closeAnnouncementModal();
             loadAnnouncements();
+            alert("Announcement saved successfully!");
           } else {
             alert(data.error || "Failed to save announcement.");
           }
