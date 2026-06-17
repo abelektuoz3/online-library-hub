@@ -1039,22 +1039,30 @@
 
       // ===== FIXED: SAVE RESOURCE FUNCTION =====
       async function saveResource() {
+        // 1. Get token first
         const token = getToken();
         
-        // Get form values
+        // 2. Check if token exists
+        if (!token) {
+          alert("Your admin session has expired. Please login again.");
+          window.location.href = "admin-login.html";
+          return;
+        }
+        
+        // 3. Get form values
         const title = document.getElementById("resourceTitle").value.trim();
         const category = document.getElementById("resourceCategory").value;
         const gradeLevel = document.getElementById("resourceGrade").value;
         const resourceType = document.getElementById("resourceType").value;
         const description = document.getElementById("resourceDesc").value.trim();
 
-        // Validate required fields
+        // 4. Validate required fields
         if (!title || !category || !gradeLevel || !resourceType) {
           alert("Please fill in title, category, grade level, and resource type.");
           return;
         }
 
-        // Create FormData for file upload
+        // 5. Create FormData for file upload
         const formData = new FormData();
         formData.append("title", title);
         formData.append("category", category);
@@ -1063,7 +1071,7 @@
         formData.append("description", description);
         formData.append("available", "true");
 
-        // Add file if selected
+        // 6. Add file if selected
         const fileInput = document.getElementById("resourceFile");
         if (fileInput && fileInput.files && fileInput.files.length > 0) {
           formData.append("file", fileInput.files[0]);
@@ -1072,7 +1080,7 @@
           console.log("📎 No file selected");
         }
 
-        // Determine URL and method
+        // 7. Determine URL and method
         const url = editingResourceId
           ? `${API_BASE}/admin/resources/${editingResourceId}`
           : `${API_BASE}/admin/resources`;
@@ -1081,16 +1089,26 @@
         try {
           console.log(`📡 ${method} request to:`, url);
           
+          // 8. Send request with proper headers
           const response = await fetch(url, {
             method: method,
             headers: {
-              "Authorization": `Bearer ${token}`
+              "Authorization": `Bearer ${token}` // IMPORTANT: This is the only header needed
             },
-            body: formData
+            body: formData // Browser sets Content-Type automatically for FormData
           });
 
           const data = await response.json();
           console.log("📨 Response:", data);
+
+          // 9. Handle 401 Unauthorized
+          if (response.status === 401) {
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("admin");
+            alert("Your session has expired. Please login again.");
+            window.location.href = "admin-login.html";
+            return;
+          }
 
           if (response.ok && data.success) {
             closeModal();
