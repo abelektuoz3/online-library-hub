@@ -7,10 +7,6 @@ console.log('📧 EMAIL.JS HAS BEEN LOADED!');
 
 /**
  * Send a transactional email via Brevo HTTP API
- * @param {string} toEmail   - recipient email address
- * @param {string} toName    - recipient display name
- * @param {string} subject   - email subject
- * @param {string} htmlContent - HTML body of the email
  */
 async function sendEmail(toEmail, toName, subject, htmlContent) {
     console.log('📧 sendEmail function called');
@@ -29,6 +25,12 @@ async function sendEmail(toEmail, toName, subject, htmlContent) {
         console.error('❌ BREVO_API_KEY is not set in environment variables');
         console.log('📝 Falling back to console logging only...');
         return { success: false, fallback: true, message: 'No API key - email logged to console' };
+    }
+
+    if (!process.env.SENDER_EMAIL) {
+        console.error('❌ SENDER_EMAIL is not set in environment variables');
+        console.log('📝 Falling back to console logging only...');
+        return { success: false, fallback: true, message: 'No sender email - email logged to console' };
     }
 
     try {
@@ -53,15 +55,23 @@ async function sendEmail(toEmail, toName, subject, htmlContent) {
 
         console.log(`📡 Brevo response status: ${response.status}`);
 
+        // Parse response body for debugging
+        let responseBody;
+        try {
+            responseBody = await response.json();
+            console.log('📡 Brevo response body:', JSON.stringify(responseBody, null, 2));
+        } catch (e) {
+            console.log('📡 Could not parse response body');
+        }
+
         if (!response.ok) {
-            const error = await response.json();
+            const error = responseBody || await response.json();
             console.error('❌ Brevo API error:', error);
             throw new Error(`Brevo error: ${JSON.stringify(error)}`);
         }
 
-        const result = await response.json();
         console.log('✅ Email sent successfully via Brevo!');
-        return result;
+        return responseBody;
     } catch (err) {
         console.error('❌ Failed to send email via Brevo:', err.message);
         throw err;
@@ -121,6 +131,7 @@ async function sendOTPEmail(toEmail, toName, otp, type = 'verify') {
         try {
             await sendEmail(toEmail, toName, subject, htmlContent);
             console.log('✅ OTP email sent successfully!');
+            console.log(`📧 Check your inbox at: ${toEmail}`);
         } catch (err) {
             console.error('❌ Failed to send OTP email, but OTP is still valid:', otp);
             console.log('📝 Use this OTP code for testing:', otp);
@@ -129,14 +140,9 @@ async function sendOTPEmail(toEmail, toName, otp, type = 'verify') {
         console.log('⚠️ Email not sent - missing BREVO_API_KEY or SENDER_EMAIL in .env');
         console.log('📝 Please use this OTP code for testing:', otp);
         console.log('💡 To fix: Add BREVO_API_KEY and SENDER_EMAIL to your .env file');
-        console.log('📧 Example .env entry:');
-        console.log('   BREVO_API_KEY=xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-        console.log('   SENDER_EMAIL=your_verified_email@gmail.com');
-        console.log('   SENDER_NAME=Online Library Hub');
     }
     
     console.log('✅ sendOTPEmail function completed');
-    // Always return success for development (so OTP verification works)
     return { success: true, message: 'OTP generated (check console for code)', otp: otp };
 }
 
@@ -152,7 +158,7 @@ async function sendWelcomeEmail(toEmail, toName) {
             <h2 style="color: #2563eb;">Welcome to LibraryHub, ${toName}! 🎉</h2>
             <p>Your account has been successfully verified.</p>
             <p>You can now log in and start exploring thousands of resources.</p>
-            <a href="http://localhost:5000/pages/login.html" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a>
+            <a href="https://online-library-hub.netlify.app/pages/login.html" style="background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a>
         </div>
     `;
     
