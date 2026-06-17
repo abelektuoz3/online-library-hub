@@ -7,6 +7,7 @@ const Admin = require('../models/Admin');
 const User = require('../models/User');
 const Book = require('../models/Book');
 const Announcement = require('../models/Announcement');
+const upload = require('../config/multer');
 
 // ==================== ADMIN LOGIN (NO AUTH REQUIRED) ====================
 router.post('/login', async (req, res) => {
@@ -149,13 +150,14 @@ router.get('/resources', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource (course) - FIXED for FormData
-router.post('/resources', authMiddleware, async (req, res) => {
+// POST new resource (course) - WITH MULTER FOR FILE UPLOAD
+router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         console.log('📝 Creating new resource...');
         console.log('Content-Type:', req.headers['content-type']);
         console.log('Request body:', req.body);
-        
+        console.log('Uploaded file:', req.file);
+
         // Get form data from body
         const { 
             title, 
@@ -201,12 +203,12 @@ router.post('/resources', authMiddleware, async (req, res) => {
         let fileUrl = '';
         let coverImage = '';
         
-        // If there's a file uploaded, we'd handle it here
-        // For now, we'll use a placeholder
         if (req.file) {
             console.log('📎 File uploaded:', req.file.originalname);
-            fileUrl = req.file.path || req.file.location || '';
-            coverImage = req.file.path || req.file.location || '';
+            // Generate URLs for the uploaded file
+            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
+            fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+            coverImage = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
         // Create new resource/book
@@ -261,6 +263,14 @@ router.post('/resources', authMiddleware, async (req, res) => {
             });
         }
 
+        // Check for multer errors
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                success: false,
+                error: 'File too large. Maximum size is 100MB.'
+            });
+        }
+
         res.status(500).json({
             success: false,
             error: 'Failed to create resource',
@@ -269,8 +279,8 @@ router.post('/resources', authMiddleware, async (req, res) => {
     }
 });
 
-// UPDATE resource - FIXED for FormData
-router.put('/resources/:id', authMiddleware, async (req, res) => {
+// UPDATE resource
+router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         const { id } = req.params;
         const { 
@@ -289,14 +299,24 @@ router.put('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
+        // Build update object
+        const updateData = {
+            title: title?.trim(),
+            category: category || 'Other',
+            description: description || '',
+            updatedAt: new Date()
+        };
+
+        // If new file uploaded, update file URL
+        if (req.file) {
+            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
+            updateData.fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+            updateData.coverImage = `${baseUrl}/uploads/${req.file.filename}`;
+        }
+
         const updatedResource = await Book.findByIdAndUpdate(
             id,
-            {
-                title: title?.trim(),
-                category: category || 'Other',
-                description: description || '',
-                updatedAt: new Date()
-            },
+            updateData,
             { new: true, runValidators: true }
         );
 
