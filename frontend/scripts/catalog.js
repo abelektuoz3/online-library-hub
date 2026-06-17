@@ -1,27 +1,33 @@
 // Catalog API — base URL is provided by backend/server.js via /scripts/api-config.js
 
 const API_BASE = window.API_BASE || '/api';
+const BACKEND_BASE = window.BACKEND_BASE || 'https://online-library-hub.onrender.com';
 
 function getFileUrl(fileUrl) {
     if (!fileUrl) return '';
     
-    // If fileUrl already starts with /uploads/, use it as-is
-    if (fileUrl.startsWith('/uploads/')) {
+    // If fileUrl already starts with http, return as-is (it's a full URL)
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
         return fileUrl;
+    }
+    
+    // If fileUrl starts with /uploads/, use it with backend base
+    if (fileUrl.startsWith('/uploads/')) {
+        return `${BACKEND_BASE}${fileUrl}`;
     }
     
     // If fileUrl starts with uploads/ (no leading slash), add the leading slash
     if (fileUrl.startsWith('uploads/')) {
-        return `/${fileUrl}`;
+        return `${BACKEND_BASE}/${fileUrl}`;
     }
     
-    // If it starts with a slash but not /uploads/, treat it as a full path
+    // If it starts with a slash, use it with backend base
     if (fileUrl.startsWith('/')) {
-        return fileUrl;
+        return `${BACKEND_BASE}${fileUrl}`;
     }
     
     // Default: assume it's just a filename in the uploads folder
-    return `/uploads/${fileUrl}`;
+    return `${BACKEND_BASE}/uploads/${fileUrl}`;
 }
 
 async function loadCatalog() {

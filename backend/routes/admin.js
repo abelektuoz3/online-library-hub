@@ -9,7 +9,7 @@ const Feedback = require('../models/Feedback');
 const Announcement = require('../models/Announcement');
 const router = express.Router();
 
-// ==================== MULTER CONFIGURATION (Directly in this file) ====================
+// ==================== MULTER CONFIGURATION ====================
 const multer = require('multer');
 
 // Ensure uploads directory exists
@@ -307,7 +307,7 @@ router.post('/resources', verifyAdmin, upload.single('file'), async (req, res) =
         let fileUrl = '';
         let fileType = 'none';
         if (req.file) {
-            // FIX: Store as uploads/filename instead of /uploads/filename to avoid duplication
+            // FIX: Store as uploads/filename (no leading slash) to avoid duplication
             fileUrl = `uploads/${req.file.filename}`;
             const ext = req.file.originalname.split('.').pop().toLowerCase();
             const mimeType = req.file.mimetype;
@@ -373,7 +373,7 @@ router.put('/resources/:resourceId', verifyAdmin, upload.single('file'), async (
         };
 
         if (req.file) {
-            // FIX: Store as uploads/filename instead of /uploads/filename
+            // FIX: Store as uploads/filename (no leading slash)
             updateData.file_url = `uploads/${req.file.filename}`;
             const ext = req.file.originalname.split('.').pop().toLowerCase();
             const mimeType = req.file.mimetype;
