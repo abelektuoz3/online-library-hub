@@ -128,9 +128,7 @@
         width: 100%;
         background: white;
         border-radius: 1rem;
-        box-shadow:
-          0 1px 3px 0 rgba(0, 0, 0, 0.1),
-          0 1px 2px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
         padding: 2rem;
       }
 
@@ -246,15 +244,9 @@
         font-weight: 500;
       }
 
-      .strength-label.weak {
-        color: #ef4444;
-      }
-      .strength-label.medium {
-        color: #f59e0b;
-      }
-      .strength-label.strong {
-        color: #10b981;
-      }
+      .strength-label.weak { color: #ef4444; }
+      .strength-label.medium { color: #f59e0b; }
+      .strength-label.strong { color: #10b981; }
 
       /* ===== Checkbox ===== */
       .checkbox {
@@ -480,7 +472,6 @@
 
         <div id="form-message"></div>
 
-        <!-- FIX: No method or action attributes — JS handles submission -->
         <form id="registerForm" novalidate>
           <div class="form-group">
             <label for="name">Full name</label>
@@ -598,10 +589,6 @@
       // ===== ALL SCRIPTS INLINE - NO DUPLICATES =====
       console.log("📝 Register page loaded");
 
-      // FIX: Use window.API_BASE directly - NO REDECLARATION
-      // REMOVED: const API_BASE_URL = window.API_BASE || ...
-      // REMOVED: const BACKEND_BASE = window.BACKEND_BASE || ...
-
       console.log("📡 API Base:", window.API_BASE);
 
       // ==================== NAVBAR ====================
@@ -686,12 +673,7 @@
           var strength = 0;
           if (password.length >= 4) strength = 1;
           if (password.length >= 8) strength = 2;
-          if (
-            password.length >= 12 &&
-            /[A-Z]/.test(password) &&
-            /[0-9]/.test(password)
-          )
-            strength = 3;
+          if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password)) strength = 3;
 
           var labels = ["", "Weak", "Medium", "Strong"];
           var classes = ["", "weak", "medium", "strong"];
@@ -704,10 +686,8 @@
           });
 
           if (strengthLabel) {
-            strengthLabel.textContent =
-              password.length > 0 ? labels[strength] : "";
-            strengthLabel.className =
-              "strength-label" + (strength > 0 ? " " + classes[strength] : "");
+            strengthLabel.textContent = password.length > 0 ? labels[strength] : "";
+            strengthLabel.className = "strength-label" + (strength > 0 ? " " + classes[strength] : "");
           }
         }
 
@@ -744,8 +724,7 @@
         }
         msgDiv.className = "message " + type;
         msgDiv.style.display = "block";
-        var icon =
-          type === "success" ? "fa-check-circle" : "fa-exclamation-circle";
+        var icon = type === "success" ? "fa-check-circle" : "fa-exclamation-circle";
         msgDiv.innerHTML = '<i class="fas ' + icon + '"></i> ' + message;
 
         setTimeout(function () {
@@ -835,10 +814,7 @@
             showFieldError("password", "Password is required");
             hasError = true;
           } else if (password.length < 4) {
-            showFieldError(
-              "password",
-              "Password must be at least 4 characters",
-            );
+            showFieldError("password", "Password must be at least 4 characters");
             hasError = true;
           }
 
@@ -866,13 +842,8 @@
           }
 
           try {
-            // FIX: Use window.API_BASE instead of redeclared variable
-            var apiBase =
-              window.API_BASE || "https://online-library-hub.onrender.com/api";
-            console.log(
-              "📡 Sending registration request to:",
-              apiBase + "/auth/register",
-            );
+            var apiBase = window.API_BASE || "https://online-library-hub.onrender.com/api";
+            console.log("📡 Sending registration request to:", apiBase + "/auth/register");
 
             var response = await fetch(apiBase + "/auth/register", {
               method: "POST",
@@ -892,10 +863,30 @@
               localStorage.setItem("pendingVerificationEmail", email);
               localStorage.setItem("pendingVerificationName", name);
 
-              showMessage(
-                "Account created! Please verify your email.",
-                "success",
-              );
+              // ===== FIX: SEND OTP IMMEDIATELY =====
+              console.log("📧 Sending OTP to:", email);
+              try {
+                const otpResponse = await fetch(apiBase + "/otp/send", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: email,
+                    name: name
+                  }),
+                });
+                const otpData = await otpResponse.json();
+                console.log("📧 OTP Response:", otpData);
+                
+                if (otpResponse.ok && otpData.success) {
+                  showMessage("Account created! Please check your email for the verification code.", "success");
+                } else {
+                  console.error("OTP send error:", otpData);
+                  showMessage("Account created! But we couldn't send the verification code. Please use the resend button.", "error");
+                }
+              } catch (otpErr) {
+                console.error("❌ OTP send error:", otpErr);
+                showMessage("Account created! But we couldn't send the verification code. Please use the resend button.", "error");
+              }
 
               setTimeout(function () {
                 window.location.href = `otp-verification.html?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`;
@@ -909,10 +900,7 @@
             }
           } catch (err) {
             console.error("Registration error:", err);
-            showMessage(
-              "Server error. Please make sure the backend is running.",
-              "error",
-            );
+            showMessage("Server error. Please make sure the backend is running.", "error");
             if (submitBtn) {
               submitBtn.disabled = false;
               submitBtn.textContent = "Create account";
@@ -924,27 +912,20 @@
       }
 
       // ==================== SOCIAL LOGIN ====================
-      document
-        .getElementById("googleRegisterBtn")
-        ?.addEventListener("click", function () {
-          var backendBase =
-            window.BACKEND_BASE || "https://online-library-hub.onrender.com";
-          window.location.href = backendBase + "/auth/google";
-        });
+      document.getElementById("googleRegisterBtn")?.addEventListener("click", function () {
+        var backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+        window.location.href = backendBase + "/auth/google";
+      });
 
-      document
-        .getElementById("githubRegisterBtn")
-        ?.addEventListener("click", function () {
-          var backendBase =
-            window.BACKEND_BASE || "https://online-library-hub.onrender.com";
-          window.location.href = backendBase + "/auth/github";
-        });
+      document.getElementById("githubRegisterBtn")?.addEventListener("click", function () {
+        var backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
+        window.location.href = backendBase + "/auth/github";
+      });
 
       // ==================== INIT ====================
       document.addEventListener("DOMContentLoaded", function () {
         renderNavbar();
-        document.getElementById("current-year").textContent =
-          new Date().getFullYear();
+        document.getElementById("current-year").textContent = new Date().getFullYear();
       });
 
       if (document.readyState !== "loading") {
