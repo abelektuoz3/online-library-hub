@@ -428,15 +428,26 @@
                 if (!response.ok) throw new Error('Failed to fetch resources');
 
                 const data = await response.json();
+                console.log('📦 Catalog data:', data);
+
                 let resources = [];
 
                 // Handle different response formats
                 if (data.success && data.resources) {
                     resources = data.resources;
+                    console.log('📚 Found resources in data.resources:', resources.length);
                 } else if (data.success && data.books) {
                     resources = data.books.map(b => ({ ...b, resourceType: 'book' }));
                 } else if (Array.isArray(data)) {
                     resources = data;
+                } else {
+                    // Try to extract any array from the response
+                    for (const key in data) {
+                        if (Array.isArray(data[key])) {
+                            resources = data[key];
+                            break;
+                        }
+                    }
                 }
 
                 allResources = resources;

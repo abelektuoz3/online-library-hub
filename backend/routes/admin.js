@@ -140,37 +140,39 @@ router.get('/verify', authMiddleware, async (req, res) => {
 // GET all resources (both books and courses)
 router.get('/resources', authMiddleware, async (req, res) => {
     try {
+        console.log('📚 Fetching all resources...');
+        
         const [books, courses] = await Promise.all([
             Book.find().sort({ createdAt: -1 }).lean(),
             Course.find().sort({ createdAt: -1 }).lean()
         ]);
 
-        // Combine and format resources
+        console.log(`📚 Found ${books.length} books and ${courses.length} courses`);
+
         const resources = [
             ...books.map(b => ({
                 ...b,
                 resourceType: 'book',
-                type: b.resource_type || 'Book',
+                type: 'Book',
                 grade_level: b.grade_level || 'N/A',
-                category: b.category || 'General'
+                category: b.category || 'General',
+                displayType: '📚 Book'
             })),
             ...courses.map(c => ({
                 ...c,
                 resourceType: 'course',
                 type: 'Course',
-                grade_level: `Grade ${c.grade}`,
-                category: c.subject || c.category || 'General',
+                grade_level: `Grade ${c.grade || 'N/A'}`,
+                category: c.category || c.subject || 'General',
                 title: c.title,
                 description: c.description,
                 available: c.published !== false,
-                coverImage: c.thumbnail || '',
-                fileUrl: c.mediaFiles?.length > 0 ? '/uploads/media' : '',
+                displayType: '🎓 Course',
                 author: 'Admin',
                 price: c.price || 0
             }))
         ];
 
-        // Sort by createdAt
         resources.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         res.json({ success: true, resources });
@@ -195,7 +197,6 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        // Try to find in Books first, then Courses
         let resource = await Book.findById(id).lean();
         let resourceType = 'book';
         
@@ -235,7 +236,7 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             resource_type, 
             description,
             available,
-            resourceType // 'book' or 'course'
+            resourceType
         } = req.body;
 
         // Validate required fields
@@ -257,9 +258,11 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
         }
 
         let newResource;
+        const isCourse = resourceType === 'course';
 
-        if (resourceType === 'course') {
-            // Create a Course
+        if (isCourse) {
+            console.log('🎓 Creating a COURSE...');
+            
             const subjectMap = {
                 'Mathematics': 'math',
                 'Programming': 'cs',
@@ -268,10 +271,21 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
                 'English': 'english',
                 'Arts': 'arts',
                 'Technology': 'cs',
+                'Fiction': 'english',
+                'Non-Fiction': 'english',
                 'Other': 'cs'
             };
 
-            const gradeNum = parseInt(grade_level) || 9;
+            let gradeNum = 9;
+            if (grade_level) {
+                const match = grade_level.match(/\d+/);
+                if (match) {
+                    gradeNum = parseInt(match[0]);
+                    if (gradeNum < 9) gradeNum = 9;
+                    if (gradeNum > 12) gradeNum = 12;
+                }
+            }
+
             const subject = subjectMap[category] || 'cs';
 
             newResource = new Course({
@@ -280,26 +294,31 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
                 thumbnail: coverImage || '',
                 category: category || 'General',
                 subject: subject,
-                grade: gradeNum >= 9 && gradeNum <= 12 ? gradeNum : 9,
+                grade: gradeNum,
                 price: 0,
                 published: available === 'true' || available === true,
                 color: 'from-blue-500 to-cyan-500',
-                icon: 'fa-book',
+                icon: 'fa-graduation-cap',
                 modules: [],
                 totalLessons: 0,
                 mediaFiles: [],
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
+
+            await newResource.save();
+            console.log('✅ Course created successfully:', newResource._id);
+            
         } else {
-            // Create a Book
+            console.log('📚 Creating a BOOK...');
+            
             newResource = new Book({
                 title: title.trim(),
                 author: 'Admin Upload',
                 description: description || 'No description provided',
                 category: category || 'Other',
                 grade_level: grade_level || 'Other',
-                resource_type: resource_type || 'Other',
+                resource_type: resource_type || 'Book',
                 available: available === 'true' || available === true,
                 coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
                 fileUrl: fileUrl || '',
@@ -314,16 +333,18 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
-        }
 
-        await newResource.save();
-        console.log('✅ Resource created successfully:', newResource._id);
+            await newResource.save();
+            console.log('✅ Book created successfully:', newResource._id);
+        }
 
         res.status(201).json({
             success: true,
             message: 'Resource created successfully',
-            resource: newResource
+            resource: newResource,
+            resourceType: isCourse ? 'course' : 'book'
         });
+
     } catch (error) {
         console.error('❌ Error creating resource:', error);
         
@@ -367,7 +388,6 @@ router.delete('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        // Try to delete from Books first, then Courses
         let deleted = await Book.findByIdAndDelete(id);
         let deletedType = 'book';
         

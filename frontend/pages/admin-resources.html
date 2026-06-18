@@ -732,7 +732,8 @@
                                 ? '<span class="status-badge status-approved">✅ Available</span>' 
                                 : '<span class="status-badge status-suspended">❌ Unavailable</span>';
                             
-                            const typeBadge = r.resourceType === 'course' 
+                            const isCourse = r.resourceType === 'course';
+                            const typeBadge = isCourse 
                                 ? '<span class="badge-type badge-course">🎓 Course</span>'
                                 : '<span class="badge-type badge-book">📚 Book</span>';
                             
@@ -796,7 +797,6 @@
                     document.getElementById("resourceType").value = data.resource.resource_type || data.resource.type || "";
                     document.getElementById("resourceDesc").value = data.resource.description || "";
                     
-                    // Set resource type selector
                     const resourceType = data.resourceType || 'book';
                     document.getElementById("resourceTypeSelector").value = resourceType;
                 }
