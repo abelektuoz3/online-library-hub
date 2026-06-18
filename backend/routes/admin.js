@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
 const Admin = require('../models/Admin');
 const User = require('../models/User');
 const Book = require('../models/Book');
@@ -136,7 +137,7 @@ router.get('/verify', authMiddleware, async (req, res) => {
 
 // ==================== RESOURCE ROUTES ====================
 
-// GET all resources (books with files)
+// GET all resources
 router.get('/resources', authMiddleware, async (req, res) => {
     try {
         const resources = await Book.find().sort({ createdAt: -1 });
@@ -180,165 +181,206 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource with file upload
-router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
-    try {
-        console.log('📝 Creating new resource...');
-        console.log('Request body:', req.body);
-        console.log('File:', req.file);
-
-        const { 
-            title, 
-            category, 
-            grade_level, 
-            resource_type, 
-            description,
-            available
-        } = req.body;
-
-        // Validate required fields
-        if (!title || !category || !grade_level || !resource_type) {
-            return res.status(400).json({
-                success: false,
-                error: 'Title, category, grade level, and resource type are required'
-            });
-        }
-
-        // If no file uploaded, return error
-        if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                error: 'Please upload a file (PDF, Video, or Audio)'
-            });
-        }
-
-        // Get file URL
-        const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
-        const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
-        const coverImage = `${baseUrl}/uploads/${req.file.filename}`;
-
-        // Create new resource
-        const newResource = new Book({
-            title: title.trim(),
-            author: 'Admin Upload',
-            description: description || 'No description provided',
-            category: category || 'Other',
-            grade_level: grade_level || 'Other',
-            resource_type: resource_type || 'Other',
-            available: available === 'true' || available === true,
-            coverImage: coverImage,
-            fileUrl: fileUrl,
-            price: 0,
-            pages: null,
-            publisher: 'Online Library Hub',
-            publicationYear: new Date().getFullYear(),
-            language: 'English',
-            isbn: '',
-            featured: false,
-            uploadedBy: req.admin._id,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-
-        await newResource.save();
-        console.log('✅ Resource created successfully:', newResource._id);
-
-        res.status(201).json({
-            success: true,
-            message: 'Resource created successfully',
-            resource: newResource
-        });
-
-    } catch (error) {
-        console.error('❌ Error creating resource:', error);
-        
-        if (error.name === 'ValidationError') {
-            const validationErrors = {};
-            for (const field in error.errors) {
-                validationErrors[field] = error.errors[field].message;
+// ==================== POST RESOURCE WITH FILE UPLOAD ====================
+router.post('/resources', authMiddleware, (req, res) => {
+    // Use multer with error handling
+    upload.single('file')(req, res, async function(err) {
+        try {
+            // Check for multer errors
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(400).json({
+                        success: false,
+                        error: 'File too large. Maximum size is 100MB.'
+                    });
+                }
+                return res.status(400).json({
+                    success: false,
+                    error: `Upload error: ${err.message}`
+                });
+            } else if (err) {
+                return res.status(400).json({
+                    success: false,
+                    error: err.message
+                });
             }
-            return res.status(400).json({
+
+            console.log('📝 Creating new resource...');
+            console.log('Request body:', req.body);
+            console.log('File:', req.file);
+
+            const { 
+                title, 
+                category, 
+                grade_level, 
+                resource_type, 
+                description,
+                available
+            } = req.body;
+
+            // Validate required fields
+            if (!title || !category || !grade_level || !resource_type) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Title, category, grade level, and resource type are required'
+                });
+            }
+
+            // Check if file was uploaded
+            if (!req.file) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Please select a file to upload (PDF, Video, or Audio)'
+                });
+            }
+
+            // Get file URL
+            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
+            const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+            const coverImage = `${baseUrl}/uploads/${req.file.filename}`;
+
+            // Create new resource
+            const newResource = new Book({
+                title: title.trim(),
+                author: 'Admin Upload',
+                description: description || 'No description provided',
+                category: category || 'Other',
+                grade_level: grade_level || 'Other',
+                resource_type: resource_type || 'Other',
+                available: available === 'true' || available === true,
+                coverImage: coverImage,
+                fileUrl: fileUrl,
+                price: 0,
+                pages: null,
+                publisher: 'Online Library Hub',
+                publicationYear: new Date().getFullYear(),
+                language: 'English',
+                isbn: '',
+                featured: false,
+                uploadedBy: req.admin._id,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+
+            await newResource.save();
+            console.log('✅ Resource created successfully:', newResource._id);
+
+            res.status(201).json({
+                success: true,
+                message: 'Resource created successfully',
+                resource: newResource
+            });
+
+        } catch (error) {
+            console.error('❌ Error creating resource:', error);
+            
+            if (error.name === 'ValidationError') {
+                const validationErrors = {};
+                for (const field in error.errors) {
+                    validationErrors[field] = error.errors[field].message;
+                }
+                return res.status(400).json({
+                    success: false,
+                    error: 'Validation failed',
+                    details: validationErrors
+                });
+            }
+
+            res.status(500).json({
                 success: false,
-                error: 'Validation failed',
-                details: validationErrors
+                error: 'Failed to create resource',
+                details: error.message
             });
         }
-
-        res.status(500).json({
-            success: false,
-            error: 'Failed to create resource',
-            details: error.message
-        });
-    }
+    });
 });
 
-// UPDATE resource
-router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log('📝 Updating resource:', id);
+// ==================== UPDATE RESOURCE ====================
+router.put('/resources/:id', authMiddleware, (req, res) => {
+    upload.single('file')(req, res, async function(err) {
+        try {
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(400).json({
+                        success: false,
+                        error: 'File too large. Maximum size is 100MB.'
+                    });
+                }
+                return res.status(400).json({
+                    success: false,
+                    error: `Upload error: ${err.message}`
+                });
+            } else if (err) {
+                return res.status(400).json({
+                    success: false,
+                    error: err.message
+                });
+            }
 
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
+            const { id } = req.params;
+            console.log('📝 Updating resource:', id);
+
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Invalid resource ID format'
+                });
+            }
+
+            const { 
+                title, 
+                category, 
+                grade_level, 
+                resource_type, 
+                description,
+                available
+            } = req.body;
+
+            const updateData = {
+                title: title?.trim(),
+                description: description || 'No description provided',
+                category: category || 'Other',
+                grade_level: grade_level || 'Other',
+                resource_type: resource_type || 'Other',
+                available: available === 'true' || available === true,
+                updatedAt: new Date()
+            };
+
+            if (req.file) {
+                const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
+                updateData.fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+                updateData.coverImage = `${baseUrl}/uploads/${req.file.filename}`;
+            }
+
+            const updatedResource = await Book.findByIdAndUpdate(
+                id,
+                updateData,
+                { new: true, runValidators: true }
+            );
+
+            if (!updatedResource) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Resource not found'
+                });
+            }
+
+            console.log('✅ Resource updated successfully:', id);
+            res.json({
+                success: true,
+                message: 'Resource updated successfully',
+                resource: updatedResource
+            });
+
+        } catch (error) {
+            console.error('❌ Error updating resource:', error);
+            res.status(500).json({
                 success: false,
-                error: 'Invalid resource ID format'
+                error: 'Failed to update resource',
+                details: error.message
             });
         }
-
-        const { 
-            title, 
-            category, 
-            grade_level, 
-            resource_type, 
-            description,
-            available
-        } = req.body;
-
-        const updateData = {
-            title: title?.trim(),
-            description: description || 'No description provided',
-            category: category || 'Other',
-            grade_level: grade_level || 'Other',
-            resource_type: resource_type || 'Other',
-            available: available === 'true' || available === true,
-            updatedAt: new Date()
-        };
-
-        // If new file uploaded, update file URL
-        if (req.file) {
-            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
-            updateData.fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
-            updateData.coverImage = `${baseUrl}/uploads/${req.file.filename}`;
-        }
-
-        const updatedResource = await Book.findByIdAndUpdate(
-            id,
-            updateData,
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedResource) {
-            return res.status(404).json({
-                success: false,
-                error: 'Resource not found'
-            });
-        }
-
-        console.log('✅ Resource updated successfully:', id);
-        res.json({
-            success: true,
-            message: 'Resource updated successfully',
-            resource: updatedResource
-        });
-
-    } catch (error) {
-        console.error('❌ Error updating resource:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update resource',
-            details: error.message
-        });
-    }
+    });
 });
 
 // DELETE resource

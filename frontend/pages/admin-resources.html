@@ -309,6 +309,11 @@
             color: #1d4ed8;
         }
 
+        .badge-other {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
         .btn-icon {
             background: none;
             border: none;
@@ -679,11 +684,11 @@
                 <i class="fas fa-cloud-upload-alt"></i>
                 <p>Click to upload or drag and drop</p>
                 <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
-                    Supported: PDF, MP4, MP3, WAV, MOV
+                    Supported: PDF, MP4, MP3, WAV, MOV, JPEG, PNG, DOC, PPT, TXT
                 </p>
                 <div class="file-name" id="fileName"></div>
             </div>
-            <input type="file" id="resourceFile" accept="application/pdf,video/*,audio/*" style="display: none;" />
+            <input type="file" id="resourceFile" accept=".pdf,.mp4,.mp3,.wav,.mov,.avi,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx,.txt" style="display: none;" />
             
             <div class="modal-buttons">
                 <button class="btn-secondary" id="closeModalBtn">Cancel</button>
@@ -730,7 +735,7 @@
                 'PDF': 'badge-pdf',
                 'Audio': 'badge-audio'
             };
-            return typeMap[type] || 'badge-video';
+            return typeMap[type] || 'badge-other';
         }
 
         function getFileIcon(type) {

@@ -12,7 +12,7 @@
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-        <style>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -21,17 +21,14 @@
 
         body {
             font-family: "Inter", sans-serif;
-            background: #f1f5f9;
-            color: #1e293b;
+            background: #f5f7fa;
+            color: #1a1a2e;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* ===== NAVBAR ===== */
         .navbar {
             background: white;
-            padding: 1rem 2.5rem;
+            padding: 1rem 2rem;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
@@ -42,9 +39,9 @@
         }
 
         .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1a1a2e;
             text-decoration: none;
         }
 
@@ -54,19 +51,16 @@
 
         .navbar-links {
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             align-items: center;
         }
 
         .navbar-links a {
-            color: #64748b;
+            color: #4b5563;
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             transition: color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
         }
 
         .navbar-links a:hover {
@@ -78,32 +72,33 @@
             font-weight: 600;
         }
 
-        .navbar-links a.logout {
-            color: #ef4444;
+        .btn-login {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
         }
 
-        .navbar-links a.logout:hover {
-            color: #dc2626;
+        .btn-login:hover {
+            background: #1d4ed8 !important;
+            color: white !important;
         }
 
-        /* ===== CATALOG ===== */
         .catalog-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 3rem 1.5rem;
-            flex: 1;
+            padding: 2rem 1.5rem;
         }
 
         .catalog-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .catalog-header h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.75rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
         }
 
         .catalog-header p {
@@ -111,70 +106,36 @@
             font-size: 1rem;
         }
 
-        /* ===== FILTERS ===== */
         .filters {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 1.25rem;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 2.5rem;
             display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .filters input {
-            width: 100%;
-            padding: 1.125rem 1.5rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
             background: white;
-            color: #1e293b;
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
         }
 
-        .filters input::placeholder {
-            color: #94a3b8;
-        }
-
-        .filters input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .filter-row {
-            display: flex;
-            gap: 1.25rem;
-        }
-
+        .filters input,
         .filters select {
-            flex: 1;
-            padding: 1.125rem 1.25rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
+            padding: 0.625rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 0.875rem;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s;
+            flex: 1;
+            min-width: 150px;
             background: white;
-            color: #1e293b;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1.25rem center;
-            padding-right: 3rem;
         }
 
+        .filters input:focus,
         .filters select:focus {
             border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        /* ===== GRID ===== */
         .resources-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -194,7 +155,6 @@
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
         }
 
-        /* ===== THUMBNAIL ===== */
         .resource-thumbnail {
             height: 150px;
             display: flex;
@@ -242,7 +202,6 @@
             color: #ef4444;
         }
 
-        /* ===== BODY ===== */
         .resource-body {
             padding: 1.25rem 1.25rem 1.25rem;
         }
@@ -250,7 +209,7 @@
         .resource-body h3 {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #1a1a2e;
             margin-bottom: 0.15rem;
         }
 
@@ -287,7 +246,6 @@
             overflow: hidden;
         }
 
-        /* ===== FOOTER ===== */
         .resource-body .footer {
             display: flex;
             justify-content: space-between;
@@ -299,9 +257,6 @@
         .resource-body .footer .price {
             font-weight: 700;
             font-size: 1rem;
-        }
-
-        .resource-body .footer .price.free {
             color: #10b981;
         }
 
@@ -321,7 +276,6 @@
             background: #1d4ed8;
         }
 
-        /* ===== LOADING / NO RESULTS ===== */
         .loading-spinner {
             text-align: center;
             padding: 3rem;
@@ -370,7 +324,6 @@
             background: #1d4ed8;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -409,13 +362,13 @@
         }
 
         .modal-close:hover {
-            color: #1e293b;
+            color: #1a1a2e;
         }
 
         .modal-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #1a1a2e;
             margin-bottom: 0.5rem;
         }
 
@@ -488,16 +441,6 @@
             background: #1d4ed8;
         }
 
-        /* ===== FOOTER ===== */
-        .site-footer {
-            text-align: center;
-            padding: 1.5rem;
-            color: #94a3b8;
-            font-size: 0.875rem;
-            border-top: 1px solid #e2e8f0;
-            background: white;
-        }
-
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -507,13 +450,16 @@
             .navbar-links {
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 1rem;
             }
             .catalog-container {
                 padding: 1rem;
             }
-            .filter-row {
+            .filters {
                 flex-direction: column;
+            }
+            .filters input,
+            .filters select {
+                width: 100%;
             }
             .resources-grid {
                 grid-template-columns: 1fr;
@@ -526,72 +472,62 @@
             }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="../index.html" class="navbar-brand">Library<span>Hub</span></a>
         <div class="navbar-links">
-            <a href="admin/admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="catalog.html" class="active"><i class="fas fa-search"></i> Catalog</a>
-            <a href="#"><i class="fas fa-tools"></i> Study Tools</a>
-            <a href="#"><i class="fas fa-question-circle"></i> FAQ</a>
-            <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-            <a href="#"><i class="fas fa-info-circle"></i> About</a>
-            <a href="#" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a href="../index.html">Home</a>
+            <a href="catalog.html" class="active">Catalog</a>
+            <a href="admin/admin-dashboard.html">Admin</a>
+            <a href="admin/admin-dashboard.html" class="btn-login">Dashboard</a>
         </div>
     </nav>
 
-    <!-- ===== CATALOG ===== -->
     <div class="catalog-container">
         <div class="catalog-header">
-            <h1>Resource Catalog</h1>
+            <h1>📚 Resource Catalog</h1>
             <p>Browse our collection of books, e-books, and learning materials</p>
         </div>
 
-        <!-- Filters -->
         <div class="filters">
             <input type="text" id="searchInput" placeholder="Search by title or description..." />
-            <div class="filter-row">
-                <select id="categoryFilter">
-                    <option value="">All Categories</option>
-                    <option value="Fiction">Fiction</option>
-                    <option value="Non-Fiction">Non-Fiction</option>
-                    <option value="Programming">Programming</option>
-                    <option value="History">History</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Science">Science</option>
-                    <option value="English">English</option>
-                    <option value="Arts">Arts</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Other">Other</option>
-                </select>
-                <select id="gradeFilter">
-                    <option value="">All Grade Levels</option>
-                    <option value="Grade 8-10">Grade 8-10</option>
-                    <option value="Grade 9-11">Grade 9-11</option>
-                    <option value="Grade 9-12">Grade 9-12</option>
-                    <option value="Grade 10-12">Grade 10-12</option>
-                    <option value="Grade 11-12">Grade 11-12</option>
-                    <option value="College">College</option>
-                    <option value="University">University</option>
-                    <option value="Other">Other</option>
-                </select>
-                <select id="typeFilter">
-                    <option value="">All Types</option>
-                    <option value="Video">Video</option>
-                    <option value="PDF">PDF</option>
-                    <option value="Audio">Audio</option>
-                    <option value="Book">Book</option>
-                    <option value="E-Book">E-Book</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Programming">Programming</option>
+                <option value="History">History</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="English">English</option>
+                <option value="Arts">Arts</option>
+                <option value="Technology">Technology</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="gradeFilter">
+                <option value="">All Grade Levels</option>
+                <option value="Grade 8-10">Grade 8-10</option>
+                <option value="Grade 9-11">Grade 9-11</option>
+                <option value="Grade 9-12">Grade 9-12</option>
+                <option value="Grade 10-12">Grade 10-12</option>
+                <option value="Grade 11-12">Grade 11-12</option>
+                <option value="College">College</option>
+                <option value="University">University</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="typeFilter">
+                <option value="">All Types</option>
+                <option value="Video">🎬 Video</option>
+                <option value="PDF">📄 PDF</option>
+                <option value="Audio">🎵 Audio</option>
+                <option value="Book">📚 Book</option>
+                <option value="E-Book">📖 E-Book</option>
+                <option value="Other">📁 Other</option>
+            </select>
         </div>
 
-        <!-- Resources Grid -->
         <div class="resources-grid" id="resourcesGrid">
             <div class="loading-spinner">
                 <i class="fas fa-spinner"></i>
@@ -600,7 +536,6 @@
         </div>
     </div>
 
-    <!-- ===== MODAL ===== -->
     <div class="modal-overlay" id="resourceModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -611,15 +546,10 @@
         </div>
     </div>
 
-    <footer class="site-footer">
-        &copy; Online Library Hub. All rights reserved.
-    </footer>
-
     <script>
         const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
         let allBooks = [];
 
-        // ===== GRADIENT COLORS FOR DIFFERENT TYPES =====
         function getGradient(type) {
             const gradients = {
                 'Video': 'linear-gradient(135deg, #ec4899, #8b5cf6)',
@@ -651,7 +581,6 @@
             return div.innerHTML;
         }
 
-        // ===== FETCH BOOKS =====
         async function fetchBooks() {
             const grid = document.getElementById('resourcesGrid');
             grid.innerHTML = `
@@ -694,7 +623,6 @@
             }
         }
 
-        // ===== RENDER BOOKS =====
         function renderBooks(books) {
             const grid = document.getElementById('resourcesGrid');
 
@@ -747,7 +675,6 @@
             }).join('');
         }
 
-        // ===== FILTERS =====
         function filterBooks() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const category = document.getElementById('categoryFilter').value;
@@ -778,7 +705,6 @@
             renderBooks(filtered);
         }
 
-        // ===== VIEW BOOK =====
         window.viewBook = function(id) {
             const book = allBooks.find(b => (b._id || b.id) === id);
             if (!book) {
@@ -866,7 +792,6 @@
             document.body.style.overflow = 'hidden';
         };
 
-        // ===== CLOSE MODAL =====
         function closeModal() {
             document.getElementById('resourceModal').classList.remove('active');
             document.body.style.overflow = 'auto';
@@ -883,13 +808,11 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // ===== EVENT LISTENERS =====
         document.getElementById('searchInput').addEventListener('input', filterBooks);
         document.getElementById('categoryFilter').addEventListener('change', filterBooks);
         document.getElementById('gradeFilter').addEventListener('change', filterBooks);
         document.getElementById('typeFilter').addEventListener('change', filterBooks);
 
-        // ===== INIT =====
         document.addEventListener('DOMContentLoaded', fetchBooks);
     </script>
 
