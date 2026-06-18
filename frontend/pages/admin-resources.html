@@ -286,6 +286,24 @@
             color: #b91c1c;
         }
 
+        .badge-type {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-book {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-course {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
         .btn-icon {
             background: none;
             border: none;
@@ -328,10 +346,12 @@
             background: white;
             border-radius: 1rem;
             padding: 2rem;
-            max-width: 500px;
+            max-width: 550px;
             width: 90%;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content h3 {
@@ -339,6 +359,14 @@
             font-weight: 700;
             color: #1a1a2e;
             margin-bottom: 1.5rem;
+        }
+
+        .modal-content label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4b5563;
+            display: block;
+            margin-bottom: 0.25rem;
         }
 
         .modal-content input,
@@ -359,12 +387,20 @@
         .modal-content select:focus,
         .modal-content textarea:focus {
             border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-content .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         .modal-buttons {
             display: flex;
             gap: 0.75rem;
             justify-content: flex-end;
+            margin-top: 1rem;
         }
 
         .btn-primary {
@@ -397,6 +433,19 @@
 
         .btn-secondary:hover {
             background: #e2e8f0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            color: #cbd5e1;
         }
 
         @media (max-width: 992px) {
@@ -443,6 +492,9 @@
                 margin-left: 0;
                 padding: 1rem;
             }
+            .modal-content .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -474,9 +526,6 @@
                 <a class="nav-item" href="admin-announcements.html">
                     <i class="fas fa-bullhorn"></i> <span>Announcements</span>
                 </a>
-                <a class="nav-item" href="admin-courses.html">
-                    <i class="fas fa-graduation-cap"></i> <span>Courses</span>
-                </a>
             </nav>
         </aside>
 
@@ -486,7 +535,7 @@
             <div class="top-bar">
                 <div class="page-title">
                     <h1>Resources</h1>
-                    <p>Manage your library resources</p>
+                    <p>Manage your library resources and courses</p>
                 </div>
                 <div class="user-info">
                     <span id="adminName">Admin</span>
@@ -512,9 +561,9 @@
                         <thead>
                             <tr>
                                 <th>Title</th>
+                                <th>Type</th>
                                 <th>Category</th>
                                 <th>Grade Level</th>
-                                <th>Type</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -536,31 +585,50 @@
     <div id="resourceModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle">Add Resource</h3>
+            
+            <!-- Resource Type Selector -->
+            <label>Resource Type *</label>
+            <select id="resourceTypeSelector">
+                <option value="book">📚 Book / Resource</option>
+                <option value="course">🎓 Course</option>
+            </select>
+
             <input type="text" id="resourceTitle" placeholder="Title *" />
-            <select id="resourceCategory">
-                <option value="">Select Category *</option>
-                <option value="Fiction">Fiction</option>
-                <option value="Non-Fiction">Non-Fiction</option>
-                <option value="Programming">Programming</option>
-                <option value="History">History</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science</option>
-                <option value="English">English</option>
-                <option value="Arts">Arts</option>
-                <option value="Technology">Technology</option>
-                <option value="Other">Other</option>
-            </select>
-            <select id="resourceGrade">
-                <option value="">Select Grade Level *</option>
-                <option value="Grade 8-10">Grade 8-10</option>
-                <option value="Grade 9-11">Grade 9-11</option>
-                <option value="Grade 9-12">Grade 9-12</option>
-                <option value="Grade 10-12">Grade 10-12</option>
-                <option value="Grade 11-12">Grade 11-12</option>
-                <option value="College">College</option>
-                <option value="University">University</option>
-                <option value="Other">Other</option>
-            </select>
+            
+            <div class="form-row">
+                <div>
+                    <label>Category *</label>
+                    <select id="resourceCategory">
+                        <option value="">Select Category *</option>
+                        <option value="Fiction">Fiction</option>
+                        <option value="Non-Fiction">Non-Fiction</option>
+                        <option value="Programming">Programming</option>
+                        <option value="History">History</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Grade Level *</label>
+                    <select id="resourceGrade">
+                        <option value="">Select Grade Level *</option>
+                        <option value="Grade 8-10">Grade 8-10</option>
+                        <option value="Grade 9-11">Grade 9-11</option>
+                        <option value="Grade 9-12">Grade 9-12</option>
+                        <option value="Grade 10-12">Grade 10-12</option>
+                        <option value="Grade 11-12">Grade 11-12</option>
+                        <option value="College">College</option>
+                        <option value="University">University</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Resource Type Detail *</label>
             <select id="resourceType">
                 <option value="">Select Resource Type *</option>
                 <option value="Book">Book</option>
@@ -573,8 +641,11 @@
                 <option value="Course">Course</option>
                 <option value="Other">Other</option>
             </select>
+
             <textarea id="resourceDesc" placeholder="Description" rows="3"></textarea>
+            
             <input type="file" id="resourceFile" accept="application/pdf,video/*,audio/*" style="margin-bottom: 1rem" />
+            
             <div class="modal-buttons">
                 <button class="btn-secondary" id="closeModalBtn">Cancel</button>
                 <button class="btn-primary" id="saveResourceBtn">Save</button>
@@ -661,12 +732,18 @@
                                 ? '<span class="status-badge status-approved">✅ Available</span>' 
                                 : '<span class="status-badge status-suspended">❌ Unavailable</span>';
                             
+                            const typeBadge = r.resourceType === 'course' 
+                                ? '<span class="badge-type badge-course">🎓 Course</span>'
+                                : '<span class="badge-type badge-book">📚 Book</span>';
+                            
+                            const gradeDisplay = r.grade_level || r.grade || 'N/A';
+                            
                             return `
                                 <tr>
                                     <td><strong>${escapeHtml(r.title)}</strong></td>
+                                    <td>${typeBadge}</td>
                                     <td>${escapeHtml(r.category || "-")}</td>
-                                    <td>${escapeHtml(r.grade_level || "-")}</td>
-                                    <td>${escapeHtml(r.resource_type || "-")}</td>
+                                    <td>${escapeHtml(gradeDisplay)}</td>
                                     <td>${statusHtml}</td>
                                     <td>
                                         <button class="btn-icon" onclick="editResource('${resourceId}')" title="Edit resource"><i class="fas fa-edit"></i></button>
@@ -677,7 +754,16 @@
                         })
                         .join("");
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">No resources found</td></tr>';
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fas fa-book-open"></i>
+                                    <p>No resources found. Click "Add Resource" to get started.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
                 }
             } catch (err) {
                 console.error("Error loading resources:", err);
@@ -706,9 +792,13 @@
                 if (data.success && data.resource) {
                     document.getElementById("resourceTitle").value = data.resource.title || "";
                     document.getElementById("resourceCategory").value = data.resource.category || "";
-                    document.getElementById("resourceGrade").value = data.resource.grade_level || "";
-                    document.getElementById("resourceType").value = data.resource.resource_type || "";
+                    document.getElementById("resourceGrade").value = data.resource.grade_level || data.resource.grade || "";
+                    document.getElementById("resourceType").value = data.resource.resource_type || data.resource.type || "";
                     document.getElementById("resourceDesc").value = data.resource.description || "";
+                    
+                    // Set resource type selector
+                    const resourceType = data.resourceType || 'book';
+                    document.getElementById("resourceTypeSelector").value = resourceType;
                 }
             } catch (err) {
                 console.error("Error fetching resource details:", err);
@@ -749,15 +839,16 @@
                 window.location.href = "../admin-login.html";
                 return;
             }
-            
+
+            const resourceType = document.getElementById("resourceTypeSelector").value;
             const title = document.getElementById("resourceTitle").value.trim();
             const category = document.getElementById("resourceCategory").value;
             const gradeLevel = document.getElementById("resourceGrade").value;
-            const resourceType = document.getElementById("resourceType").value;
+            const resourceTypeDetail = document.getElementById("resourceType").value;
             const description = document.getElementById("resourceDesc").value.trim();
 
-            if (!title || !category || !gradeLevel || !resourceType) {
-                alert("Please fill in title, category, grade level, and resource type.");
+            if (!title || !category || !gradeLevel || !resourceTypeDetail) {
+                alert("Please fill in all required fields.");
                 return;
             }
 
@@ -765,9 +856,10 @@
             formData.append("title", title);
             formData.append("category", category);
             formData.append("grade_level", gradeLevel);
-            formData.append("resource_type", resourceType);
+            formData.append("resource_type", resourceTypeDetail);
             formData.append("description", description);
             formData.append("available", "true");
+            formData.append("resourceType", resourceType);
 
             const fileInput = document.getElementById("resourceFile");
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
@@ -780,6 +872,8 @@
             const method = editingResourceId ? "PUT" : "POST";
 
             try {
+                console.log(`📡 ${method} request to:`, url);
+                
                 const response = await fetch(url, {
                     method: method,
                     headers: { "Authorization": `Bearer ${token}` },
@@ -787,6 +881,7 @@
                 });
 
                 const data = await response.json();
+                console.log("📨 Response:", data);
 
                 if (response.status === 401) {
                     localStorage.removeItem("adminToken");
@@ -804,7 +899,7 @@
                     alert(data.error || data.details || "Failed to save resource. Please try again.");
                 }
             } catch (err) {
-                console.error("Error saving resource:", err);
+                console.error("❌ Error saving resource:", err);
                 alert("Server error. Please check the console for details.");
             }
         }
@@ -817,8 +912,10 @@
             document.getElementById("resourceGrade").value = "";
             document.getElementById("resourceType").value = "";
             document.getElementById("resourceDesc").value = "";
+            document.getElementById("resourceTypeSelector").value = "book";
             const fileInput = document.getElementById("resourceFile");
             if (fileInput) fileInput.value = "";
+            document.getElementById("modalTitle").textContent = "Add Resource";
         }
 
         // Event Listeners

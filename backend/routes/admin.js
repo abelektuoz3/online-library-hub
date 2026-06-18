@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const Admin = require('../models/Admin');
 const User = require('../models/User');
 const Book = require('../models/Book');
+const Course = require('../models/Course');
 const Announcement = require('../models/Announcement');
 const upload = require('../config/multer');
 
@@ -134,13 +135,44 @@ router.get('/verify', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== RESOURCE ROUTES ====================
+// ==================== RESOURCE ROUTES (Books + Courses) ====================
 
-// GET all resources
+// GET all resources (both books and courses)
 router.get('/resources', authMiddleware, async (req, res) => {
     try {
-        const resources = await Book.find().sort({ createdAt: -1 });
-        console.log('📚 Found resources:', resources.length);
+        const [books, courses] = await Promise.all([
+            Book.find().sort({ createdAt: -1 }).lean(),
+            Course.find().sort({ createdAt: -1 }).lean()
+        ]);
+
+        // Combine and format resources
+        const resources = [
+            ...books.map(b => ({
+                ...b,
+                resourceType: 'book',
+                type: b.resource_type || 'Book',
+                grade_level: b.grade_level || 'N/A',
+                category: b.category || 'General'
+            })),
+            ...courses.map(c => ({
+                ...c,
+                resourceType: 'course',
+                type: 'Course',
+                grade_level: `Grade ${c.grade}`,
+                category: c.subject || c.category || 'General',
+                title: c.title,
+                description: c.description,
+                available: c.published !== false,
+                coverImage: c.thumbnail || '',
+                fileUrl: c.mediaFiles?.length > 0 ? '/uploads/media' : '',
+                author: 'Admin',
+                price: c.price || 0
+            }))
+        ];
+
+        // Sort by createdAt
+        resources.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
         res.json({ success: true, resources });
     } catch (error) {
         console.error('Error fetching resources:', error);
@@ -163,7 +195,15 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        const resource = await Book.findById(id);
+        // Try to find in Books first, then Courses
+        let resource = await Book.findById(id).lean();
+        let resourceType = 'book';
+        
+        if (!resource) {
+            resource = await Course.findById(id).lean();
+            resourceType = 'course';
+        }
+
         if (!resource) {
             return res.status(404).json({
                 success: false,
@@ -171,7 +211,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        res.json({ success: true, resource });
+        res.json({ success: true, resource, resourceType });
     } catch (error) {
         console.error('Error fetching resource:', error);
         res.status(500).json({
@@ -181,7 +221,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource - FIXED
+// POST new resource (Book or Course)
 router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         console.log('📝 Creating new resource...');
@@ -194,7 +234,8 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             grade_level, 
             resource_type, 
             description,
-            available 
+            available,
+            resourceType // 'book' or 'course'
         } = req.body;
 
         // Validate required fields
@@ -215,28 +256,65 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             coverImage = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
-        // Create new resource
-        const newResource = new Book({
-            title: title.trim(),
-            author: 'Admin Upload',
-            description: description || 'No description provided',
-            category: category || 'Other',
-            grade_level: grade_level || 'Other',
-            resource_type: resource_type || 'Other',
-            available: true,
-            coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
-            fileUrl: fileUrl || '',
-            price: 0,
-            pages: null,
-            publisher: 'Online Library Hub',
-            publicationYear: new Date().getFullYear(),
-            language: 'English',
-            isbn: '',
-            featured: false,
-            uploadedBy: req.admin._id,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
+        let newResource;
+
+        if (resourceType === 'course') {
+            // Create a Course
+            const subjectMap = {
+                'Mathematics': 'math',
+                'Programming': 'cs',
+                'History': 'history',
+                'Science': 'science',
+                'English': 'english',
+                'Arts': 'arts',
+                'Technology': 'cs',
+                'Other': 'cs'
+            };
+
+            const gradeNum = parseInt(grade_level) || 9;
+            const subject = subjectMap[category] || 'cs';
+
+            newResource = new Course({
+                title: title.trim(),
+                description: description || 'No description provided',
+                thumbnail: coverImage || '',
+                category: category || 'General',
+                subject: subject,
+                grade: gradeNum >= 9 && gradeNum <= 12 ? gradeNum : 9,
+                price: 0,
+                published: available === 'true' || available === true,
+                color: 'from-blue-500 to-cyan-500',
+                icon: 'fa-book',
+                modules: [],
+                totalLessons: 0,
+                mediaFiles: [],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        } else {
+            // Create a Book
+            newResource = new Book({
+                title: title.trim(),
+                author: 'Admin Upload',
+                description: description || 'No description provided',
+                category: category || 'Other',
+                grade_level: grade_level || 'Other',
+                resource_type: resource_type || 'Other',
+                available: available === 'true' || available === true,
+                coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
+                fileUrl: fileUrl || '',
+                price: 0,
+                pages: null,
+                publisher: 'Online Library Hub',
+                publicationYear: new Date().getFullYear(),
+                language: 'English',
+                isbn: '',
+                featured: false,
+                uploadedBy: req.admin._id,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        }
 
         await newResource.save();
         console.log('✅ Resource created successfully:', newResource._id);
@@ -269,71 +347,7 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
     }
 });
 
-// UPDATE resource
-router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid resource ID format'
-            });
-        }
-
-        const { 
-            title, 
-            category, 
-            grade_level, 
-            resource_type, 
-            description,
-            available 
-        } = req.body;
-
-        const updateData = {
-            title: title?.trim(),
-            category: category || 'Other',
-            grade_level: grade_level || 'Other',
-            resource_type: resource_type || 'Other',
-            description: description || '',
-            available: available === 'true' || available === true,
-            updatedAt: new Date()
-        };
-
-        if (req.file) {
-            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
-            updateData.fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
-            updateData.coverImage = `${baseUrl}/uploads/${req.file.filename}`;
-        }
-
-        const updatedResource = await Book.findByIdAndUpdate(
-            id,
-            updateData,
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedResource) {
-            return res.status(404).json({
-                success: false,
-                error: 'Resource not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: 'Resource updated successfully',
-            resource: updatedResource
-        });
-    } catch (error) {
-        console.error('Error updating resource:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to update resource'
-        });
-    }
-});
-
-// DELETE resource
+// DELETE resource (Book or Course)
 router.delete('/resources/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -353,16 +367,23 @@ router.delete('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        const resource = await Book.findByIdAndDelete(id);
+        // Try to delete from Books first, then Courses
+        let deleted = await Book.findByIdAndDelete(id);
+        let deletedType = 'book';
         
-        if (!resource) {
+        if (!deleted) {
+            deleted = await Course.findByIdAndDelete(id);
+            deletedType = 'course';
+        }
+
+        if (!deleted) {
             return res.status(404).json({ 
                 success: false, 
                 error: 'Resource not found' 
             });
         }
 
-        console.log('✅ Resource deleted successfully:', id);
+        console.log(`✅ ${deletedType} deleted successfully:`, id);
         res.json({ 
             success: true, 
             message: 'Resource deleted successfully' 
@@ -758,6 +779,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
         const totalAdmins = await Admin.countDocuments();
         const verifiedUsers = await User.countDocuments({ isVerified: true });
         const totalBooks = await Book.countDocuments();
+        const totalCourses = await Course.countDocuments();
         const totalAnnouncements = await Announcement.countDocuments();
         const Contact = require('../models/Contact');
         const unreadMessages = await Contact.countDocuments({ is_read: false });
@@ -769,8 +791,9 @@ router.get('/stats', authMiddleware, async (req, res) => {
                 totalAdmins,
                 verifiedUsers,
                 unverifiedUsers: totalUsers - verifiedUsers,
-                totalResources: totalBooks,
+                totalResources: totalBooks + totalCourses,
                 totalBooks,
+                totalCourses,
                 totalAnnouncements,
                 unreadMessages,
             }

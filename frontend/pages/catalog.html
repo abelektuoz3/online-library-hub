@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Course Catalog | Online Library Hub</title>
+    <title>Catalog | Online Library Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -74,19 +74,6 @@
             font-weight: 600;
         }
 
-        .btn-login {
-            background: #2563eb;
-            color: white !important;
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.5rem;
-            transition: background 0.2s;
-        }
-
-        .btn-login:hover {
-            background: #1d4ed8 !important;
-            color: white !important;
-        }
-
         .catalog-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -141,13 +128,13 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .courses-grid {
+        .resources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        .course-card {
+        .resource-card {
             background: white;
             border: 1px solid #e2e8f0;
             border-radius: 1rem;
@@ -156,26 +143,27 @@
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
-        .course-card:hover {
+        .resource-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        .course-thumbnail {
+        .resource-thumbnail {
             height: 160px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
         }
 
-        .course-thumbnail i {
+        .resource-thumbnail i {
             font-size: 3rem;
             color: white;
             opacity: 0.8;
         }
 
-        .course-thumbnail .badge {
+        .resource-thumbnail .badge {
             position: absolute;
             top: 12px;
             right: 12px;
@@ -187,7 +175,7 @@
             color: #1a1a2e;
         }
 
-        .course-thumbnail .subject-badge {
+        .resource-thumbnail .type-badge {
             position: absolute;
             top: 12px;
             left: 12px;
@@ -195,29 +183,37 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
-            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .type-badge-book {
+            background: rgba(37, 99, 235, 0.8);
             color: white;
         }
 
-        .course-body {
+        .type-badge-course {
+            background: rgba(236, 72, 153, 0.8);
+            color: white;
+        }
+
+        .resource-body {
             padding: 1.5rem;
         }
 
-        .course-body h3 {
+        .resource-body h3 {
             font-size: 1.125rem;
             font-weight: 700;
             color: #1a1a2e;
             margin-bottom: 0.5rem;
         }
 
-        .course-body .meta {
+        .resource-body .meta {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
             margin-bottom: 0.75rem;
         }
 
-        .course-body .meta span {
+        .resource-body .meta span {
             background: #f1f5f9;
             padding: 0.25rem 0.625rem;
             border-radius: 0.375rem;
@@ -225,7 +221,7 @@
             color: #475569;
         }
 
-        .course-body .description {
+        .resource-body .description {
             color: #4b5563;
             font-size: 0.875rem;
             line-height: 1.5;
@@ -236,7 +232,7 @@
             overflow: hidden;
         }
 
-        .course-body .footer {
+        .resource-body .footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -244,16 +240,20 @@
             border-top: 1px solid #f1f5f9;
         }
 
-        .course-body .footer .price {
-            font-weight: 700;
-            color: #2563eb;
+        .resource-body .footer .status {
+            font-weight: 600;
+            font-size: 0.875rem;
         }
 
-        .course-body .footer .price.free {
+        .status-available {
             color: #10b981;
         }
 
-        .btn-view-course {
+        .status-unavailable {
+            color: #ef4444;
+        }
+
+        .btn-view {
             background: #2563eb;
             color: white;
             border: none;
@@ -265,16 +265,8 @@
             transition: background 0.2s;
         }
 
-        .btn-view-course:hover {
+        .btn-view:hover {
             background: #1d4ed8;
-        }
-
-        .btn-view-course.published {
-            background: #10b981;
-        }
-
-        .btn-view-course.published:hover {
-            background: #059669;
         }
 
         .loading-spinner {
@@ -326,100 +318,6 @@
             background: #1d4ed8;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 1rem;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .modal-close:hover {
-            color: #1a1a2e;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-detail {
-            margin-bottom: 0.75rem;
-        }
-
-        .modal-detail strong {
-            color: #475569;
-            font-weight: 600;
-        }
-
-        .modal-detail p {
-            color: #4b5563;
-            margin-top: 0.25rem;
-        }
-
-        .modal-modules {
-            margin-top: 1.5rem;
-        }
-
-        .modal-modules h4 {
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-modules ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .modal-modules li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f1f5f9;
-            color: #4b5563;
-            font-size: 0.875rem;
-        }
-
-        .modal-modules li:last-child {
-            border-bottom: none;
-        }
-
-        .modal-modules li i {
-            color: #2563eb;
-            margin-right: 0.5rem;
-        }
-
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -440,7 +338,7 @@
             .filters select {
                 width: 100%;
             }
-            .courses-grid {
+            .resources-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -453,8 +351,7 @@
         <div class="navbar-links">
             <a href="../index.html">Home</a>
             <a href="catalog.html" class="active">Catalog</a>
-            <a href="admin-login.html">Admin</a>
-            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="admin/admin-dashboard.html">Admin</a>
             <a href="../index.html#contact">Contact</a>
         </div>
     </nav>
@@ -462,146 +359,97 @@
     <div class="catalog-container">
         <!-- Header -->
         <div class="catalog-header">
-            <h1>📚 Course Catalog</h1>
-            <p>Browse our collection of courses and learning materials</p>
+            <h1>📚 Resource Catalog</h1>
+            <p>Browse our collection of books, courses, and learning materials</p>
         </div>
 
         <!-- Filters -->
         <div class="filters">
             <input type="text" id="searchInput" placeholder="Search by title or description..." />
-            <select id="subjectFilter">
-                <option value="">All Subjects</option>
-                <option value="math">Mathematics</option>
-                <option value="physics">Physics</option>
-                <option value="chemistry">Chemistry</option>
-                <option value="biology">Biology</option>
-                <option value="english">English</option>
-                <option value="amharic">Amharic</option>
-                <option value="history">History</option>
-                <option value="geography">Geography</option>
-                <option value="cs">Computer Science</option>
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Programming">Programming</option>
+                <option value="History">History</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="English">English</option>
+                <option value="Arts">Arts</option>
+                <option value="Technology">Technology</option>
+                <option value="Other">Other</option>
             </select>
             <select id="gradeFilter">
-                <option value="">All Grades</option>
-                <option value="9">Grade 9</option>
-                <option value="10">Grade 10</option>
-                <option value="11">Grade 11</option>
-                <option value="12">Grade 12</option>
+                <option value="">All Grade Levels</option>
+                <option value="Grade 8-10">Grade 8-10</option>
+                <option value="Grade 9-11">Grade 9-11</option>
+                <option value="Grade 9-12">Grade 9-12</option>
+                <option value="Grade 10-12">Grade 10-12</option>
+                <option value="Grade 11-12">Grade 11-12</option>
+                <option value="College">College</option>
+                <option value="University">University</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="typeFilter">
+                <option value="">All Types</option>
+                <option value="book">📚 Books</option>
+                <option value="course">🎓 Courses</option>
             </select>
         </div>
 
-        <!-- Courses Grid -->
-        <div class="courses-grid" id="coursesGrid">
+        <!-- Resources Grid -->
+        <div class="resources-grid" id="resourcesGrid">
             <div class="loading-spinner">
                 <i class="fas fa-spinner"></i>
-                <p>Loading courses...</p>
+                <p>Loading resources...</p>
             </div>
         </div>
     </div>
 
-    <!-- Course Detail Modal -->
-    <div id="courseModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 class="modal-title" id="modalTitle">Course Details</h2>
-            <div id="modalContent"></div>
-        </div>
-    </div>
-
+    <script src="../scripts/api-config.js"></script>
     <script>
-        const API_BASE = window.API_BASE || 'https://online-library-hub.onrender.com/api';
-        let allCourses = [];
+        const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
+        let allResources = [];
 
-        // Subject display names
-        const subjectMap = {
-            'math': 'Mathematics',
-            'physics': 'Physics',
-            'chemistry': 'Chemistry',
-            'biology': 'Biology',
-            'english': 'English',
-            'amharic': 'Amharic',
-            'history': 'History',
-            'geography': 'Geography',
-            'cs': 'Computer Science'
-        };
-
-        const iconMap = {
-            'math': 'fa-calculator',
-            'physics': 'fa-atom',
-            'chemistry': 'fa-flask',
-            'biology': 'fa-dna',
-            'english': 'fa-book',
-            'amharic': 'fa-language',
-            'history': 'fa-landmark',
-            'geography': 'fa-globe',
-            'cs': 'fa-laptop-code'
-        };
-
-        const colorMap = {
-            'math': 'from-blue-500 to-cyan-500',
-            'physics': 'from-orange-500 to-red-500',
-            'chemistry': 'from-green-500 to-emerald-500',
-            'biology': 'from-purple-500 to-pink-500',
-            'english': 'from-indigo-500 to-blue-500',
-            'amharic': 'from-yellow-500 to-orange-500',
-            'history': 'from-amber-500 to-yellow-500',
-            'geography': 'from-teal-500 to-cyan-500',
-            'cs': 'from-purple-500 to-indigo-500'
-        };
-
-        // ==================== FETCH COURSES ====================
-        async function fetchCourses() {
-            const grid = document.getElementById('coursesGrid');
+        async function fetchResources() {
+            const grid = document.getElementById('resourcesGrid');
             grid.innerHTML = `
                 <div class="loading-spinner">
                     <i class="fas fa-spinner"></i>
-                    <p>Loading courses...</p>
+                    <p>Loading resources...</p>
                 </div>
             `;
 
             try {
-                const search = document.getElementById('searchInput').value.trim();
-                const subject = document.getElementById('subjectFilter').value;
-                const grade = document.getElementById('gradeFilter').value;
-
-                let url = `${API_BASE}/courses?`;
-                if (search) url += `search=${encodeURIComponent(search)}&`;
-                if (subject) url += `subject=${subject}&`;
-                if (grade) url += `grade=${grade}&`;
-                url += `page=1&limit=50`;
-
-                console.log('📡 Fetching courses from:', url);
-
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                const response = await fetch(`${API_BASE}/catalog`, {
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error('Failed to fetch resources');
 
                 const data = await response.json();
-                console.log('📦 Courses data:', data);
+                let resources = [];
 
-                if (data.success && data.courses) {
-                    allCourses = data.courses;
-                    renderCourses(allCourses);
-                } else {
-                    allCourses = [];
-                    renderCourses([]);
+                // Handle different response formats
+                if (data.success && data.resources) {
+                    resources = data.resources;
+                } else if (data.success && data.books) {
+                    resources = data.books.map(b => ({ ...b, resourceType: 'book' }));
+                } else if (Array.isArray(data)) {
+                    resources = data;
                 }
 
+                allResources = resources;
+                renderResources(resources);
+
             } catch (error) {
-                console.error('❌ Error fetching courses:', error);
+                console.error('Error fetching resources:', error);
                 grid.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-exclamation-circle"></i>
-                        <h3>Error Loading Courses</h3>
+                        <h3>Error Loading Resources</h3>
                         <p>${error.message || 'Please try again later.'}</p>
-                        <button class="btn-retry" onclick="fetchCourses()">
+                        <button class="btn-retry" onclick="fetchResources()">
                             <i class="fas fa-redo"></i> Retry
                         </button>
                     </div>
@@ -609,48 +457,54 @@
             }
         }
 
-        // ==================== RENDER COURSES ====================
-        function renderCourses(courses) {
-            const grid = document.getElementById('coursesGrid');
+        function renderResources(resources) {
+            const grid = document.getElementById('resourcesGrid');
 
-            if (!courses || courses.length === 0) {
+            if (!resources || resources.length === 0) {
                 grid.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-book-open"></i>
-                        <h3>No Courses Found</h3>
-                        <p>No courses match your search criteria.</p>
+                        <h3>No Resources Found</h3>
+                        <p>No resources match your search criteria.</p>
                     </div>
                 `;
                 return;
             }
 
-            grid.innerHTML = courses.map(course => {
-                const subjectDisplay = subjectMap[course.subject] || course.subject || 'General';
-                const icon = iconMap[course.subject] || course.icon || 'fa-book';
-                const color = colorMap[course.subject] || course.color || 'from-blue-500 to-cyan-500';
-                const isFree = course.price === 0 || !course.price;
-                const isPublished = course.published !== false;
+            grid.innerHTML = resources.map(resource => {
+                const isAvailable = resource.available !== false;
+                const resourceType = resource.resourceType || 'book';
+                const isCourse = resourceType === 'course';
+                
+                const typeBadgeClass = isCourse ? 'type-badge-course' : 'type-badge-book';
+                const typeIcon = isCourse ? 'fa-graduation-cap' : 'fa-book';
+                const typeLabel = isCourse ? 'Course' : 'Book';
+                
+                const gradeDisplay = resource.grade_level || resource.grade || 'All Levels';
+                const category = resource.category || 'General';
+                const resourceId = resource._id || resource.id;
 
                 return `
-                    <div class="course-card">
-                        <div class="course-thumbnail" style="background: linear-gradient(135deg, ${color.replace('from-', '').replace('to-', '').split(' ').join(', ')})">
-                            <i class="fas ${icon}"></i>
-                            <span class="subject-badge">${subjectDisplay}</span>
-                            <span class="badge">Grade ${course.grade || 'N/A'}</span>
+                    <div class="resource-card">
+                        <div class="resource-thumbnail" style="background: ${isCourse ? 'linear-gradient(135deg, #ec4899, #8b5cf6)' : 'linear-gradient(135deg, #667eea, #764ba2)'}">
+                            <i class="fas ${typeIcon}"></i>
+                            <span class="type-badge ${typeBadgeClass}">${typeLabel}</span>
+                            <span class="badge">${isAvailable ? '✅ Available' : '❌ Unavailable'}</span>
                         </div>
-                        <div class="course-body">
-                            <h3>${escapeHtml(course.title)}</h3>
+                        <div class="resource-body">
+                            <h3>${escapeHtml(resource.title || 'Untitled')}</h3>
                             <div class="meta">
-                                <span><i class="fas fa-layer-group"></i> ${course.totalLessons || 0} Lessons</span>
-                                <span><i class="fas ${icon}"></i> ${subjectDisplay}</span>
+                                <span>📂 ${escapeHtml(category)}</span>
+                                <span>📚 ${escapeHtml(gradeDisplay)}</span>
+                                <span>📖 ${escapeHtml(resource.resource_type || resource.type || typeLabel)}</span>
                             </div>
-                            <div class="description">${escapeHtml(course.description || 'No description available.')}</div>
+                            <div class="description">${escapeHtml(resource.description || 'No description available.')}</div>
                             <div class="footer">
-                                <span class="price ${isFree ? 'free' : ''}">
-                                    ${isFree ? 'Free' : `$${course.price.toFixed(2)}`}
+                                <span class="status ${isAvailable ? 'status-available' : 'status-unavailable'}">
+                                    ${isAvailable ? 'Available' : 'Unavailable'}
                                 </span>
-                                <button class="btn-view-course ${isPublished ? 'published' : ''}" onclick="viewCourse('${course.id}')">
-                                    <i class="fas fa-eye"></i> View Details
+                                <button class="btn-view" onclick="viewResource('${resourceId}')">
+                                    <i class="fas fa-eye"></i> View
                                 </button>
                             </div>
                         </div>
@@ -659,83 +513,68 @@
             }).join('');
         }
 
-        // ==================== VIEW COURSE DETAILS ====================
-        async function viewCourse(courseId) {
-            try {
-                const response = await fetch(`${API_BASE}/courses/${courseId}`);
-                const data = await response.json();
+        function filterResources() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('categoryFilter').value;
+            const grade = document.getElementById('gradeFilter').value;
+            const type = document.getElementById('typeFilter').value;
 
-                if (data.success && data.course) {
-                    const course = data.course;
-                    const subjectDisplay = subjectMap[course.subject] || course.subject || 'General';
-                    const isFree = course.price === 0 || !course.price;
-
-                    let modulesHtml = '';
-                    if (course.modules && course.modules.length > 0) {
-                        modulesHtml = `
-                            <div class="modal-modules">
-                                <h4><i class="fas fa-layer-group"></i> Modules (${course.modules.length})</h4>
-                                <ul>
-                                    ${course.modules.map(module => `
-                                        <li>
-                                            <i class="fas fa-folder"></i>
-                                            <strong>${escapeHtml(module.title)}</strong>
-                                            ${module.lessons ? ` (${module.lessons.length} lessons)` : ''}
-                                            ${module.description ? `<br><span style="font-size: 0.8rem; color: #64748b;">${escapeHtml(module.description)}</span>` : ''}
-                                        </li>
-                                    `).join('')}
-                                </ul>
-                            </div>
-                        `;
-                    }
-
-                    document.getElementById('modalTitle').textContent = course.title;
-                    document.getElementById('modalContent').innerHTML = `
-                        <div class="modal-detail">
-                            <strong>Subject:</strong> ${subjectDisplay}
-                        </div>
-                        <div class="modal-detail">
-                            <strong>Grade:</strong> ${course.grade || 'N/A'}
-                        </div>
-                        <div class="modal-detail">
-                            <strong>Price:</strong> ${isFree ? 'Free' : `$${course.price.toFixed(2)}`}
-                        </div>
-                        <div class="modal-detail">
-                            <strong>Status:</strong> ${course.published ? '✅ Published' : '🔒 Draft'}
-                        </div>
-                        <div class="modal-detail">
-                            <strong>Total Lessons:</strong> ${course.totalLessons || 0}
-                        </div>
-                        <div class="modal-detail">
-                            <strong>Description:</strong>
-                            <p>${escapeHtml(course.description || 'No description available.')}</p>
-                        </div>
-                        ${modulesHtml}
-                    `;
-
-                    document.getElementById('courseModal').classList.add('active');
-                } else {
-                    alert('Failed to load course details.');
+            let filtered = allResources.filter(resource => {
+                let matchesSearch = true;
+                if (searchTerm) {
+                    matchesSearch = 
+                        (resource.title || '').toLowerCase().includes(searchTerm) ||
+                        (resource.description || '').toLowerCase().includes(searchTerm) ||
+                        (resource.author || '').toLowerCase().includes(searchTerm);
                 }
-            } catch (error) {
-                console.error('Error loading course details:', error);
-                alert('Error loading course details. Please try again.');
-            }
+
+                let matchesCategory = true;
+                if (category) {
+                    matchesCategory = (resource.category || '') === category;
+                }
+
+                let matchesGrade = true;
+                if (grade) {
+                    const resourceGrade = resource.grade_level || resource.grade || '';
+                    matchesGrade = resourceGrade === grade;
+                }
+
+                let matchesType = true;
+                if (type) {
+                    const resourceType = resource.resourceType || 'book';
+                    matchesType = resourceType === type;
+                }
+
+                return matchesSearch && matchesCategory && matchesGrade && matchesType;
+            });
+
+            renderResources(filtered);
         }
 
-        // ==================== MODAL FUNCTIONS ====================
-        function closeModal() {
-            document.getElementById('courseModal').classList.remove('active');
-        }
+        window.viewResource = function(id) {
+            const resource = allResources.find(r => (r._id || r.id) === id);
+            if (resource) {
+                const isCourse = resource.resourceType === 'course';
+                const details = `
+📖 ${resource.title}
 
-        // Close modal on backdrop click
-        document.getElementById('courseModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+${isCourse ? '🎓 Course' : '📚 Book'}
+📂 Category: ${resource.category || 'General'}
+📚 Grade Level: ${resource.grade_level || resource.grade || 'All Levels'}
+📖 Type: ${resource.resource_type || resource.type || (isCourse ? 'Course' : 'Book')}
+
+📝 Description:
+${resource.description || 'No description available.'}
+
+${isCourse ? `📊 Total Lessons: ${resource.totalLessons || 0}` : `✍️ Author: ${resource.author || 'Unknown'}`}
+${resource.price ? `💰 Price: $${resource.price}` : ''}
+`;
+                alert(details);
+            } else {
+                alert('Resource not found.');
             }
-        });
+        };
 
-        // ==================== UTILITY FUNCTIONS ====================
         function escapeHtml(str) {
             if (!str) return '';
             const div = document.createElement('div');
@@ -743,27 +582,14 @@
             return div.innerHTML;
         }
 
-        // ==================== FILTER FUNCTIONS ====================
-        function filterCourses() {
-            fetchCourses();
-        }
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', filterResources);
+        document.getElementById('categoryFilter').addEventListener('change', filterResources);
+        document.getElementById('gradeFilter').addEventListener('change', filterResources);
+        document.getElementById('typeFilter').addEventListener('change', filterResources);
 
-        // ==================== EVENT LISTENERS ====================
-        document.getElementById('searchInput').addEventListener('input', filterCourses);
-        document.getElementById('subjectFilter').addEventListener('change', filterCourses);
-        document.getElementById('gradeFilter').addEventListener('change', filterCourses);
-
-        // ==================== KEYBOARD SHORTCUT ====================
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-
-        // ==================== INITIALIZE ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchCourses();
-        });
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchResources);
     </script>
 </body>
 </html>
