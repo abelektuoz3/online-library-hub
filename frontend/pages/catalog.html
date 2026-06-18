@@ -27,7 +27,7 @@
             min-height: 100vh;
         }
 
-        /* Navbar - Original Style */
+        /* Navbar */
         .navbar {
             background: white;
             padding: 1rem 2rem;
@@ -88,7 +88,6 @@
             color: white !important;
         }
 
-        /* Catalog Container - Original Style */
         .catalog-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -111,7 +110,6 @@
             font-size: 1rem;
         }
 
-        /* Filters - Original Style */
         .filters {
             display: flex;
             gap: 1rem;
@@ -144,10 +142,12 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        /* Resources Grid - Original Style */
+        /* ============================================
+           ORIGINAL CATALOG STYLE - Matching Screenshot
+           ============================================ */
         .resources-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
@@ -156,102 +156,109 @@
             border: 1px solid #e2e8f0;
             border-radius: 1rem;
             overflow: hidden;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
         .resource-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
         }
 
-        /* Thumbnail - Original Style with Color based on type */
         .resource-thumbnail {
-            height: 160px;
+            height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            cursor: pointer;
+        }
+
+        .resource-thumbnail .icon-container {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .resource-thumbnail i {
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: white;
-            opacity: 0.8;
         }
 
-        .resource-thumbnail .badge {
+        .resource-thumbnail .status-badge {
             position: absolute;
             top: 12px;
             right: 12px;
             padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             color: #1a1a2e;
         }
 
-        .resource-thumbnail .type-badge {
+        .resource-thumbnail .status-badge.available {
+            color: #10b981;
+        }
+
+        .resource-thumbnail .status-badge.unavailable {
+            color: #ef4444;
+        }
+
+        .resource-thumbnail .type-tag {
             position: absolute;
             top: 12px;
             left: 12px;
             padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
             font-weight: 600;
-        }
-
-        .type-badge-video {
-            background: rgba(236, 72, 153, 0.8);
-            color: white;
-        }
-
-        .type-badge-pdf {
-            background: rgba(245, 158, 11, 0.8);
-            color: white;
-        }
-
-        .type-badge-audio {
-            background: rgba(37, 99, 235, 0.8);
-            color: white;
-        }
-
-        .type-badge-default {
-            background: rgba(107, 114, 128, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0, 0, 0, 0.5);
             color: white;
         }
 
         .resource-body {
-            padding: 1.5rem;
+            padding: 1.25rem 1.5rem 1.5rem;
         }
 
         .resource-body h3 {
-            font-size: 1.125rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #1a1a2e;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .resource-body .author {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
         .resource-body .meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 0.4rem;
             margin-bottom: 0.75rem;
         }
 
         .resource-body .meta span {
             background: #f1f5f9;
-            padding: 0.25rem 0.625rem;
-            border-radius: 0.375rem;
-            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
             color: #475569;
+            font-weight: 500;
         }
 
         .resource-body .description {
             color: #4b5563;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             line-height: 1.5;
             margin-bottom: 1rem;
             display: -webkit-box;
@@ -264,31 +271,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 1rem;
+            padding-top: 0.75rem;
             border-top: 1px solid #f1f5f9;
         }
 
-        .resource-body .footer .status {
-            font-weight: 600;
-            font-size: 0.875rem;
+        .resource-body .footer .price {
+            font-weight: 700;
+            color: #2563eb;
+            font-size: 1rem;
         }
 
-        .status-available {
+        .resource-body .footer .price.free {
             color: #10b981;
-        }
-
-        .status-unavailable {
-            color: #ef4444;
         }
 
         .btn-view {
             background: #2563eb;
             color: white;
             border: none;
-            padding: 0.5rem 1.25rem;
+            padding: 0.4rem 1.25rem;
             border-radius: 0.5rem;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: background 0.2s;
         }
@@ -346,7 +350,7 @@
             background: #1d4ed8;
         }
 
-        /* Modal - Original Style */
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -499,7 +503,7 @@
     </style>
 </head>
 <body>
-    <!-- Navbar - Original Style -->
+    <!-- Navbar -->
     <nav class="navbar">
         <a href="../index.html" class="navbar-brand">Library<span>Hub</span></a>
         <div class="navbar-links">
@@ -514,7 +518,7 @@
         <!-- Header -->
         <div class="catalog-header">
             <h1>📚 Resource Catalog</h1>
-            <p>Browse our collection of books, videos, and learning materials</p>
+            <p>Browse our collection of books, e-books, and learning materials</p>
         </div>
 
         <!-- Filters -->
@@ -546,11 +550,11 @@
             </select>
             <select id="typeFilter">
                 <option value="">All Types</option>
-                <option value="Video">🎬 Videos</option>
-                <option value="PDF">📄 PDFs</option>
+                <option value="Video">🎬 Video</option>
+                <option value="PDF">📄 PDF</option>
                 <option value="Audio">🎵 Audio</option>
-                <option value="Book">📚 Books</option>
-                <option value="E-Book">📖 E-Books</option>
+                <option value="Book">📚 Book</option>
+                <option value="E-Book">📖 E-Book</option>
                 <option value="Other">📁 Other</option>
             </select>
         </div>
@@ -580,8 +584,8 @@
         const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
         let allBooks = [];
 
-        function getFileTypeColor(type) {
-            const colors = {
+        function getGradient(type) {
+            const gradients = {
                 'Video': 'linear-gradient(135deg, #ec4899, #8b5cf6)',
                 'PDF': 'linear-gradient(135deg, #f59e0b, #ef4444)',
                 'Audio': 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
@@ -589,10 +593,10 @@
                 'E-Book': 'linear-gradient(135deg, #667eea, #764ba2)',
                 'Other': 'linear-gradient(135deg, #6b7280, #4b5563)'
             };
-            return colors[type] || colors['Other'];
+            return gradients[type] || gradients['Other'];
         }
 
-        function getFileIcon(type) {
+        function getIcon(type) {
             const icons = {
                 'Video': 'fa-video',
                 'PDF': 'fa-file-pdf',
@@ -602,15 +606,6 @@
                 'Other': 'fa-file'
             };
             return icons[type] || icons['Other'];
-        }
-
-        function getTypeBadgeClass(type) {
-            const classes = {
-                'Video': 'type-badge-video',
-                'PDF': 'type-badge-pdf',
-                'Audio': 'type-badge-audio'
-            };
-            return classes[type] || 'type-badge-default';
         }
 
         function escapeHtml(str) {
@@ -696,22 +691,27 @@
             grid.innerHTML = books.map(book => {
                 const isAvailable = book.available !== false;
                 const resourceType = book.resource_type || 'Book';
-                const bgColor = getFileTypeColor(resourceType);
-                const icon = getFileIcon(resourceType);
-                const badgeClass = getTypeBadgeClass(resourceType);
+                const gradient = getGradient(resourceType);
+                const icon = getIcon(resourceType);
                 const gradeDisplay = book.grade_level || 'All Levels';
                 const category = book.category || 'General';
                 const bookId = book._id || book.id;
+                const author = book.author || 'Unknown Author';
 
                 return `
                     <div class="resource-card">
-                        <div class="resource-thumbnail" style="background: ${bgColor}" onclick="viewBook('${bookId}')">
-                            <i class="fas ${icon}"></i>
-                            <span class="type-badge ${badgeClass}">${resourceType}</span>
-                            <span class="badge">${isAvailable ? '✅ Available' : '❌ Unavailable'}</span>
+                        <div class="resource-thumbnail" style="background: ${gradient}">
+                            <div class="icon-container">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <span class="type-tag">${resourceType}</span>
+                            <span class="status-badge ${isAvailable ? 'available' : 'unavailable'}">
+                                ${isAvailable ? 'Available' : 'Unavailable'}
+                            </span>
                         </div>
                         <div class="resource-body">
                             <h3>${escapeHtml(book.title || 'Untitled')}</h3>
+                            <div class="author">✍️ ${escapeHtml(author)}</div>
                             <div class="meta">
                                 <span>📂 ${escapeHtml(category)}</span>
                                 <span>📚 ${escapeHtml(gradeDisplay)}</span>
@@ -719,9 +719,7 @@
                             </div>
                             <div class="description">${escapeHtml(book.description || 'No description available.')}</div>
                             <div class="footer">
-                                <span class="status ${isAvailable ? 'status-available' : 'status-unavailable'}">
-                                    ${isAvailable ? 'Available' : 'Unavailable'}
-                                </span>
+                                <span class="price free">Free</span>
                                 <button class="btn-view" onclick="viewBook('${bookId}')">
                                     <i class="fas fa-eye"></i> View
                                 </button>
@@ -782,10 +780,8 @@
             const resourceType = book.resource_type || 'Book';
             const fileUrl = book.fileUrl || book.coverImage || '';
 
-            // Set modal title
             document.getElementById('modalTitle').textContent = book.title || 'Untitled';
             
-            // Set meta info
             document.getElementById('modalMeta').innerHTML = `
                 <span>${resourceType}</span>
                 <span>📂 ${escapeHtml(book.category || 'General')}</span>
@@ -794,10 +790,8 @@
                 ${book.author ? `<span>✍️ ${escapeHtml(book.author)}</span>` : ''}
             `;
             
-            // Set description
             document.getElementById('modalDescription').textContent = book.description || 'No description available.';
             
-            // Set player
             const playerContainer = document.getElementById('modalPlayer');
             
             if (fileUrl) {
@@ -859,7 +853,6 @@
                 `;
             }
             
-            // Show modal
             document.getElementById('resourceModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         };
@@ -876,14 +869,12 @@
             document.getElementById('modalPlayer').innerHTML = '';
         }
 
-        // Close modal on backdrop click
         document.getElementById('resourceModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
 
-        // Close modal on ESC key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();
