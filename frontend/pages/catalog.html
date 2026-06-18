@@ -12,8 +12,7 @@
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="../style/style.css" />
-    <style>
+        <style>
         * {
             margin: 0;
             padding: 0;
@@ -22,15 +21,17 @@
 
         body {
             font-family: "Inter", sans-serif;
-            background: #f5f7fa;
-            color: #1a1a2e;
+            background: #f1f5f9;
+            color: #1e293b;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Navbar */
+        /* ===== NAVBAR ===== */
         .navbar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 1rem 2.5rem;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
@@ -38,13 +39,12 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
         .navbar-brand {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #1a1a2e;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
             text-decoration: none;
         }
 
@@ -54,16 +54,19 @@
 
         .navbar-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 2rem;
             align-items: center;
         }
 
         .navbar-links a {
-            color: #4b5563;
+            color: #64748b;
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .navbar-links a:hover {
@@ -75,34 +78,32 @@
             font-weight: 600;
         }
 
-        .btn-login {
-            background: #2563eb;
-            color: white !important;
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.5rem;
-            transition: background 0.2s;
+        .navbar-links a.logout {
+            color: #ef4444;
         }
 
-        .btn-login:hover {
-            background: #1d4ed8 !important;
-            color: white !important;
+        .navbar-links a.logout:hover {
+            color: #dc2626;
         }
 
+        /* ===== CATALOG ===== */
         .catalog-container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 3rem 1.5rem;
+            flex: 1;
         }
 
         .catalog-header {
-            margin-bottom: 2rem;
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
 
         .catalog-header h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1a1a2e;
-            margin-bottom: 0.5rem;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
         }
 
         .catalog-header p {
@@ -110,41 +111,70 @@
             font-size: 1rem;
         }
 
+        /* ===== FILTERS ===== */
         .filters {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
             background: white;
-            padding: 1.25rem;
-            border-radius: 1rem;
+            padding: 2.5rem;
+            border-radius: 1.25rem;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
-        .filters input,
-        .filters select {
-            padding: 0.625rem 1rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.5rem;
+        .filters input {
+            width: 100%;
+            padding: 1.125rem 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
             font-family: inherit;
-            font-size: 0.875rem;
+            font-size: 1rem;
             outline: none;
-            transition: border-color 0.2s;
-            flex: 1;
-            min-width: 150px;
+            transition: border-color 0.2s, box-shadow 0.2s;
             background: white;
+            color: #1e293b;
         }
 
-        .filters input:focus,
+        .filters input::placeholder {
+            color: #94a3b8;
+        }
+
+        .filters input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        .filters select {
+            flex: 1;
+            padding: 1.125rem 1.25rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+            color: #1e293b;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.25rem center;
+            padding-right: 3rem;
+        }
+
         .filters select:focus {
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        /* ============================================
-           ORIGINAL CATALOG STYLE - Matching Screenshot
-           ============================================ */
+        /* ===== GRID ===== */
         .resources-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -153,62 +183,33 @@
 
         .resource-card {
             background: white;
-            border: 1px solid #e2e8f0;
             border-radius: 1rem;
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
         }
 
         .resource-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px);
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
         }
 
+        /* ===== THUMBNAIL ===== */
         .resource-thumbnail {
-            height: 140px;
+            height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
         }
 
-        .resource-thumbnail .icon-container {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         .resource-thumbnail i {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             color: white;
+            opacity: 0.9;
         }
 
-        .resource-thumbnail .status-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.95);
-            color: #1a1a2e;
-        }
-
-        .resource-thumbnail .status-badge.available {
-            color: #10b981;
-        }
-
-        .resource-thumbnail .status-badge.unavailable {
-            color: #ef4444;
-        }
-
-        .resource-thumbnail .type-tag {
+        .resource-thumbnail .type-badge {
             position: absolute;
             top: 12px;
             left: 12px;
@@ -222,29 +223,48 @@
             color: white;
         }
 
+        .resource-thumbnail .status-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .status-badge.available {
+            color: #10b981;
+        }
+
+        .status-badge.unavailable {
+            color: #ef4444;
+        }
+
+        /* ===== BODY ===== */
         .resource-body {
-            padding: 1.25rem 1.5rem 1.5rem;
+            padding: 1.25rem 1.25rem 1.25rem;
         }
 
         .resource-body h3 {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 0.25rem;
-            line-height: 1.3;
+            color: #1e293b;
+            margin-bottom: 0.15rem;
         }
 
         .resource-body .author {
             color: #64748b;
             font-size: 0.85rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .resource-body .meta {
             display: flex;
             flex-wrap: wrap;
             gap: 0.4rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.6rem;
         }
 
         .resource-body .meta span {
@@ -260,13 +280,14 @@
             color: #4b5563;
             font-size: 0.85rem;
             line-height: 1.5;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
+        /* ===== FOOTER ===== */
         .resource-body .footer {
             display: flex;
             justify-content: space-between;
@@ -277,7 +298,6 @@
 
         .resource-body .footer .price {
             font-weight: 700;
-            color: #2563eb;
             font-size: 1rem;
         }
 
@@ -301,6 +321,7 @@
             background: #1d4ed8;
         }
 
+        /* ===== LOADING / NO RESULTS ===== */
         .loading-spinner {
             text-align: center;
             padding: 3rem;
@@ -343,14 +364,13 @@
             border-radius: 0.5rem;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.2s;
         }
 
         .btn-retry:hover {
             background: #1d4ed8;
         }
 
-        /* Modal */
+        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -386,17 +406,16 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: #64748b;
-            z-index: 10;
         }
 
         .modal-close:hover {
-            color: #1a1a2e;
+            color: #1e293b;
         }
 
         .modal-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1a1a2e;
+            color: #1e293b;
             margin-bottom: 0.5rem;
         }
 
@@ -426,7 +445,6 @@
             background: #0f172a;
             border-radius: 0.5rem;
             overflow: hidden;
-            margin-bottom: 1rem;
         }
 
         .modal-player video,
@@ -470,6 +488,16 @@
             background: #1d4ed8;
         }
 
+        /* ===== FOOTER ===== */
+        .site-footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -479,16 +507,13 @@
             .navbar-links {
                 flex-wrap: wrap;
                 justify-content: center;
+                gap: 1rem;
             }
             .catalog-container {
                 padding: 1rem;
             }
-            .filters {
+            .filter-row {
                 flex-direction: column;
-            }
-            .filters input,
-            .filters select {
-                width: 100%;
             }
             .resources-grid {
                 grid-template-columns: 1fr;
@@ -501,62 +526,69 @@
             }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
-    <!-- Navbar -->
+
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <a href="../index.html" class="navbar-brand">Library<span>Hub</span></a>
         <div class="navbar-links">
-            <a href="../index.html">Home</a>
-            <a href="catalog.html" class="active">Catalog</a>
-            <a href="admin/admin-dashboard.html">Admin</a>
-            <a href="admin/admin-dashboard.html" class="btn-login">Dashboard</a>
+            <a href="admin/admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="catalog.html" class="active"><i class="fas fa-search"></i> Catalog</a>
+            <a href="#"><i class="fas fa-tools"></i> Study Tools</a>
+            <a href="#"><i class="fas fa-question-circle"></i> FAQ</a>
+            <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            <a href="#"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
+    <!-- ===== CATALOG ===== -->
     <div class="catalog-container">
-        <!-- Header -->
         <div class="catalog-header">
-            <h1>📚 Resource Catalog</h1>
+            <h1>Resource Catalog</h1>
             <p>Browse our collection of books, e-books, and learning materials</p>
         </div>
 
         <!-- Filters -->
         <div class="filters">
             <input type="text" id="searchInput" placeholder="Search by title or description..." />
-            <select id="categoryFilter">
-                <option value="">All Categories</option>
-                <option value="Fiction">Fiction</option>
-                <option value="Non-Fiction">Non-Fiction</option>
-                <option value="Programming">Programming</option>
-                <option value="History">History</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science</option>
-                <option value="English">English</option>
-                <option value="Arts">Arts</option>
-                <option value="Technology">Technology</option>
-                <option value="Other">Other</option>
-            </select>
-            <select id="gradeFilter">
-                <option value="">All Grade Levels</option>
-                <option value="Grade 8-10">Grade 8-10</option>
-                <option value="Grade 9-11">Grade 9-11</option>
-                <option value="Grade 9-12">Grade 9-12</option>
-                <option value="Grade 10-12">Grade 10-12</option>
-                <option value="Grade 11-12">Grade 11-12</option>
-                <option value="College">College</option>
-                <option value="University">University</option>
-                <option value="Other">Other</option>
-            </select>
-            <select id="typeFilter">
-                <option value="">All Types</option>
-                <option value="Video">🎬 Video</option>
-                <option value="PDF">📄 PDF</option>
-                <option value="Audio">🎵 Audio</option>
-                <option value="Book">📚 Book</option>
-                <option value="E-Book">📖 E-Book</option>
-                <option value="Other">📁 Other</option>
-            </select>
+            <div class="filter-row">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Programming">Programming</option>
+                    <option value="History">History</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="English">English</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="gradeFilter">
+                    <option value="">All Grade Levels</option>
+                    <option value="Grade 8-10">Grade 8-10</option>
+                    <option value="Grade 9-11">Grade 9-11</option>
+                    <option value="Grade 9-12">Grade 9-12</option>
+                    <option value="Grade 10-12">Grade 10-12</option>
+                    <option value="Grade 11-12">Grade 11-12</option>
+                    <option value="College">College</option>
+                    <option value="University">University</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="Video">Video</option>
+                    <option value="PDF">PDF</option>
+                    <option value="Audio">Audio</option>
+                    <option value="Book">Book</option>
+                    <option value="E-Book">E-Book</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
         </div>
 
         <!-- Resources Grid -->
@@ -568,7 +600,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- ===== MODAL ===== -->
     <div class="modal-overlay" id="resourceModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -579,11 +611,15 @@
         </div>
     </div>
 
-    <script src="../scripts/api-config.js"></script>
+    <footer class="site-footer">
+        &copy; Online Library Hub. All rights reserved.
+    </footer>
+
     <script>
         const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
         let allBooks = [];
 
+        // ===== GRADIENT COLORS FOR DIFFERENT TYPES =====
         function getGradient(type) {
             const gradients = {
                 'Video': 'linear-gradient(135deg, #ec4899, #8b5cf6)',
@@ -615,7 +651,7 @@
             return div.innerHTML;
         }
 
-        // ==================== FETCH BOOKS FROM DATABASE ====================
+        // ===== FETCH BOOKS =====
         async function fetchBooks() {
             const grid = document.getElementById('resourcesGrid');
             grid.innerHTML = `
@@ -626,37 +662,25 @@
             `;
 
             try {
-                console.log('📡 Fetching books from:', `${API_BASE}/catalog`);
-                
                 const response = await fetch(`${API_BASE}/catalog`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data = await response.json();
-                console.log('📦 Data from server:', data);
 
                 let books = [];
-                if (data.success && data.books) {
-                    books = data.books;
-                } else if (data.success && data.resources) {
-                    books = data.resources;
-                } else if (Array.isArray(data)) {
-                    books = data;
-                }
+                if (data.success && data.books) books = data.books;
+                else if (data.success && data.resources) books = data.resources;
+                else if (Array.isArray(data)) books = data;
 
-                console.log(`📚 Found ${books.length} books`);
                 allBooks = books;
                 renderBooks(books);
 
             } catch (error) {
-                console.error('❌ Error fetching books:', error);
+                console.error('Error fetching books:', error);
                 grid.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-exclamation-circle"></i>
@@ -670,7 +694,7 @@
             }
         }
 
-        // ==================== RENDER BOOKS ====================
+        // ===== RENDER BOOKS =====
         function renderBooks(books) {
             const grid = document.getElementById('resourcesGrid');
 
@@ -680,9 +704,6 @@
                         <i class="fas fa-book-open"></i>
                         <h3>No Resources Found</h3>
                         <p>No resources available in the catalog yet.</p>
-                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">
-                            Check back later or contact the administrator.
-                        </p>
                     </div>
                 `;
                 return;
@@ -693,18 +714,14 @@
                 const resourceType = book.resource_type || 'Book';
                 const gradient = getGradient(resourceType);
                 const icon = getIcon(resourceType);
-                const gradeDisplay = book.grade_level || 'All Levels';
-                const category = book.category || 'General';
                 const bookId = book._id || book.id;
                 const author = book.author || 'Unknown Author';
 
                 return `
                     <div class="resource-card">
                         <div class="resource-thumbnail" style="background: ${gradient}">
-                            <div class="icon-container">
-                                <i class="fas ${icon}"></i>
-                            </div>
-                            <span class="type-tag">${resourceType}</span>
+                            <i class="fas ${icon}"></i>
+                            <span class="type-badge">${resourceType}</span>
                             <span class="status-badge ${isAvailable ? 'available' : 'unavailable'}">
                                 ${isAvailable ? 'Available' : 'Unavailable'}
                             </span>
@@ -713,8 +730,8 @@
                             <h3>${escapeHtml(book.title || 'Untitled')}</h3>
                             <div class="author">✍️ ${escapeHtml(author)}</div>
                             <div class="meta">
-                                <span>📂 ${escapeHtml(category)}</span>
-                                <span>📚 ${escapeHtml(gradeDisplay)}</span>
+                                <span>📂 ${escapeHtml(book.category || 'General')}</span>
+                                <span>📚 ${escapeHtml(book.grade_level || 'All Levels')}</span>
                                 <span>📖 ${escapeHtml(resourceType)}</span>
                             </div>
                             <div class="description">${escapeHtml(book.description || 'No description available.')}</div>
@@ -730,7 +747,7 @@
             }).join('');
         }
 
-        // ==================== FILTER BOOKS ====================
+        // ===== FILTERS =====
         function filterBooks() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const category = document.getElementById('categoryFilter').value;
@@ -740,28 +757,20 @@
             let filtered = allBooks.filter(book => {
                 let matchesSearch = true;
                 if (searchTerm) {
-                    matchesSearch = 
+                    matchesSearch =
                         (book.title || '').toLowerCase().includes(searchTerm) ||
                         (book.description || '').toLowerCase().includes(searchTerm) ||
                         (book.author || '').toLowerCase().includes(searchTerm);
                 }
 
                 let matchesCategory = true;
-                if (category) {
-                    matchesCategory = (book.category || '') === category;
-                }
+                if (category) matchesCategory = (book.category || '') === category;
 
                 let matchesGrade = true;
-                if (grade) {
-                    const bookGrade = book.grade_level || '';
-                    matchesGrade = bookGrade === grade;
-                }
+                if (grade) matchesGrade = (book.grade_level || '') === grade;
 
                 let matchesType = true;
-                if (type) {
-                    const bookType = book.resource_type || '';
-                    matchesType = bookType === type;
-                }
+                if (type) matchesType = (book.resource_type || '') === type;
 
                 return matchesSearch && matchesCategory && matchesGrade && matchesType;
             });
@@ -769,8 +778,8 @@
             renderBooks(filtered);
         }
 
-        // ==================== VIEW BOOK ====================
-        window.viewBook = async function(id) {
+        // ===== VIEW BOOK =====
+        window.viewBook = function(id) {
             const book = allBooks.find(b => (b._id || b.id) === id);
             if (!book) {
                 alert('Resource not found.');
@@ -781,7 +790,7 @@
             const fileUrl = book.fileUrl || book.coverImage || '';
 
             document.getElementById('modalTitle').textContent = book.title || 'Untitled';
-            
+
             document.getElementById('modalMeta').innerHTML = `
                 <span>${resourceType}</span>
                 <span>📂 ${escapeHtml(book.category || 'General')}</span>
@@ -789,18 +798,18 @@
                 <span>${book.available !== false ? '✅ Available' : '❌ Unavailable'}</span>
                 ${book.author ? `<span>✍️ ${escapeHtml(book.author)}</span>` : ''}
             `;
-            
+
             document.getElementById('modalDescription').textContent = book.description || 'No description available.';
-            
+
             const playerContainer = document.getElementById('modalPlayer');
-            
+
             if (fileUrl) {
                 const isVideo = fileUrl.match(/\.(mp4|webm|ogg|mov|avi)$/i) || resourceType === 'Video';
                 const isAudio = fileUrl.match(/\.(mp3|wav|ogg|m4a)$/i) || resourceType === 'Audio';
                 const isPDF = fileUrl.match(/\.pdf$/i) || resourceType === 'PDF';
-                
+
                 let playerHtml = '';
-                
+
                 if (isVideo) {
                     playerHtml = `
                         <video controls style="width:100%; max-height: 400px;">
@@ -841,7 +850,7 @@
                         </div>
                     `;
                 }
-                
+
                 playerContainer.innerHTML = playerHtml;
             } else {
                 playerContainer.innerHTML = `
@@ -852,43 +861,37 @@
                     </div>
                 `;
             }
-            
+
             document.getElementById('resourceModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         };
 
-        // ==================== CLOSE MODAL ====================
+        // ===== CLOSE MODAL =====
         function closeModal() {
             document.getElementById('resourceModal').classList.remove('active');
             document.body.style.overflow = 'auto';
-            
             const player = document.querySelector('#modalPlayer video, #modalPlayer audio');
-            if (player) {
-                player.pause();
-            }
+            if (player) player.pause();
             document.getElementById('modalPlayer').innerHTML = '';
         }
 
         document.getElementById('resourceModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
+            if (e.target === this) closeModal();
         });
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
+            if (e.key === 'Escape') closeModal();
         });
 
-        // ==================== EVENT LISTENERS ====================
+        // ===== EVENT LISTENERS =====
         document.getElementById('searchInput').addEventListener('input', filterBooks);
         document.getElementById('categoryFilter').addEventListener('change', filterBooks);
         document.getElementById('gradeFilter').addEventListener('change', filterBooks);
         document.getElementById('typeFilter').addEventListener('change', filterBooks);
 
-        // ==================== INITIALIZE ====================
+        // ===== INIT =====
         document.addEventListener('DOMContentLoaded', fetchBooks);
     </script>
+
 </body>
 </html>
