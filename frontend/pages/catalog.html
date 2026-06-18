@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resource Catalog | Online Library Hub</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
-        rel="stylesheet" />
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="../style/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog | Online Library Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
     <style>
         * {
             margin: 0;
@@ -21,632 +17,404 @@
         }
 
         body {
-            font-family: "Inter", sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #f5f7fa;
             color: #1a1a2e;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Navbar */
         .navbar {
             background: white;
-            padding: 1rem 2rem;
             border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
-        .navbar-brand {
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
             font-size: 1.25rem;
-            font-weight: 800;
+            font-weight: 700;
             color: #1a1a2e;
             text-decoration: none;
         }
 
-        .navbar-brand span {
+        .logo a span {
             color: #2563eb;
         }
 
-        .navbar-links {
+        .nav-links {
             display: flex;
-            gap: 1.5rem;
+            list-style: none;
+            gap: 1.75rem;
             align-items: center;
         }
 
-        .navbar-links a {
-            color: #4b5563;
+        .nav-links a {
             text-decoration: none;
+            color: #4a5568;
             font-weight: 500;
             font-size: 0.875rem;
             transition: color 0.2s;
         }
 
-        .navbar-links a:hover {
+        .nav-links a:hover {
             color: #2563eb;
         }
 
-        .navbar-links a.active {
-            color: #2563eb;
-            font-weight: 600;
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
         }
 
-        .btn-login {
+        .btn-outline:hover {
+            background: #eff6ff;
+        }
+
+        .btn-primary-nav {
             background: #2563eb;
             color: white !important;
             padding: 0.5rem 1.25rem;
             border-radius: 0.5rem;
-            transition: background 0.2s;
         }
 
-        .btn-login:hover {
-            background: #1d4ed8 !important;
-            color: white !important;
+        .btn-primary-nav:hover {
+            background: #1d4ed8;
         }
 
-        .catalog-container {
-            max-width: 1200px;
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem 2rem;
+            width: 100%;
         }
 
-        .catalog-header {
+        .page-header {
+            text-align: center;
             margin-bottom: 2rem;
         }
 
-        .catalog-header h1 {
+        .page-header h1 {
             font-size: 2rem;
-            font-weight: 800;
+            font-weight: 700;
             color: #1a1a2e;
             margin-bottom: 0.5rem;
         }
 
-        .catalog-header p {
+        .page-header p {
             color: #64748b;
-            font-size: 1rem;
-        }
-
-        .filters {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-            background: white;
-            padding: 1.25rem;
-            border-radius: 1rem;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .filters input,
-        .filters select {
-            padding: 0.625rem 1rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.5rem;
-            font-family: inherit;
             font-size: 0.875rem;
-            outline: none;
-            transition: border-color 0.2s;
-            flex: 1;
-            min-width: 150px;
-            background: white;
         }
 
-        .filters input:focus,
-        .filters select:focus {
+        /* Filters */
+        .filters-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            margin-bottom: 1rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .resources-grid {
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group select {
+            flex: 1;
+            padding: 0.625rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .results-count {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .catalog-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
         .resource-card {
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            padding: 1.5rem;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
             transition: all 0.2s;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
         .resource-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
 
-        .resource-card .badge {
+        .resource-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-card .category {
             display: inline-block;
+            background: #eff6ff;
+            color: #2563eb;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
         }
 
-        .badge-available {
+        .resource-card .grade {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .resource-card .description {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin: 0.75rem 0;
+            line-height: 1.5;
+        }
+
+        .availability {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+
+        .availability.available {
             background: #ecfdf5;
             color: #047857;
         }
 
-        .badge-unavailable {
+        .availability.unavailable {
             background: #fef2f2;
             color: #b91c1c;
         }
 
-        .resource-card h3 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 0.25rem;
-        }
-
-        .resource-card .author {
-            color: #64748b;
-            font-size: 0.875rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .resource-card .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .resource-card .meta span {
-            background: #f1f5f9;
-            padding: 0.25rem 0.625rem;
-            border-radius: 0.375rem;
+        .view-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            background: #2563eb;
+            color: white !important;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
             font-size: 0.75rem;
-            color: #475569;
-        }
-
-        .resource-card .description {
-            color: #4b5563;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .resource-card .actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .resource-card .actions button {
-            flex: 1;
-            padding: 0.5rem;
-            border: none;
-            border-radius: 0.5rem;
             font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
             transition: all 0.2s;
-        }
-
-        .btn-view {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-view:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-download {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-download:hover {
-            background: #e2e8f0;
-        }
-
-        .loading-spinner {
             text-align: center;
-            padding: 3rem;
-            color: #64748b;
-            grid-column: 1 / -1;
+            width: fit-content;
+            margin-top: 0.25rem;
         }
 
-        .loading-spinner i {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            display: block;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 3rem;
-            color: #64748b;
-            grid-column: 1 / -1;
-        }
-
-        .no-results i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-            color: #cbd5e1;
-        }
-
-        .btn-retry {
-            margin-top: 1rem;
-            padding: 0.625rem 1.25rem;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        .btn-retry:hover {
+        .view-link:hover {
             background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .view-link i {
+            font-size: 0.7rem;
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
         }
 
         @media (max-width: 768px) {
-            .navbar {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
                 flex-direction: column;
+                padding: 1rem;
                 gap: 1rem;
-                padding: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             }
-            .navbar-links {
-                flex-wrap: wrap;
-                justify-content: center;
+
+            .nav-links.active {
+                display: flex;
             }
-            .catalog-container {
-                padding: 1rem;
+
+            main {
+                padding: 1.5rem;
             }
-            .filters {
+
+            .filter-group {
                 flex-direction: column;
             }
-            .filters input,
-            .filters select {
-                width: 100%;
-            }
-            .resources-grid {
+
+            .catalog-container {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
-        <a href="../index.html" class="navbar-brand">Library<span>Hub</span></a>
-        <div class="navbar-links">
-            <a href="../index.html">Home</a>
-            <a href="catalog.html" class="active">Catalog</a>
-            <a href="admin-login.html">Admin</a>
-            <a href="admin-dashboard.html">Dashboard</a>
-            <a href="../index.html#contact">Contact</a>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="../index.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="catalog.html">Catalog</a></li>
+                <li><a href="study-tools.html">Study Tools</a></li>
+                <li><a href="reserve.html">Reserve</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="login.html" class="btn-outline">Sign In</a></li>
+                <li><a href="register.html" class="btn-primary-nav">Join Free</a></li>
+            </ul>
         </div>
     </nav>
 
-    <div class="catalog-container">
-        <!-- Header -->
-        <div class="catalog-header">
-            <h1>📚 Resource Catalog</h1>
+    <main>
+        <div class="page-header">
+            <h1>Resource Catalog</h1>
             <p>Browse our collection of books, e-books, and learning materials</p>
         </div>
 
-        <!-- Filters -->
-        <div class="filters">
-            <input type="text" id="searchInput" placeholder="Search by title or description..." />
-            <select id="categoryFilter">
-                <option value="">All Categories</option>
-                <option value="Fiction">Fiction</option>
-                <option value="Non-Fiction">Non-Fiction</option>
-                <option value="Programming">Programming</option>
-                <option value="History">History</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science</option>
-                <option value="English">English</option>
-                <option value="Arts">Arts</option>
-                <option value="Technology">Technology</option>
-                <option value="Other">Other</option>
-            </select>
-            <select id="gradeFilter">
-                <option value="">All Grade Levels</option>
-                <option value="Grade 8-10">Grade 8-10</option>
-                <option value="Grade 9-11">Grade 9-11</option>
-                <option value="Grade 9-12">Grade 9-12</option>
-                <option value="Grade 10-12">Grade 10-12</option>
-                <option value="Grade 11-12">Grade 11-12</option>
-                <option value="College">College</option>
-                <option value="University">University</option>
-                <option value="Other">Other</option>
-            </select>
-            <select id="typeFilter">
-                <option value="">All Types</option>
-                <option value="Book">Book</option>
-                <option value="E-Book">E-Book</option>
-                <option value="Textbook">Textbook</option>
-                <option value="Reference">Reference</option>
-                <option value="Lab Manual">Lab Manual</option>
-                <option value="Video">Video</option>
-                <option value="Audio">Audio</option>
-                <option value="Course">Course</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-
-        <!-- Resources Grid -->
-        <div class="resources-grid" id="resourcesGrid">
-            <div class="loading-spinner">
-                <i class="fas fa-spinner"></i>
-                <p>Loading resources...</p>
+        <div class="filters-card">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search by title or description...">
+            </div>
+            <div class="filter-group">
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Programming">Programming</option>
+                    <option value="History">History</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="English">English</option>
+                    <option value="Arts">Arts</option>
+                </select>
+                <select id="grade-filter">
+                    <option value="all">All Grade Levels</option>
+                    <option value="Grade 8-10">Grade 8-10</option>
+                    <option value="Grade 9-11">Grade 9-11</option>
+                    <option value="Grade 9-12">Grade 9-12</option>
+                    <option value="Grade 10-12">Grade 10-12</option>
+                    <option value="Grade 11-12">Grade 11-12</option>
+                </select>
+                <select id="type-filter">
+                    <option value="all">All Types</option>
+                    <option value="Book">Book</option>
+                    <option value="E-Book">E-Book</option>
+                    <option value="Textbook">Textbook</option>
+                    <option value="Reference">Reference</option>
+                    <option value="Lab Manual">Lab Manual</option>
+                    <option value="Video">Video</option>
+                </select>
             </div>
         </div>
-    </div>
 
-    <script src="../scripts/api-config.js"></script>
-    <script>
-        // Get API base URL from config or use default
-        const API_BASE = window.API_BASE || 'https://online-library-hub.onrender.com/api';
-        let allResources = [];
-        let filteredResources = [];
+        <div class="results-count" id="resultsCount"></div>
+        <div class="catalog-container" id="catalog-container">
+            <div class="loading">Loading resources...</div>
+        </div>
+    </main>
 
-        // ==================== FETCH RESOURCES FROM DATABASE ====================
-        async function fetchResources() {
-            const grid = document.getElementById('resourcesGrid');
-            grid.innerHTML = `
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner"></i>
-                    <p>Loading resources...</p>
-                </div>
-            `;
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
 
-            try {
-                console.log('📡 Fetching resources from:', `${API_BASE}/catalog`);
-                
-                const response = await fetch(`${API_BASE}/catalog`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                console.log('📨 Response status:', response.status);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('📦 Raw data from server:', data);
-
-                // ===== FIX: Handle different response formats =====
-                let resources = [];
-
-                if (data && data.success && data.books) {
-                    // Format: { success: true, books: [...] }
-                    resources = data.books;
-                    console.log('📚 Found books in data.books:', resources.length);
-                } else if (data && data.success && data.resources) {
-                    // Format: { success: true, resources: [...] }
-                    resources = data.resources;
-                    console.log('📚 Found resources in data.resources:', resources.length);
-                } else if (data && Array.isArray(data)) {
-                    // Format: direct array
-                    resources = data;
-                    console.log('📚 Direct array:', resources.length);
-                } else if (data && data.success && data.data && Array.isArray(data.data)) {
-                    // Format: { success: true, data: [...] }
-                    resources = data.data;
-                    console.log('📚 Found in data.data:', resources.length);
-                } else {
-                    // Try to extract any array from the response
-                    for (const key in data) {
-                        if (Array.isArray(data[key])) {
-                            resources = data[key];
-                            console.log(`📚 Found array in data.${key}:`, resources.length);
-                            break;
-                        }
-                    }
-                }
-
-                // Ensure resources is an array
-                if (!Array.isArray(resources)) {
-                    console.warn('⚠️ Resources is not an array, converting to empty array');
-                    resources = [];
-                }
-
-                allResources = resources;
-                filteredResources = [...allResources];
-
-                console.log('✅ Total resources loaded:', allResources.length);
-                
-                if (allResources.length === 0) {
-                    grid.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-book-open"></i>
-                            <h3>No Resources Found</h3>
-                            <p>No resources available in the catalog yet.</p>
-                            <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">
-                                Check back later or contact the administrator.
-                            </p>
-                        </div>
-                    `;
-                } else {
-                    renderResources(allResources);
-                }
-
-            } catch (error) {
-                console.error('❌ Error fetching resources:', error);
-                console.error('Error details:', error.message);
-                
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Error Loading Resources</h3>
-                        <p>${error.message || 'Please try again later.'}</p>
-                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">
-                            Make sure the backend server is running.
-                        </p>
-                        <button class="btn-retry" onclick="fetchResources()">
-                            <i class="fas fa-redo"></i> Retry
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        // ==================== RENDER RESOURCES ====================
-        function renderResources(resources) {
-            const grid = document.getElementById('resourcesGrid');
-
-            if (!resources || !Array.isArray(resources) || resources.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-book-open"></i>
-                        <h3>No Resources Found</h3>
-                        <p>No resources match your search criteria.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = resources.map(resource => {
-                // Handle both _id and id
-                const resourceId = resource._id || resource.id || '';
-                
-                // Safely get values with fallbacks
-                const title = resource.title || 'Untitled';
-                const author = resource.author || 'Unknown Author';
-                const category = resource.category || 'Uncategorized';
-                const gradeLevel = resource.grade_level || 'All Levels';
-                const resourceType = resource.resource_type || 'Other';
-                const description = resource.description || 'No description available.';
-                const isAvailable = resource.available !== false;
-                
-                const statusBadge = isAvailable 
-                    ? '<span class="badge badge-available">✅ Available</span>'
-                    : '<span class="badge badge-unavailable">❌ Unavailable</span>';
-
-                return `
-                    <div class="resource-card">
-                        ${statusBadge}
-                        <h3>${escapeHtml(title)}</h3>
-                        <div class="author">✍️ ${escapeHtml(author)}</div>
-                        <div class="meta">
-                            <span>📂 ${escapeHtml(category)}</span>
-                            <span>📚 ${escapeHtml(gradeLevel)}</span>
-                            <span>📖 ${escapeHtml(resourceType)}</span>
-                        </div>
-                        <div class="description">${escapeHtml(description)}</div>
-                        <div class="actions">
-                            <button class="btn-view" onclick="viewResource('${resourceId}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="btn-download" onclick="downloadResource('${resourceId}')">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ==================== FILTER RESOURCES ====================
-        function filterResources() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-            const category = document.getElementById('categoryFilter').value;
-            const grade = document.getElementById('gradeFilter').value;
-            const type = document.getElementById('typeFilter').value;
-
-            filteredResources = allResources.filter(resource => {
-                let matchesSearch = true;
-                if (searchTerm) {
-                    matchesSearch = 
-                        (resource.title || '').toLowerCase().includes(searchTerm) ||
-                        (resource.description || '').toLowerCase().includes(searchTerm) ||
-                        (resource.author || '').toLowerCase().includes(searchTerm);
-                }
-
-                let matchesCategory = true;
-                if (category) {
-                    matchesCategory = (resource.category || '') === category;
-                }
-
-                let matchesGrade = true;
-                if (grade) {
-                    matchesGrade = (resource.grade_level || '') === grade;
-                }
-
-                let matchesType = true;
-                if (type) {
-                    matchesType = (resource.resource_type || '') === type;
-                }
-
-                return matchesSearch && matchesCategory && matchesGrade && matchesType;
-            });
-
-            renderResources(filteredResources);
-        }
-
-        // ==================== VIEW RESOURCE ====================
-        window.viewResource = function(id) {
-            const resource = allResources.find(r => (r._id || r.id) === id);
-            if (resource) {
-                alert(`📖 ${resource.title || 'Untitled'}\n\n✍️ Author: ${resource.author || 'Unknown'}\n📂 Category: ${resource.category || 'Uncategorized'}\n📚 Grade Level: ${resource.grade_level || 'All Levels'}\n📖 Type: ${resource.resource_type || 'Other'}\n\n📝 Description:\n${resource.description || 'No description available.'}`);
-            } else {
-                alert('Resource not found.');
-            }
-        };
-
-        // ==================== DOWNLOAD RESOURCE ====================
-        window.downloadResource = function(id) {
-            const resource = allResources.find(r => (r._id || r.id) === id);
-            if (resource && resource.fileUrl) {
-                window.open(resource.fileUrl, '_blank');
-            } else if (resource && resource.fileUrl === '') {
-                alert('This resource does not have a file available for download.');
-            } else {
-                alert('Download URL not available for this resource.');
-            }
-        };
-
-        // ==================== ESCAPE HTML ====================
-        function escapeHtml(str) {
-            if (!str) return '';
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        // ==================== EVENT LISTENERS ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up filter event listeners
-            document.getElementById('searchInput').addEventListener('input', filterResources);
-            document.getElementById('categoryFilter').addEventListener('change', filterResources);
-            document.getElementById('gradeFilter').addEventListener('change', filterResources);
-            document.getElementById('typeFilter').addEventListener('change', filterResources);
-            
-            // Load resources
-            fetchResources();
-        });
-
-        // Make fetchResources available globally for retry button
-        window.fetchResources = fetchResources;
-    </script>
+    <script src="/scripts/api-config.js"></script>
+    <script src="../scripts/main.js"></script>
+    <script src="../scripts/catalog.js"></script>
 </body>
 </html>
