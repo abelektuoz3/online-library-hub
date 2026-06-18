@@ -1,33 +1,35 @@
-# frontend/netlify.toml
-
 [build]
-  publish = "."
+  publish = "frontend"
+  command = "echo 'Building...'"
 
-# Redirect all 404s to index.html for SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# API redirects to your Render backend
+[[redirects]]
+  from = "/admin-dashboard"
+  to = "/admin-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin-login"
+  to = "/admin-login.html"
+  status = 200
+
+[[redirects]]
+  from = "/catalog"
+  to = "/catalog.html"
+  status = 200
+
+[[redirects]]
+  from = "/auth-success"
+  to = "/auth-success.html"
+  status = 200
+
+# For API routes - don't redirect these
 [[redirects]]
   from = "/api/*"
   to = "https://online-library-hub.onrender.com/api/:splat"
   status = 200
   force = true
-
-# OAuth redirects to Render backend
-[[redirects]]
-  from = "/auth/*"
-  to = "https://online-library-hub.onrender.com/auth/:splat"
-  status = 200
-  force = true
-
-# Headers for security and CORS
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "no-referrer-when-downgrade"

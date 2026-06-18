@@ -1,10 +1,10 @@
-# frontend/_redirects
+# Redirect all 404s to index.html (for SPA routing)
+/*  /index.html  200
 
-# API redirects to Render
-/api/* https://online-library-hub.onrender.com/api/:splat 200
+# Redirect old admin paths
+/admin-dashboard.html  /admin-dashboard.html  200
+/admin-login.html  /admin-login.html  200
+/catalog.html  /catalog.html  200
 
-# OAuth redirects to Render
-/auth/* https://online-library-hub.onrender.com/auth/:splat 200
-
-# SPA routing - all routes go to index.html
-/* /index.html 200
+# Redirect root to index.html
+/  /index.html  200
