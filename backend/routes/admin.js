@@ -140,6 +140,7 @@ router.get('/verify', authMiddleware, async (req, res) => {
 router.get('/resources', authMiddleware, async (req, res) => {
     try {
         const resources = await Book.find().sort({ createdAt: -1 });
+        console.log('📚 Found resources:', resources.length);
         res.json({ success: true, resources });
     } catch (error) {
         console.error('Error fetching resources:', error);
@@ -180,7 +181,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource
+// POST new resource - FIXED
 router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         console.log('📝 Creating new resource...');
@@ -214,6 +215,7 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             coverImage = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
+        // Create new resource
         const newResource = new Book({
             title: title.trim(),
             author: 'Admin Upload',
@@ -221,9 +223,9 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             category: category || 'Other',
             grade_level: grade_level || 'Other',
             resource_type: resource_type || 'Other',
-            available: available === 'true' || available === true || true,
+            available: true,
             coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
-            fileUrl: fileUrl || 'https://example.com/sample.pdf',
+            fileUrl: fileUrl || '',
             price: 0,
             pages: null,
             publisher: 'Online Library Hub',

@@ -8,42 +8,39 @@ const BookSchema = new mongoose.Schema({
     },
     author: {
         type: String,
-        required: [true, 'Author is required'],
+        default: 'Admin Upload',
         trim: true,
     },
     description: {
         type: String,
-        required: [true, 'Description is required'],
+        default: 'No description provided',
     },
     category: {
         type: String,
-        enum: ['Fiction', 'Non-Fiction', 'Science', 'History', 'Biography', 'Fantasy', 'Mystery', 'Romance', 'Thriller', 'Poetry', 'Drama', 'Religion', 'Self-Help', 'Technology', 'Travel', 'Other', 'Programming', 'Mathematics', 'English', 'Arts'],
+        enum: ['Fiction', 'Non-Fiction', 'Programming', 'History', 'Mathematics', 'Science', 'English', 'Arts', 'Technology', 'Other'],
         default: 'Other',
     },
-    // Grade Level field
     grade_level: {
         type: String,
         enum: ['Grade 8-10', 'Grade 9-11', 'Grade 9-12', 'Grade 10-12', 'Grade 11-12', 'College', 'University', 'Other'],
         default: 'Other',
     },
-    // Resource Type field
     resource_type: {
         type: String,
         enum: ['Book', 'E-Book', 'Textbook', 'Reference', 'Lab Manual', 'Video', 'Audio', 'Course', 'Other'],
         default: 'Other',
     },
-    // Availability status
     available: {
         type: Boolean,
         default: true,
     },
     coverImage: {
         type: String,
-        required: [true, 'Cover image is required'],
+        default: 'https://via.placeholder.com/300x400?text=No+Cover',
     },
     fileUrl: {
         type: String,
-        required: [true, 'File URL is required'],
+        default: '',
     },
     price: {
         type: Number,
@@ -52,18 +49,14 @@ const BookSchema = new mongoose.Schema({
     },
     pages: {
         type: Number,
-        min: 1,
         default: null,
     },
     publisher: {
         type: String,
-        trim: true,
-        default: '',
+        default: 'Online Library Hub',
     },
     publicationYear: {
         type: Number,
-        min: 1000,
-        max: new Date().getFullYear(),
         default: null,
     },
     language: {
@@ -72,7 +65,6 @@ const BookSchema = new mongoose.Schema({
     },
     isbn: {
         type: String,
-        trim: true,
         default: '',
     },
     views: {
@@ -108,7 +100,6 @@ const BookSchema = new mongoose.Schema({
     }
 });
 
-// Update the updatedAt timestamp on save
 BookSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
     next();

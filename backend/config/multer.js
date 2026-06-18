@@ -8,7 +8,6 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, uploadDir);
@@ -16,11 +15,10 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+        cb(null, 'resource-' + uniqueSuffix + ext);
     }
 });
 
-// File filter
 const fileFilter = (req, file, cb) => {
     const allowedTypes = [
         'application/pdf',
@@ -32,14 +30,13 @@ const fileFilter = (req, file, cb) => {
         'audio/ogg'
     ];
     
-    if (allowedTypes.includes(file.mimetype)) {
+    if (allowedTypes.includes(file.mimetype) || file.mimetype.startsWith('video/')) {
         cb(null, true);
     } else {
         cb(new Error('Invalid file type. Only PDF, video, and audio files are allowed.'), false);
     }
 };
 
-// Create multer instance
 const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
