@@ -27,6 +27,7 @@
             min-height: 100vh;
         }
 
+        /* Navbar - Original Style */
         .navbar {
             background: white;
             padding: 1rem 2rem;
@@ -74,6 +75,20 @@
             font-weight: 600;
         }
 
+        .btn-login {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background: #1d4ed8 !important;
+            color: white !important;
+        }
+
+        /* Catalog Container - Original Style */
         .catalog-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -96,6 +111,7 @@
             font-size: 1rem;
         }
 
+        /* Filters - Original Style */
         .filters {
             display: flex;
             gap: 1rem;
@@ -128,6 +144,7 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
+        /* Resources Grid - Original Style */
         .resources-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -148,6 +165,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
+        /* Thumbnail - Original Style with Color based on type */
         .resource-thumbnail {
             height: 160px;
             display: flex;
@@ -161,38 +179,6 @@
             font-size: 3rem;
             color: white;
             opacity: 0.8;
-        }
-
-        .resource-thumbnail .play-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .resource-thumbnail:hover .play-overlay {
-            opacity: 1;
-        }
-
-        .resource-thumbnail .play-button {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2563eb;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .resource-thumbnail .play-button:hover {
-            transform: scale(1.1);
         }
 
         .resource-thumbnail .badge {
@@ -360,7 +346,7 @@
             background: #1d4ed8;
         }
 
-        /* Modal */
+        /* Modal - Original Style */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -513,14 +499,14 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- Navbar - Original Style -->
     <nav class="navbar">
         <a href="../index.html" class="navbar-brand">Library<span>Hub</span></a>
         <div class="navbar-links">
             <a href="../index.html">Home</a>
             <a href="catalog.html" class="active">Catalog</a>
             <a href="admin/admin-dashboard.html">Admin</a>
-            <a href="../index.html#contact">Contact</a>
+            <a href="admin/admin-dashboard.html" class="btn-login">Dashboard</a>
         </div>
     </nav>
 
@@ -661,7 +647,6 @@
                 const data = await response.json();
                 console.log('📦 Data from server:', data);
 
-                // Extract books from response
                 let books = [];
                 if (data.success && data.books) {
                     books = data.books;
@@ -722,11 +707,6 @@
                     <div class="resource-card">
                         <div class="resource-thumbnail" style="background: ${bgColor}" onclick="viewBook('${bookId}')">
                             <i class="fas ${icon}"></i>
-                            <div class="play-overlay">
-                                <div class="play-button">
-                                    <i class="fas fa-play"></i>
-                                </div>
-                            </div>
                             <span class="type-badge ${badgeClass}">${resourceType}</span>
                             <span class="badge">${isAvailable ? '✅ Available' : '❌ Unavailable'}</span>
                         </div>
