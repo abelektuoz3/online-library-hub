@@ -225,54 +225,6 @@
             background: #1d4ed8;
         }
 
-        .btn-sm {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-sm:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-sm-danger {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-sm-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-sm-success {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-sm-success:hover {
-            background: #059669;
-        }
-
         .table-responsive {
             overflow-x: auto;
             margin: 0 -1.5rem -1.5rem -1.5rem;
@@ -342,14 +294,19 @@
             font-weight: 600;
         }
 
-        .badge-book {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .badge-course {
+        .badge-video {
             background: #fce7f3;
             color: #be185d;
+        }
+
+        .badge-pdf {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-audio {
+            background: #dbeafe;
+            color: #1d4ed8;
         }
 
         .btn-icon {
@@ -394,7 +351,7 @@
             background: white;
             border-radius: 1rem;
             padding: 2rem;
-            max-width: 700px;
+            max-width: 550px;
             width: 90%;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
@@ -443,6 +400,40 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
+        }
+
+        .modal-content .file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content .file-upload-area:hover {
+            border-color: #2563eb;
+            background: #f8fafc;
+        }
+
+        .modal-content .file-upload-area i {
+            font-size: 2rem;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content .file-upload-area p {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .modal-content .file-upload-area .file-name {
+            color: #2563eb;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: none;
         }
 
         .modal-buttons {
@@ -495,34 +486,6 @@
             margin-bottom: 1rem;
             display: block;
             color: #cbd5e1;
-        }
-
-        .module-item {
-            background: #f8fafc;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .module-item .module-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .module-item .module-title {
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .module-item .lesson-item {
-            padding: 0.25rem 0.5rem;
-            margin-left: 1rem;
-            font-size: 0.813rem;
-            color: #475569;
-            border-left: 2px solid #2563eb;
-            margin-top: 0.25rem;
         }
 
         @media (max-width: 992px) {
@@ -612,7 +575,7 @@
             <div class="top-bar">
                 <div class="page-title">
                     <h1>Resources</h1>
-                    <p>Manage your library resources and courses</p>
+                    <p>Upload and manage your library files</p>
                 </div>
                 <div class="user-info">
                     <span id="adminName">Admin</span>
@@ -630,7 +593,7 @@
                         <h3>All Resources</h3>
                     </div>
                     <button class="btn-add" id="addResourceBtn">
-                        <i class="fas fa-plus"></i> Add Resource
+                        <i class="fas fa-plus"></i> Upload Resource
                     </button>
                 </div>
                 <div class="table-responsive">
@@ -658,17 +621,11 @@
         </main>
     </div>
 
-    <!-- Add/Edit Resource Modal -->
+    <!-- Upload Resource Modal -->
     <div id="resourceModal" class="modal">
         <div class="modal-content">
-            <h3 id="modalTitle">Add Resource</h3>
+            <h3 id="modalTitle">Upload Resource</h3>
             
-            <label>Resource Type *</label>
-            <select id="resourceTypeSelector">
-                <option value="book">📚 Book / Resource</option>
-                <option value="course">🎓 Course</option>
-            </select>
-
             <input type="text" id="resourceTitle" placeholder="Title *" />
             
             <div class="form-row">
@@ -704,47 +661,33 @@
                 </div>
             </div>
 
-            <label>Resource Type Detail *</label>
+            <label>Resource Type *</label>
             <select id="resourceType">
                 <option value="">Select Resource Type *</option>
-                <option value="Book">Book</option>
-                <option value="E-Book">E-Book</option>
-                <option value="Textbook">Textbook</option>
-                <option value="Reference">Reference</option>
-                <option value="Lab Manual">Lab Manual</option>
-                <option value="Video">Video</option>
-                <option value="Audio">Audio</option>
-                <option value="Course">Course</option>
-                <option value="Other">Other</option>
+                <option value="Video">🎬 Video</option>
+                <option value="PDF">📄 PDF Document</option>
+                <option value="Audio">🎵 Audio</option>
+                <option value="Book">📚 Book</option>
+                <option value="E-Book">📖 E-Book</option>
+                <option value="Other">📁 Other</option>
             </select>
 
             <textarea id="resourceDesc" placeholder="Description" rows="3"></textarea>
             
-            <label>Upload File (PDF, Video, Audio)</label>
-            <input type="file" id="resourceFile" accept="application/pdf,video/*,audio/*" style="margin-bottom: 1rem" />
-            
-            <!-- Course Content Section -->
-            <div id="courseContentSection" style="display: none;">
-                <hr style="margin: 1rem 0; border-color: #e2e8f0;" />
-                <h4 style="font-weight: 600; color: #1a1a2e; margin-bottom: 0.5rem;">
-                    <i class="fas fa-graduation-cap"></i> Course Content
-                </h4>
-                <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem;">
-                    Add modules and lessons for your course
+            <label>Upload File *</label>
+            <div class="file-upload-area" id="fileUploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click to upload or drag and drop</p>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
+                    Supported: PDF, MP4, MP3, WAV, MOV
                 </p>
-                
-                <div id="modulesContainer">
-                    <!-- Modules will be added here -->
-                </div>
-                
-                <button class="btn-sm" onclick="addModule()" style="margin-top: 0.5rem;">
-                    <i class="fas fa-plus"></i> Add Module
-                </button>
+                <div class="file-name" id="fileName"></div>
             </div>
+            <input type="file" id="resourceFile" accept="application/pdf,video/*,audio/*" style="display: none;" />
             
             <div class="modal-buttons">
                 <button class="btn-secondary" id="closeModalBtn">Cancel</button>
-                <button class="btn-primary" id="saveResourceBtn">Save</button>
+                <button class="btn-primary" id="saveResourceBtn">Upload</button>
             </div>
         </div>
     </div>
@@ -753,7 +696,7 @@
     <script>
         const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
         let editingResourceId = null;
-        let modules = [];
+        let selectedFile = null;
 
         function getToken() {
             return localStorage.getItem("adminToken");
@@ -781,116 +724,67 @@
             });
         }
 
-        // ==================== MODULE MANAGEMENT ====================
-        function addModule(title = '', description = '', lessons = []) {
-            const container = document.getElementById('modulesContainer');
-            const moduleId = Date.now() + Math.random();
-            
-            const moduleDiv = document.createElement('div');
-            moduleDiv.className = 'module-item';
-            moduleDiv.id = `module-${moduleId}`;
-            moduleDiv.innerHTML = `
-                <div class="module-header">
-                    <span class="module-title">${title || 'New Module'}</span>
-                    <div>
-                        <button class="btn-sm" onclick="editModule('${moduleId}')" style="margin-right: 0.25rem;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-sm-danger" onclick="removeModule('${moduleId}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="lessons-${moduleId}">
-                    ${lessons.map((l, i) => `
-                        <div class="lesson-item">
-                            <i class="fas fa-play" style="color: #2563eb; margin-right: 0.5rem;"></i>
-                            ${escapeHtml(l.title)}
-                            ${l.duration ? ` (${l.duration})` : ''}
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="btn-sm btn-sm-success" onclick="addLesson('${moduleId}')" style="margin-top: 0.25rem; font-size: 0.7rem;">
-                    <i class="fas fa-plus"></i> Add Lesson
-                </button>
-                <input type="hidden" name="module_data" value='${JSON.stringify({ title, description, lessons })}' />
-            `;
-            
-            container.appendChild(moduleDiv);
-            
-            // Store module data
-            const moduleData = { id: moduleId, title, description, lessons };
-            modules.push(moduleData);
-            
-            // Update hidden input for form submission
-            updateModulesInput();
+        function getFileTypeBadge(type) {
+            const typeMap = {
+                'Video': 'badge-video',
+                'PDF': 'badge-pdf',
+                'Audio': 'badge-audio'
+            };
+            return typeMap[type] || 'badge-video';
         }
 
-        function removeModule(moduleId) {
-            if (!confirm('Remove this module?')) return;
-            const element = document.getElementById(`module-${moduleId}`);
-            if (element) element.remove();
-            modules = modules.filter(m => m.id !== moduleId);
-            updateModulesInput();
+        function getFileIcon(type) {
+            const iconMap = {
+                'Video': 'fa-video',
+                'PDF': 'fa-file-pdf',
+                'Audio': 'fa-music',
+                'Book': 'fa-book',
+                'E-Book': 'fa-book-open',
+                'Other': 'fa-file'
+            };
+            return iconMap[type] || 'fa-file';
         }
 
-        function editModule(moduleId) {
-            const moduleData = modules.find(m => m.id === moduleId);
-            if (!moduleData) return;
-            
-            const newTitle = prompt('Module Title:', moduleData.title || '');
-            if (newTitle !== null) {
-                moduleData.title = newTitle;
-                const element = document.getElementById(`module-${moduleId}`);
-                if (element) {
-                    element.querySelector('.module-title').textContent = newTitle || 'New Module';
-                }
-                updateModulesInput();
-            }
-        }
+        // ==================== FILE UPLOAD HANDLER ====================
+        document.getElementById('fileUploadArea').addEventListener('click', function() {
+            document.getElementById('resourceFile').click();
+        });
 
-        function addLesson(moduleId) {
-            const moduleData = modules.find(m => m.id === moduleId);
-            if (!moduleData) return;
-            
-            const title = prompt('Lesson Title:');
-            if (!title) return;
-            
-            const duration = prompt('Duration (e.g., 10:30):', '10:00') || '10:00';
-            
-            const lesson = { title, duration, isFree: false };
-            moduleData.lessons.push(lesson);
-            
-            // Update UI
-            const container = document.getElementById(`lessons-${moduleId}`);
-            if (container) {
-                const lessonDiv = document.createElement('div');
-                lessonDiv.className = 'lesson-item';
-                lessonDiv.innerHTML = `
-                    <i class="fas fa-play" style="color: #2563eb; margin-right: 0.5rem;"></i>
-                    ${escapeHtml(title)}
-                    ${duration ? ` (${duration})` : ''}
-                `;
-                container.appendChild(lessonDiv);
-            }
-            
-            updateModulesInput();
-        }
+        document.getElementById('fileUploadArea').addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#2563eb';
+            this.style.background = '#f8fafc';
+        });
 
-        function updateModulesInput() {
-            // The modules will be sent as JSON in the form data
-            // We'll handle this in the save function
-        }
+        document.getElementById('fileUploadArea').addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#cbd5e1';
+            this.style.background = 'transparent';
+        });
 
-        // ==================== RESOURCE TYPE TOGGLE ====================
-        document.getElementById('resourceTypeSelector').addEventListener('change', function() {
-            const isCourse = this.value === 'course';
-            document.getElementById('courseContentSection').style.display = isCourse ? 'block' : 'none';
-            if (!isCourse) {
-                modules = [];
-                document.getElementById('modulesContainer').innerHTML = '';
+        document.getElementById('fileUploadArea').addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#cbd5e1';
+            this.style.background = 'transparent';
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                document.getElementById('resourceFile').files = e.dataTransfer.files;
+                handleFileSelect(file);
             }
         });
+
+        document.getElementById('resourceFile').addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleFileSelect(this.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            const fileName = document.getElementById('fileName');
+            fileName.textContent = `📎 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            fileName.style.display = 'block';
+        }
 
         // ==================== CHECK ADMIN ACCESS ====================
         async function checkAdminAccess() {
@@ -942,19 +836,15 @@
                                 ? '<span class="status-badge status-approved">✅ Available</span>' 
                                 : '<span class="status-badge status-suspended">❌ Unavailable</span>';
                             
-                            const isCourse = r.resourceType === 'course';
-                            const typeBadge = isCourse 
-                                ? '<span class="badge-type badge-course">🎓 Course</span>'
-                                : '<span class="badge-type badge-book">📚 Book</span>';
-                            
-                            const gradeDisplay = r.grade_level || r.grade || 'N/A';
+                            const typeClass = getFileTypeBadge(r.resource_type);
+                            const icon = getFileIcon(r.resource_type);
                             
                             return `
                                 <tr>
                                     <td><strong>${escapeHtml(r.title)}</strong></td>
-                                    <td>${typeBadge}</td>
+                                    <td><span class="badge-type ${typeClass}"><i class="fas ${icon}"></i> ${escapeHtml(r.resource_type || 'Other')}</span></td>
                                     <td>${escapeHtml(r.category || "-")}</td>
-                                    <td>${escapeHtml(gradeDisplay)}</td>
+                                    <td>${escapeHtml(r.grade_level || 'N/A')}</td>
                                     <td>${statusHtml}</td>
                                     <td>
                                         <button class="btn-icon" onclick="editResource('${resourceId}')" title="Edit resource"><i class="fas fa-edit"></i></button>
@@ -969,8 +859,11 @@
                         <tr>
                             <td colspan="6">
                                 <div class="empty-state">
-                                    <i class="fas fa-book-open"></i>
-                                    <p>No resources found. Click "Add Resource" to get started.</p>
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>No resources uploaded yet.</p>
+                                    <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">
+                                        Click "Upload Resource" to add your first file.
+                                    </p>
                                 </div>
                             </td>
                         </tr>
@@ -1004,67 +897,14 @@
                 if (data.success && data.resource) {
                     document.getElementById("resourceTitle").value = data.resource.title || "";
                     document.getElementById("resourceCategory").value = data.resource.category || "";
-                    document.getElementById("resourceGrade").value = data.resource.grade_level || data.resource.grade || "";
-                    document.getElementById("resourceType").value = data.resource.resource_type || data.resource.type || "";
+                    document.getElementById("resourceGrade").value = data.resource.grade_level || "";
+                    document.getElementById("resourceType").value = data.resource.resource_type || "";
                     document.getElementById("resourceDesc").value = data.resource.description || "";
-                    
-                    const resourceType = data.resourceType || 'book';
-                    document.getElementById("resourceTypeSelector").value = resourceType;
-                    
-                    // If course, show content section and load modules
-                    if (resourceType === 'course' && data.resource.modules) {
-                        document.getElementById('courseContentSection').style.display = 'block';
-                        modules = data.resource.modules.map(m => ({
-                            id: Date.now() + Math.random(),
-                            title: m.title,
-                            description: m.description || '',
-                            lessons: m.lessons || []
-                        }));
-                        renderModules();
-                    }
                 }
             } catch (err) {
                 console.error("Error fetching resource details:", err);
                 alert("Error loading resource details. Please try again.");
             }
-        }
-
-        function renderModules() {
-            const container = document.getElementById('modulesContainer');
-            container.innerHTML = '';
-            modules.forEach(m => {
-                const moduleId = m.id || Date.now() + Math.random();
-                m.id = moduleId;
-                const moduleDiv = document.createElement('div');
-                moduleDiv.className = 'module-item';
-                moduleDiv.id = `module-${moduleId}`;
-                moduleDiv.innerHTML = `
-                    <div class="module-header">
-                        <span class="module-title">${escapeHtml(m.title || 'New Module')}</span>
-                        <div>
-                            <button class="btn-sm" onclick="editModule('${moduleId}')" style="margin-right: 0.25rem;">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-sm-danger" onclick="removeModule('${moduleId}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="lessons-${moduleId}">
-                        ${(m.lessons || []).map(l => `
-                            <div class="lesson-item">
-                                <i class="fas fa-play" style="color: #2563eb; margin-right: 0.5rem;"></i>
-                                ${escapeHtml(l.title)}
-                                ${l.duration ? ` (${l.duration})` : ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button class="btn-sm btn-sm-success" onclick="addLesson('${moduleId}')" style="margin-top: 0.25rem; font-size: 0.7rem;">
-                        <i class="fas fa-plus"></i> Add Lesson
-                    </button>
-                `;
-                container.appendChild(moduleDiv);
-            });
         }
 
         // ==================== DELETE RESOURCE ====================
@@ -1103,15 +943,21 @@
                 return;
             }
 
-            const resourceType = document.getElementById("resourceTypeSelector").value;
             const title = document.getElementById("resourceTitle").value.trim();
             const category = document.getElementById("resourceCategory").value;
             const gradeLevel = document.getElementById("resourceGrade").value;
-            const resourceTypeDetail = document.getElementById("resourceType").value;
+            const resourceType = document.getElementById("resourceType").value;
             const description = document.getElementById("resourceDesc").value.trim();
 
-            if (!title || !category || !gradeLevel || !resourceTypeDetail) {
+            if (!title || !category || !gradeLevel || !resourceType) {
                 alert("Please fill in all required fields.");
+                return;
+            }
+
+            // Check if file is selected (for new uploads)
+            const fileInput = document.getElementById("resourceFile");
+            if (!editingResourceId && (!fileInput.files || fileInput.files.length === 0)) {
+                alert("Please select a file to upload.");
                 return;
             }
 
@@ -1119,29 +965,11 @@
             formData.append("title", title);
             formData.append("category", category);
             formData.append("grade_level", gradeLevel);
-            formData.append("resource_type", resourceTypeDetail);
+            formData.append("resource_type", resourceType);
             formData.append("description", description);
             formData.append("available", "true");
-            formData.append("resourceType", resourceType);
 
-            // If course, add modules
-            if (resourceType === 'course') {
-                const courseModules = modules.map(m => ({
-                    title: m.title || 'Module',
-                    description: m.description || '',
-                    lessons: (m.lessons || []).map(l => ({
-                        title: l.title,
-                        description: l.description || '',
-                        duration: l.duration || '10:00',
-                        isFree: false
-                    }))
-                }));
-                formData.append("modules", JSON.stringify(courseModules));
-                formData.append("totalLessons", courseModules.reduce((sum, m) => sum + m.lessons.length, 0));
-            }
-
-            const fileInput = document.getElementById("resourceFile");
-            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            if (fileInput.files && fileInput.files.length > 0) {
                 formData.append("file", fileInput.files[0]);
             }
 
@@ -1192,13 +1020,13 @@
             document.getElementById("resourceGrade").value = "";
             document.getElementById("resourceType").value = "";
             document.getElementById("resourceDesc").value = "";
-            document.getElementById("resourceTypeSelector").value = "book";
-            document.getElementById("courseContentSection").style.display = "none";
-            modules = [];
-            document.getElementById("modulesContainer").innerHTML = "";
-            const fileInput = document.getElementById("resourceFile");
-            if (fileInput) fileInput.value = "";
-            document.getElementById("modalTitle").textContent = "Add Resource";
+            document.getElementById("resourceFile").value = "";
+            document.getElementById("fileName").style.display = 'none';
+            document.getElementById("fileName").textContent = '';
+            selectedFile = null;
+            document.getElementById("modalTitle").textContent = "Upload Resource";
+            document.getElementById("fileUploadArea").style.borderColor = '#cbd5e1';
+            document.getElementById("fileUploadArea").style.background = 'transparent';
         }
 
         // ==================== EVENT LISTENERS ====================
@@ -1211,7 +1039,7 @@
 
         document.getElementById("addResourceBtn").addEventListener("click", () => {
             editingResourceId = null;
-            document.getElementById("modalTitle").textContent = "Add Resource";
+            document.getElementById("modalTitle").textContent = "Upload Resource";
             document.getElementById("resourceModal").classList.add("active");
         });
 

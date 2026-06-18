@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const Admin = require('../models/Admin');
 const User = require('../models/User');
 const Book = require('../models/Book');
-const Course = require('../models/Course');
 const Announcement = require('../models/Announcement');
 const upload = require('../config/multer');
 
@@ -135,46 +134,12 @@ router.get('/verify', authMiddleware, async (req, res) => {
     }
 });
 
-// ==================== RESOURCE ROUTES (Books + Courses) ====================
+// ==================== RESOURCE ROUTES ====================
 
-// GET all resources (both books and courses)
+// GET all resources (books with files)
 router.get('/resources', authMiddleware, async (req, res) => {
     try {
-        console.log('📚 Fetching all resources...');
-        
-        const [books, courses] = await Promise.all([
-            Book.find().sort({ createdAt: -1 }).lean(),
-            Course.find().sort({ createdAt: -1 }).lean()
-        ]);
-
-        console.log(`📚 Found ${books.length} books and ${courses.length} courses`);
-
-        const resources = [
-            ...books.map(b => ({
-                ...b,
-                resourceType: 'book',
-                type: 'Book',
-                grade_level: b.grade_level || 'N/A',
-                category: b.category || 'General',
-                displayType: '📚 Book'
-            })),
-            ...courses.map(c => ({
-                ...c,
-                resourceType: 'course',
-                type: 'Course',
-                grade_level: `Grade ${c.grade || 'N/A'}`,
-                category: c.category || c.subject || 'General',
-                title: c.title,
-                description: c.description,
-                available: c.published !== false,
-                displayType: '🎓 Course',
-                author: 'Admin',
-                price: c.price || 0
-            }))
-        ];
-
-        resources.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
+        const resources = await Book.find().sort({ createdAt: -1 });
         res.json({ success: true, resources });
     } catch (error) {
         console.error('Error fetching resources:', error);
@@ -197,14 +162,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        let resource = await Book.findById(id).lean();
-        let resourceType = 'book';
-        
-        if (!resource) {
-            resource = await Course.findById(id).lean();
-            resourceType = 'course';
-        }
-
+        const resource = await Book.findById(id);
         if (!resource) {
             return res.status(404).json({
                 success: false,
@@ -212,7 +170,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        res.json({ success: true, resource, resourceType });
+        res.json({ success: true, resource });
     } catch (error) {
         console.error('Error fetching resource:', error);
         res.status(500).json({
@@ -222,7 +180,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource (Book or Course) - WITH MODULES SUPPORT
+// POST new resource with file upload
 router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         console.log('📝 Creating new resource...');
@@ -235,10 +193,7 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             grade_level, 
             resource_type, 
             description,
-            available,
-            resourceType,
-            modules,
-            totalLessons
+            available
         } = req.body;
 
         // Validate required fields
@@ -249,115 +204,49 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             });
         }
 
-        let fileUrl = '';
-        let coverImage = '';
-        
-        if (req.file) {
-            console.log('📎 File uploaded:', req.file.originalname);
-            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
-            fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
-            coverImage = `${baseUrl}/uploads/${req.file.filename}`;
+        // If no file uploaded, return error
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please upload a file (PDF, Video, or Audio)'
+            });
         }
 
-        let newResource;
-        const isCourse = resourceType === 'course';
+        // Get file URL
+        const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
+        const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+        const coverImage = `${baseUrl}/uploads/${req.file.filename}`;
 
-        if (isCourse) {
-            console.log('🎓 Creating a COURSE...');
-            
-            const subjectMap = {
-                'Mathematics': 'math',
-                'Programming': 'cs',
-                'History': 'history',
-                'Science': 'science',
-                'English': 'english',
-                'Arts': 'arts',
-                'Technology': 'cs',
-                'Fiction': 'english',
-                'Non-Fiction': 'english',
-                'Other': 'cs'
-            };
+        // Create new resource
+        const newResource = new Book({
+            title: title.trim(),
+            author: 'Admin Upload',
+            description: description || 'No description provided',
+            category: category || 'Other',
+            grade_level: grade_level || 'Other',
+            resource_type: resource_type || 'Other',
+            available: available === 'true' || available === true,
+            coverImage: coverImage,
+            fileUrl: fileUrl,
+            price: 0,
+            pages: null,
+            publisher: 'Online Library Hub',
+            publicationYear: new Date().getFullYear(),
+            language: 'English',
+            isbn: '',
+            featured: false,
+            uploadedBy: req.admin._id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
 
-            let gradeNum = 9;
-            if (grade_level) {
-                const match = grade_level.match(/\d+/);
-                if (match) {
-                    gradeNum = parseInt(match[0]);
-                    if (gradeNum < 9) gradeNum = 9;
-                    if (gradeNum > 12) gradeNum = 12;
-                }
-            }
-
-            const subject = subjectMap[category] || 'cs';
-
-            // Parse modules if provided
-            let parsedModules = [];
-            let totalLessonsCount = 0;
-            
-            if (modules) {
-                try {
-                    parsedModules = typeof modules === 'string' ? JSON.parse(modules) : modules;
-                    totalLessonsCount = parsedModules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0);
-                } catch (e) {
-                    console.log('Error parsing modules:', e);
-                }
-            }
-
-            newResource = new Course({
-                title: title.trim(),
-                description: description || 'No description provided',
-                thumbnail: coverImage || '',
-                category: category || 'General',
-                subject: subject,
-                grade: gradeNum,
-                price: 0,
-                published: available === 'true' || available === true,
-                color: 'from-blue-500 to-cyan-500',
-                icon: 'fa-graduation-cap',
-                modules: parsedModules,
-                totalLessons: totalLessonsCount || parseInt(totalLessons) || 0,
-                mediaFiles: [],
-                createdAt: new Date(),
-                updatedAt: new Date()
-            });
-
-            await newResource.save();
-            console.log('✅ Course created successfully with', newResource.totalLessons, 'lessons');
-            
-        } else {
-            console.log('📚 Creating a BOOK...');
-            
-            newResource = new Book({
-                title: title.trim(),
-                author: 'Admin Upload',
-                description: description || 'No description provided',
-                category: category || 'Other',
-                grade_level: grade_level || 'Other',
-                resource_type: resource_type || 'Book',
-                available: available === 'true' || available === true,
-                coverImage: coverImage || 'https://via.placeholder.com/300x400?text=No+Cover',
-                fileUrl: fileUrl || '',
-                price: 0,
-                pages: null,
-                publisher: 'Online Library Hub',
-                publicationYear: new Date().getFullYear(),
-                language: 'English',
-                isbn: '',
-                featured: false,
-                uploadedBy: req.admin._id,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            });
-
-            await newResource.save();
-            console.log('✅ Book created successfully:', newResource._id);
-        }
+        await newResource.save();
+        console.log('✅ Resource created successfully:', newResource._id);
 
         res.status(201).json({
             success: true,
             message: 'Resource created successfully',
-            resource: newResource,
-            resourceType: isCourse ? 'course' : 'book'
+            resource: newResource
         });
 
     } catch (error) {
@@ -383,12 +272,11 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
     }
 });
 
-// UPDATE resource (Book or Course) - WITH MODULES SUPPORT
+// UPDATE resource
 router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         const { id } = req.params;
         console.log('📝 Updating resource:', id);
-        console.log('Request body:', req.body);
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
@@ -403,99 +291,31 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
             grade_level, 
             resource_type, 
             description,
-            available,
-            resourceType,
-            modules,
-            totalLessons
+            available
         } = req.body;
 
-        let fileUrl = '';
-        let coverImage = '';
-        
+        const updateData = {
+            title: title?.trim(),
+            description: description || 'No description provided',
+            category: category || 'Other',
+            grade_level: grade_level || 'Other',
+            resource_type: resource_type || 'Other',
+            available: available === 'true' || available === true,
+            updatedAt: new Date()
+        };
+
+        // If new file uploaded, update file URL
         if (req.file) {
-            console.log('📎 File uploaded:', req.file.originalname);
             const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
-            fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
-            coverImage = `${baseUrl}/uploads/${req.file.filename}`;
+            updateData.fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+            updateData.coverImage = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
-        const isCourse = resourceType === 'course';
-        let updatedResource;
-
-        if (isCourse) {
-            // Update Course
-            const subjectMap = {
-                'Mathematics': 'math',
-                'Programming': 'cs',
-                'History': 'history',
-                'Science': 'science',
-                'English': 'english',
-                'Arts': 'arts',
-                'Technology': 'cs',
-                'Fiction': 'english',
-                'Non-Fiction': 'english',
-                'Other': 'cs'
-            };
-
-            let gradeNum = 9;
-            if (grade_level) {
-                const match = grade_level.match(/\d+/);
-                if (match) {
-                    gradeNum = parseInt(match[0]);
-                    if (gradeNum < 9) gradeNum = 9;
-                    if (gradeNum > 12) gradeNum = 12;
-                }
-            }
-
-            const subject = subjectMap[category] || 'cs';
-
-            // Parse modules if provided
-            let parsedModules = [];
-            let totalLessonsCount = 0;
-            
-            if (modules) {
-                try {
-                    parsedModules = typeof modules === 'string' ? JSON.parse(modules) : modules;
-                    totalLessonsCount = parsedModules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0);
-                } catch (e) {
-                    console.log('Error parsing modules:', e);
-                }
-            }
-
-            const updateData = {
-                title: title?.trim(),
-                description: description || 'No description provided',
-                category: category || 'General',
-                subject: subject,
-                grade: gradeNum,
-                published: available === 'true' || available === true,
-                modules: parsedModules,
-                totalLessons: totalLessonsCount || parseInt(totalLessons) || 0,
-                updatedAt: new Date()
-            };
-
-            if (coverImage) updateData.thumbnail = coverImage;
-            if (fileUrl) updateData.mediaFiles = [fileUrl];
-
-            updatedResource = await Course.findByIdAndUpdate(id, updateData, { new: true }).lean();
-            
-        } else {
-            // Update Book
-            const updateData = {
-                title: title?.trim(),
-                description: description || 'No description provided',
-                category: category || 'Other',
-                grade_level: grade_level || 'Other',
-                resource_type: resource_type || 'Book',
-                available: available === 'true' || available === true,
-                updatedAt: new Date()
-            };
-
-            if (coverImage) updateData.coverImage = coverImage;
-            if (fileUrl) updateData.fileUrl = fileUrl;
-
-            updatedResource = await Book.findByIdAndUpdate(id, updateData, { new: true }).lean();
-        }
+        const updatedResource = await Book.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true, runValidators: true }
+        );
 
         if (!updatedResource) {
             return res.status(404).json({
@@ -508,8 +328,7 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
         res.json({
             success: true,
             message: 'Resource updated successfully',
-            resource: updatedResource,
-            resourceType: isCourse ? 'course' : 'book'
+            resource: updatedResource
         });
 
     } catch (error) {
@@ -522,7 +341,7 @@ router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, 
     }
 });
 
-// DELETE resource (Book or Course)
+// DELETE resource
 router.delete('/resources/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -542,13 +361,7 @@ router.delete('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        let deleted = await Book.findByIdAndDelete(id);
-        let deletedType = 'book';
-        
-        if (!deleted) {
-            deleted = await Course.findByIdAndDelete(id);
-            deletedType = 'course';
-        }
+        const deleted = await Book.findByIdAndDelete(id);
 
         if (!deleted) {
             return res.status(404).json({ 
@@ -557,7 +370,7 @@ router.delete('/resources/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        console.log(`✅ ${deletedType} deleted successfully:`, id);
+        console.log('✅ Resource deleted successfully:', id);
         res.json({ 
             success: true, 
             message: 'Resource deleted successfully' 
@@ -952,8 +765,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
         const totalUsers = await User.countDocuments();
         const totalAdmins = await Admin.countDocuments();
         const verifiedUsers = await User.countDocuments({ isVerified: true });
-        const totalBooks = await Book.countDocuments();
-        const totalCourses = await Course.countDocuments();
+        const totalResources = await Book.countDocuments();
         const totalAnnouncements = await Announcement.countDocuments();
         const Contact = require('../models/Contact');
         const unreadMessages = await Contact.countDocuments({ is_read: false });
@@ -965,9 +777,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
                 totalAdmins,
                 verifiedUsers,
                 unverifiedUsers: totalUsers - verifiedUsers,
-                totalResources: totalBooks + totalCourses,
-                totalBooks,
-                totalCourses,
+                totalResources,
                 totalAnnouncements,
                 unreadMessages,
             }
