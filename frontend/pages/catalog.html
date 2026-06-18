@@ -12,7 +12,7 @@
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="stylesheet" href="style/style.css" />
+    <link rel="stylesheet" href="../style/style.css" />
     <style>
         * {
             margin: 0;
@@ -25,6 +25,66 @@
             background: #f5f7fa;
             color: #1a1a2e;
             min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+
+        .navbar-brand span {
+            color: #2563eb;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .navbar-links a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .navbar-links a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-links a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .btn-login {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background: #1d4ed8 !important;
+            color: white !important;
         }
 
         .catalog-container {
@@ -58,6 +118,7 @@
             padding: 1.25rem;
             border-radius: 1rem;
             border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
         .filters input,
@@ -71,11 +132,13 @@
             transition: border-color 0.2s;
             flex: 1;
             min-width: 150px;
+            background: white;
         }
 
         .filters input:focus,
         .filters select:focus {
             border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .resources-grid {
@@ -169,7 +232,7 @@
             font-weight: 600;
             font-size: 0.875rem;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .btn-view {
@@ -194,6 +257,7 @@
             text-align: center;
             padding: 3rem;
             color: #64748b;
+            grid-column: 1 / -1;
         }
 
         .loading-spinner i {
@@ -222,7 +286,32 @@
             color: #cbd5e1;
         }
 
+        .btn-retry {
+            margin-top: 1rem;
+            padding: 0.625rem 1.25rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-retry:hover {
+            background: #1d4ed8;
+        }
+
         @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            .navbar-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
             .catalog-container {
                 padding: 1rem;
             }
@@ -240,6 +329,18 @@
     </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="../index.html" class="navbar-brand">Library<span>Hub</span></a>
+        <div class="navbar-links">
+            <a href="../index.html">Home</a>
+            <a href="catalog.html" class="active">Catalog</a>
+            <a href="admin-login.html">Admin</a>
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="../index.html#contact">Contact</a>
+        </div>
+    </nav>
+
     <div class="catalog-container">
         <!-- Header -->
         <div class="catalog-header">
@@ -297,7 +398,7 @@
         </div>
     </div>
 
-    <script src="/scripts/api-config.js"></script>
+    <script src="../scripts/api-config.js"></script>
     <script>
         const API_BASE = window.API_BASE || 'https://online-library-hub.onrender.com/api';
         let allResources = [];
@@ -348,7 +449,7 @@
                         <i class="fas fa-exclamation-circle"></i>
                         <h3>Error Loading Resources</h3>
                         <p>${error.message || 'Please try again later.'}</p>
-                        <button onclick="fetchResources()" style="margin-top: 1rem; padding: 0.625rem 1.25rem; background: #2563eb; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+                        <button class="btn-retry" onclick="fetchResources()">
                             <i class="fas fa-redo"></i> Retry
                         </button>
                     </div>
@@ -377,7 +478,6 @@
                     ? '<span class="badge badge-available">✅ Available</span>'
                     : '<span class="badge badge-unavailable">❌ Unavailable</span>';
 
-                // Get the ID (works with both _id and id)
                 const resourceId = resource._id || resource.id;
 
                 return `
@@ -412,7 +512,6 @@
             const type = document.getElementById('typeFilter').value;
 
             filteredResources = allResources.filter(resource => {
-                // Search filter
                 let matchesSearch = true;
                 if (searchTerm) {
                     matchesSearch = 
@@ -421,19 +520,16 @@
                         (resource.author || '').toLowerCase().includes(searchTerm);
                 }
 
-                // Category filter
                 let matchesCategory = true;
                 if (category) {
                     matchesCategory = (resource.category || '') === category;
                 }
 
-                // Grade filter
                 let matchesGrade = true;
                 if (grade) {
                     matchesGrade = (resource.grade_level || '') === grade;
                 }
 
-                // Type filter
                 let matchesType = true;
                 if (type) {
                     matchesType = (resource.resource_type || '') === type;
