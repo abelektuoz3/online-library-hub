@@ -225,6 +225,54 @@
             background: #1d4ed8;
         }
 
+        .btn-sm {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-sm:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-sm-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-sm-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-sm-success {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-sm-success:hover {
+            background: #059669;
+        }
+
         .table-responsive {
             overflow-x: auto;
             margin: 0 -1.5rem -1.5rem -1.5rem;
@@ -346,7 +394,7 @@
             background: white;
             border-radius: 1rem;
             padding: 2rem;
-            max-width: 550px;
+            max-width: 700px;
             width: 90%;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
@@ -367,6 +415,7 @@
             color: #4b5563;
             display: block;
             margin-bottom: 0.25rem;
+            margin-top: 0.5rem;
         }
 
         .modal-content input,
@@ -374,7 +423,7 @@
         .modal-content textarea {
             width: 100%;
             padding: 0.625rem 0.875rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             border: 1px solid #cbd5e1;
             border-radius: 0.5rem;
             font-family: inherit;
@@ -446,6 +495,34 @@
             margin-bottom: 1rem;
             display: block;
             color: #cbd5e1;
+        }
+
+        .module-item {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .module-item .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .module-item .module-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .module-item .lesson-item {
+            padding: 0.25rem 0.5rem;
+            margin-left: 1rem;
+            font-size: 0.813rem;
+            color: #475569;
+            border-left: 2px solid #2563eb;
+            margin-top: 0.25rem;
         }
 
         @media (max-width: 992px) {
@@ -586,7 +663,6 @@
         <div class="modal-content">
             <h3 id="modalTitle">Add Resource</h3>
             
-            <!-- Resource Type Selector -->
             <label>Resource Type *</label>
             <select id="resourceTypeSelector">
                 <option value="book">📚 Book / Resource</option>
@@ -644,7 +720,27 @@
 
             <textarea id="resourceDesc" placeholder="Description" rows="3"></textarea>
             
+            <label>Upload File (PDF, Video, Audio)</label>
             <input type="file" id="resourceFile" accept="application/pdf,video/*,audio/*" style="margin-bottom: 1rem" />
+            
+            <!-- Course Content Section -->
+            <div id="courseContentSection" style="display: none;">
+                <hr style="margin: 1rem 0; border-color: #e2e8f0;" />
+                <h4 style="font-weight: 600; color: #1a1a2e; margin-bottom: 0.5rem;">
+                    <i class="fas fa-graduation-cap"></i> Course Content
+                </h4>
+                <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem;">
+                    Add modules and lessons for your course
+                </p>
+                
+                <div id="modulesContainer">
+                    <!-- Modules will be added here -->
+                </div>
+                
+                <button class="btn-sm" onclick="addModule()" style="margin-top: 0.5rem;">
+                    <i class="fas fa-plus"></i> Add Module
+                </button>
+            </div>
             
             <div class="modal-buttons">
                 <button class="btn-secondary" id="closeModalBtn">Cancel</button>
@@ -657,6 +753,7 @@
     <script>
         const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
         let editingResourceId = null;
+        let modules = [];
 
         function getToken() {
             return localStorage.getItem("adminToken");
@@ -684,6 +781,118 @@
             });
         }
 
+        // ==================== MODULE MANAGEMENT ====================
+        function addModule(title = '', description = '', lessons = []) {
+            const container = document.getElementById('modulesContainer');
+            const moduleId = Date.now() + Math.random();
+            
+            const moduleDiv = document.createElement('div');
+            moduleDiv.className = 'module-item';
+            moduleDiv.id = `module-${moduleId}`;
+            moduleDiv.innerHTML = `
+                <div class="module-header">
+                    <span class="module-title">${title || 'New Module'}</span>
+                    <div>
+                        <button class="btn-sm" onclick="editModule('${moduleId}')" style="margin-right: 0.25rem;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-sm-danger" onclick="removeModule('${moduleId}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="lessons-${moduleId}">
+                    ${lessons.map((l, i) => `
+                        <div class="lesson-item">
+                            <i class="fas fa-play" style="color: #2563eb; margin-right: 0.5rem;"></i>
+                            ${escapeHtml(l.title)}
+                            ${l.duration ? ` (${l.duration})` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn-sm btn-sm-success" onclick="addLesson('${moduleId}')" style="margin-top: 0.25rem; font-size: 0.7rem;">
+                    <i class="fas fa-plus"></i> Add Lesson
+                </button>
+                <input type="hidden" name="module_data" value='${JSON.stringify({ title, description, lessons })}' />
+            `;
+            
+            container.appendChild(moduleDiv);
+            
+            // Store module data
+            const moduleData = { id: moduleId, title, description, lessons };
+            modules.push(moduleData);
+            
+            // Update hidden input for form submission
+            updateModulesInput();
+        }
+
+        function removeModule(moduleId) {
+            if (!confirm('Remove this module?')) return;
+            const element = document.getElementById(`module-${moduleId}`);
+            if (element) element.remove();
+            modules = modules.filter(m => m.id !== moduleId);
+            updateModulesInput();
+        }
+
+        function editModule(moduleId) {
+            const moduleData = modules.find(m => m.id === moduleId);
+            if (!moduleData) return;
+            
+            const newTitle = prompt('Module Title:', moduleData.title || '');
+            if (newTitle !== null) {
+                moduleData.title = newTitle;
+                const element = document.getElementById(`module-${moduleId}`);
+                if (element) {
+                    element.querySelector('.module-title').textContent = newTitle || 'New Module';
+                }
+                updateModulesInput();
+            }
+        }
+
+        function addLesson(moduleId) {
+            const moduleData = modules.find(m => m.id === moduleId);
+            if (!moduleData) return;
+            
+            const title = prompt('Lesson Title:');
+            if (!title) return;
+            
+            const duration = prompt('Duration (e.g., 10:30):', '10:00') || '10:00';
+            
+            const lesson = { title, duration, isFree: false };
+            moduleData.lessons.push(lesson);
+            
+            // Update UI
+            const container = document.getElementById(`lessons-${moduleId}`);
+            if (container) {
+                const lessonDiv = document.createElement('div');
+                lessonDiv.className = 'lesson-item';
+                lessonDiv.innerHTML = `
+                    <i class="fas fa-play" style="color: #2563eb; margin-right: 0.5rem;"></i>
+                    ${escapeHtml(title)}
+                    ${duration ? ` (${duration})` : ''}
+                `;
+                container.appendChild(lessonDiv);
+            }
+            
+            updateModulesInput();
+        }
+
+        function updateModulesInput() {
+            // The modules will be sent as JSON in the form data
+            // We'll handle this in the save function
+        }
+
+        // ==================== RESOURCE TYPE TOGGLE ====================
+        document.getElementById('resourceTypeSelector').addEventListener('change', function() {
+            const isCourse = this.value === 'course';
+            document.getElementById('courseContentSection').style.display = isCourse ? 'block' : 'none';
+            if (!isCourse) {
+                modules = [];
+                document.getElementById('modulesContainer').innerHTML = '';
+            }
+        });
+
+        // ==================== CHECK ADMIN ACCESS ====================
         async function checkAdminAccess() {
             const token = getToken();
             const admin = getAdmin();
@@ -714,6 +923,7 @@
             }
         }
 
+        // ==================== LOAD RESOURCES ====================
         async function loadResources() {
             const token = getToken();
             try {
@@ -772,6 +982,7 @@
             }
         }
 
+        // ==================== EDIT RESOURCE ====================
         window.editResource = function (id) {
             if (!id || id === 'undefined' || id === 'null') {
                 alert('Invalid resource ID. Please refresh and try again.');
@@ -799,6 +1010,18 @@
                     
                     const resourceType = data.resourceType || 'book';
                     document.getElementById("resourceTypeSelector").value = resourceType;
+                    
+                    // If course, show content section and load modules
+                    if (resourceType === 'course' && data.resource.modules) {
+                        document.getElementById('courseContentSection').style.display = 'block';
+                        modules = data.resource.modules.map(m => ({
+                            id: Date.now() + Math.random(),
+                            title: m.title,
+                            description: m.description || '',
+                            lessons: m.lessons || []
+                        }));
+                        renderModules();
+                    }
                 }
             } catch (err) {
                 console.error("Error fetching resource details:", err);
@@ -806,6 +1029,45 @@
             }
         }
 
+        function renderModules() {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = '';
+            modules.forEach(m => {
+                const moduleId = m.id || Date.now() + Math.random();
+                m.id = moduleId;
+                const moduleDiv = document.createElement('div');
+                moduleDiv.className = 'module-item';
+                moduleDiv.id = `module-${moduleId}`;
+                moduleDiv.innerHTML = `
+                    <div class="module-header">
+                        <span class="module-title">${escapeHtml(m.title || 'New Module')}</span>
+                        <div>
+                            <button class="btn-sm" onclick="editModule('${moduleId}')" style="margin-right: 0.25rem;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-sm-danger" onclick="removeModule('${moduleId}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="lessons-${moduleId}">
+                        ${(m.lessons || []).map(l => `
+                            <div class="lesson-item">
+                                <i class="fas fa-play" style="color: #2563eb; margin-right: 0.5rem;"></i>
+                                ${escapeHtml(l.title)}
+                                ${l.duration ? ` (${l.duration})` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn-sm btn-sm-success" onclick="addLesson('${moduleId}')" style="margin-top: 0.25rem; font-size: 0.7rem;">
+                        <i class="fas fa-plus"></i> Add Lesson
+                    </button>
+                `;
+                container.appendChild(moduleDiv);
+            });
+        }
+
+        // ==================== DELETE RESOURCE ====================
         window.deleteResource = async function (id) {
             if (!id || id === 'undefined' || id === 'null') {
                 alert('Invalid resource ID. Please refresh and try again.');
@@ -831,6 +1093,7 @@
             }
         };
 
+        // ==================== SAVE RESOURCE ====================
         async function saveResource() {
             const token = getToken();
             
@@ -860,6 +1123,22 @@
             formData.append("description", description);
             formData.append("available", "true");
             formData.append("resourceType", resourceType);
+
+            // If course, add modules
+            if (resourceType === 'course') {
+                const courseModules = modules.map(m => ({
+                    title: m.title || 'Module',
+                    description: m.description || '',
+                    lessons: (m.lessons || []).map(l => ({
+                        title: l.title,
+                        description: l.description || '',
+                        duration: l.duration || '10:00',
+                        isFree: false
+                    }))
+                }));
+                formData.append("modules", JSON.stringify(courseModules));
+                formData.append("totalLessons", courseModules.reduce((sum, m) => sum + m.lessons.length, 0));
+            }
 
             const fileInput = document.getElementById("resourceFile");
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
@@ -904,6 +1183,7 @@
             }
         }
 
+        // ==================== CLOSE MODAL ====================
         function closeModal() {
             document.getElementById("resourceModal").classList.remove("active");
             editingResourceId = null;
@@ -913,12 +1193,15 @@
             document.getElementById("resourceType").value = "";
             document.getElementById("resourceDesc").value = "";
             document.getElementById("resourceTypeSelector").value = "book";
+            document.getElementById("courseContentSection").style.display = "none";
+            modules = [];
+            document.getElementById("modulesContainer").innerHTML = "";
             const fileInput = document.getElementById("resourceFile");
             if (fileInput) fileInput.value = "";
             document.getElementById("modalTitle").textContent = "Add Resource";
         }
 
-        // Event Listeners
+        // ==================== EVENT LISTENERS ====================
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
             e.preventDefault();
             localStorage.removeItem("adminToken");
@@ -935,7 +1218,7 @@
         document.getElementById("saveResourceBtn").addEventListener("click", saveResource);
         document.getElementById("closeModalBtn").addEventListener("click", closeModal);
 
-        // Initialize
+        // ==================== INITIALIZE ====================
         (async () => {
             const isAdmin = await checkAdminAccess();
             if (isAdmin) {

@@ -222,7 +222,7 @@ router.get('/resources/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// POST new resource (Book or Course)
+// POST new resource (Book or Course) - WITH MODULES SUPPORT
 router.post('/resources', authMiddleware, upload.single('file'), async (req, res) => {
     try {
         console.log('📝 Creating new resource...');
@@ -236,7 +236,9 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
             resource_type, 
             description,
             available,
-            resourceType
+            resourceType,
+            modules,
+            totalLessons
         } = req.body;
 
         // Validate required fields
@@ -288,6 +290,19 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
 
             const subject = subjectMap[category] || 'cs';
 
+            // Parse modules if provided
+            let parsedModules = [];
+            let totalLessonsCount = 0;
+            
+            if (modules) {
+                try {
+                    parsedModules = typeof modules === 'string' ? JSON.parse(modules) : modules;
+                    totalLessonsCount = parsedModules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0);
+                } catch (e) {
+                    console.log('Error parsing modules:', e);
+                }
+            }
+
             newResource = new Course({
                 title: title.trim(),
                 description: description || 'No description provided',
@@ -299,15 +314,15 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
                 published: available === 'true' || available === true,
                 color: 'from-blue-500 to-cyan-500',
                 icon: 'fa-graduation-cap',
-                modules: [],
-                totalLessons: 0,
+                modules: parsedModules,
+                totalLessons: totalLessonsCount || parseInt(totalLessons) || 0,
                 mediaFiles: [],
                 createdAt: new Date(),
                 updatedAt: new Date()
             });
 
             await newResource.save();
-            console.log('✅ Course created successfully:', newResource._id);
+            console.log('✅ Course created successfully with', newResource.totalLessons, 'lessons');
             
         } else {
             console.log('📚 Creating a BOOK...');
@@ -363,6 +378,145 @@ router.post('/resources', authMiddleware, upload.single('file'), async (req, res
         res.status(500).json({
             success: false,
             error: 'Failed to create resource',
+            details: error.message
+        });
+    }
+});
+
+// UPDATE resource (Book or Course) - WITH MODULES SUPPORT
+router.put('/resources/:id', authMiddleware, upload.single('file'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('📝 Updating resource:', id);
+        console.log('Request body:', req.body);
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid resource ID format'
+            });
+        }
+
+        const { 
+            title, 
+            category, 
+            grade_level, 
+            resource_type, 
+            description,
+            available,
+            resourceType,
+            modules,
+            totalLessons
+        } = req.body;
+
+        let fileUrl = '';
+        let coverImage = '';
+        
+        if (req.file) {
+            console.log('📎 File uploaded:', req.file.originalname);
+            const baseUrl = process.env.API_BASE || 'https://online-library-hub.onrender.com';
+            fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+            coverImage = `${baseUrl}/uploads/${req.file.filename}`;
+        }
+
+        const isCourse = resourceType === 'course';
+        let updatedResource;
+
+        if (isCourse) {
+            // Update Course
+            const subjectMap = {
+                'Mathematics': 'math',
+                'Programming': 'cs',
+                'History': 'history',
+                'Science': 'science',
+                'English': 'english',
+                'Arts': 'arts',
+                'Technology': 'cs',
+                'Fiction': 'english',
+                'Non-Fiction': 'english',
+                'Other': 'cs'
+            };
+
+            let gradeNum = 9;
+            if (grade_level) {
+                const match = grade_level.match(/\d+/);
+                if (match) {
+                    gradeNum = parseInt(match[0]);
+                    if (gradeNum < 9) gradeNum = 9;
+                    if (gradeNum > 12) gradeNum = 12;
+                }
+            }
+
+            const subject = subjectMap[category] || 'cs';
+
+            // Parse modules if provided
+            let parsedModules = [];
+            let totalLessonsCount = 0;
+            
+            if (modules) {
+                try {
+                    parsedModules = typeof modules === 'string' ? JSON.parse(modules) : modules;
+                    totalLessonsCount = parsedModules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0);
+                } catch (e) {
+                    console.log('Error parsing modules:', e);
+                }
+            }
+
+            const updateData = {
+                title: title?.trim(),
+                description: description || 'No description provided',
+                category: category || 'General',
+                subject: subject,
+                grade: gradeNum,
+                published: available === 'true' || available === true,
+                modules: parsedModules,
+                totalLessons: totalLessonsCount || parseInt(totalLessons) || 0,
+                updatedAt: new Date()
+            };
+
+            if (coverImage) updateData.thumbnail = coverImage;
+            if (fileUrl) updateData.mediaFiles = [fileUrl];
+
+            updatedResource = await Course.findByIdAndUpdate(id, updateData, { new: true }).lean();
+            
+        } else {
+            // Update Book
+            const updateData = {
+                title: title?.trim(),
+                description: description || 'No description provided',
+                category: category || 'Other',
+                grade_level: grade_level || 'Other',
+                resource_type: resource_type || 'Book',
+                available: available === 'true' || available === true,
+                updatedAt: new Date()
+            };
+
+            if (coverImage) updateData.coverImage = coverImage;
+            if (fileUrl) updateData.fileUrl = fileUrl;
+
+            updatedResource = await Book.findByIdAndUpdate(id, updateData, { new: true }).lean();
+        }
+
+        if (!updatedResource) {
+            return res.status(404).json({
+                success: false,
+                error: 'Resource not found'
+            });
+        }
+
+        console.log('✅ Resource updated successfully:', id);
+        res.json({
+            success: true,
+            message: 'Resource updated successfully',
+            resource: updatedResource,
+            resourceType: isCourse ? 'course' : 'book'
+        });
+
+    } catch (error) {
+        console.error('❌ Error updating resource:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to update resource',
             details: error.message
         });
     }
