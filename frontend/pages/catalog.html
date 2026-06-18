@@ -473,6 +473,7 @@
             border-radius: 0.5rem;
             text-decoration: none;
             font-weight: 600;
+            margin-right: 0.5rem;
         }
 
         .modal-download:hover {
@@ -563,6 +564,8 @@
                 <option value="PDF">📄 PDFs</option>
                 <option value="Audio">🎵 Audio</option>
                 <option value="Book">📚 Books</option>
+                <option value="E-Book">📖 E-Books</option>
+                <option value="Other">📁 Other</option>
             </select>
         </div>
 
@@ -589,7 +592,7 @@
     <script src="../scripts/api-config.js"></script>
     <script>
         const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
-        let allResources = [];
+        let allBooks = [];
 
         function getFileTypeColor(type) {
             const colors = {
@@ -624,7 +627,15 @@
             return classes[type] || 'type-badge-default';
         }
 
-        async function fetchResources() {
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ==================== FETCH BOOKS FROM DATABASE ====================
+        async function fetchBooks() {
             const grid = document.getElementById('resourcesGrid');
             grid.innerHTML = `
                 <div class="loading-spinner">
@@ -634,43 +645,44 @@
             `;
 
             try {
+                console.log('📡 Fetching books from:', `${API_BASE}/catalog`);
+                
                 const response = await fetch(`${API_BASE}/catalog`, {
-                    headers: { 'Content-Type': 'application/json' }
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
                 });
 
-                if (!response.ok) throw new Error('Failed to fetch resources');
-
-                const data = await response.json();
-                console.log('📦 Catalog data:', data);
-
-                let resources = [];
-
-                if (data.success && data.resources) {
-                    resources = data.resources;
-                } else if (data.success && data.books) {
-                    resources = data.books;
-                } else if (Array.isArray(data)) {
-                    resources = data;
-                } else {
-                    for (const key in data) {
-                        if (Array.isArray(data[key])) {
-                            resources = data[key];
-                            break;
-                        }
-                    }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                allResources = resources;
-                renderResources(resources);
+                const data = await response.json();
+                console.log('📦 Data from server:', data);
+
+                // Extract books from response
+                let books = [];
+                if (data.success && data.books) {
+                    books = data.books;
+                } else if (data.success && data.resources) {
+                    books = data.resources;
+                } else if (Array.isArray(data)) {
+                    books = data;
+                }
+
+                console.log(`📚 Found ${books.length} books`);
+                allBooks = books;
+                renderBooks(books);
 
             } catch (error) {
-                console.error('Error fetching resources:', error);
+                console.error('❌ Error fetching books:', error);
                 grid.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-exclamation-circle"></i>
                         <h3>Error Loading Resources</h3>
                         <p>${error.message || 'Please try again later.'}</p>
-                        <button class="btn-retry" onclick="fetchResources()">
+                        <button class="btn-retry" onclick="fetchBooks()">
                             <i class="fas fa-redo"></i> Retry
                         </button>
                     </div>
@@ -678,33 +690,37 @@
             }
         }
 
-        function renderResources(resources) {
+        // ==================== RENDER BOOKS ====================
+        function renderBooks(books) {
             const grid = document.getElementById('resourcesGrid');
 
-            if (!resources || resources.length === 0) {
+            if (!books || books.length === 0) {
                 grid.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-book-open"></i>
                         <h3>No Resources Found</h3>
-                        <p>No resources match your search criteria.</p>
+                        <p>No resources available in the catalog yet.</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">
+                            Check back later or contact the administrator.
+                        </p>
                     </div>
                 `;
                 return;
             }
 
-            grid.innerHTML = resources.map(resource => {
-                const isAvailable = resource.available !== false;
-                const resourceType = resource.resource_type || 'Other';
+            grid.innerHTML = books.map(book => {
+                const isAvailable = book.available !== false;
+                const resourceType = book.resource_type || 'Book';
                 const bgColor = getFileTypeColor(resourceType);
                 const icon = getFileIcon(resourceType);
                 const badgeClass = getTypeBadgeClass(resourceType);
-                const gradeDisplay = resource.grade_level || 'All Levels';
-                const category = resource.category || 'General';
-                const resourceId = resource._id || resource.id;
+                const gradeDisplay = book.grade_level || 'All Levels';
+                const category = book.category || 'General';
+                const bookId = book._id || book.id;
 
                 return `
                     <div class="resource-card">
-                        <div class="resource-thumbnail" style="background: ${bgColor}" onclick="viewResource('${resourceId}')">
+                        <div class="resource-thumbnail" style="background: ${bgColor}" onclick="viewBook('${bookId}')">
                             <i class="fas ${icon}"></i>
                             <div class="play-overlay">
                                 <div class="play-button">
@@ -715,18 +731,18 @@
                             <span class="badge">${isAvailable ? '✅ Available' : '❌ Unavailable'}</span>
                         </div>
                         <div class="resource-body">
-                            <h3>${escapeHtml(resource.title || 'Untitled')}</h3>
+                            <h3>${escapeHtml(book.title || 'Untitled')}</h3>
                             <div class="meta">
                                 <span>📂 ${escapeHtml(category)}</span>
                                 <span>📚 ${escapeHtml(gradeDisplay)}</span>
                                 <span>📖 ${escapeHtml(resourceType)}</span>
                             </div>
-                            <div class="description">${escapeHtml(resource.description || 'No description available.')}</div>
+                            <div class="description">${escapeHtml(book.description || 'No description available.')}</div>
                             <div class="footer">
                                 <span class="status ${isAvailable ? 'status-available' : 'status-unavailable'}">
                                     ${isAvailable ? 'Available' : 'Unavailable'}
                                 </span>
-                                <button class="btn-view" onclick="viewResource('${resourceId}')">
+                                <button class="btn-view" onclick="viewBook('${bookId}')">
                                     <i class="fas fa-eye"></i> View
                                 </button>
                             </div>
@@ -736,68 +752,70 @@
             }).join('');
         }
 
-        function filterResources() {
+        // ==================== FILTER BOOKS ====================
+        function filterBooks() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const category = document.getElementById('categoryFilter').value;
             const grade = document.getElementById('gradeFilter').value;
             const type = document.getElementById('typeFilter').value;
 
-            let filtered = allResources.filter(resource => {
+            let filtered = allBooks.filter(book => {
                 let matchesSearch = true;
                 if (searchTerm) {
                     matchesSearch = 
-                        (resource.title || '').toLowerCase().includes(searchTerm) ||
-                        (resource.description || '').toLowerCase().includes(searchTerm) ||
-                        (resource.author || '').toLowerCase().includes(searchTerm);
+                        (book.title || '').toLowerCase().includes(searchTerm) ||
+                        (book.description || '').toLowerCase().includes(searchTerm) ||
+                        (book.author || '').toLowerCase().includes(searchTerm);
                 }
 
                 let matchesCategory = true;
                 if (category) {
-                    matchesCategory = (resource.category || '') === category;
+                    matchesCategory = (book.category || '') === category;
                 }
 
                 let matchesGrade = true;
                 if (grade) {
-                    const resourceGrade = resource.grade_level || '';
-                    matchesGrade = resourceGrade === grade;
+                    const bookGrade = book.grade_level || '';
+                    matchesGrade = bookGrade === grade;
                 }
 
                 let matchesType = true;
                 if (type) {
-                    const resourceType = resource.resource_type || '';
-                    matchesType = resourceType === type;
+                    const bookType = book.resource_type || '';
+                    matchesType = bookType === type;
                 }
 
                 return matchesSearch && matchesCategory && matchesGrade && matchesType;
             });
 
-            renderResources(filtered);
+            renderBooks(filtered);
         }
 
-        // ==================== VIEW RESOURCE ====================
-        window.viewResource = async function(id) {
-            const resource = allResources.find(r => (r._id || r.id) === id);
-            if (!resource) {
+        // ==================== VIEW BOOK ====================
+        window.viewBook = async function(id) {
+            const book = allBooks.find(b => (b._id || b.id) === id);
+            if (!book) {
                 alert('Resource not found.');
                 return;
             }
 
-            const resourceType = resource.resource_type || 'Other';
-            const fileUrl = resource.fileUrl || resource.coverImage || '';
+            const resourceType = book.resource_type || 'Book';
+            const fileUrl = book.fileUrl || book.coverImage || '';
 
             // Set modal title
-            document.getElementById('modalTitle').textContent = resource.title || 'Untitled';
+            document.getElementById('modalTitle').textContent = book.title || 'Untitled';
             
             // Set meta info
             document.getElementById('modalMeta').innerHTML = `
                 <span>${resourceType}</span>
-                <span>📂 ${escapeHtml(resource.category || 'General')}</span>
-                <span>📚 ${escapeHtml(resource.grade_level || 'All Levels')}</span>
-                <span>${resource.available !== false ? '✅ Available' : '❌ Unavailable'}</span>
+                <span>📂 ${escapeHtml(book.category || 'General')}</span>
+                <span>📚 ${escapeHtml(book.grade_level || 'All Levels')}</span>
+                <span>${book.available !== false ? '✅ Available' : '❌ Unavailable'}</span>
+                ${book.author ? `<span>✍️ ${escapeHtml(book.author)}</span>` : ''}
             `;
             
             // Set description
-            document.getElementById('modalDescription').textContent = resource.description || 'No description available.';
+            document.getElementById('modalDescription').textContent = book.description || 'No description available.';
             
             // Set player
             const playerContainer = document.getElementById('modalPlayer');
@@ -830,7 +848,7 @@
                             <a href="${fileUrl}" target="_blank" class="modal-download">
                                 <i class="fas fa-external-link-alt"></i> Open PDF
                             </a>
-                            <a href="${fileUrl}" download class="modal-download" style="background: #10b981; margin-left: 0.5rem;">
+                            <a href="${fileUrl}" download class="modal-download" style="background: #10b981;">
                                 <i class="fas fa-download"></i> Download
                             </a>
                         </div>
@@ -843,7 +861,7 @@
                             <a href="${fileUrl}" target="_blank" class="modal-download">
                                 <i class="fas fa-external-link-alt"></i> Open File
                             </a>
-                            <a href="${fileUrl}" download class="modal-download" style="background: #10b981; margin-left: 0.5rem;">
+                            <a href="${fileUrl}" download class="modal-download" style="background: #10b981;">
                                 <i class="fas fa-download"></i> Download
                             </a>
                         </div>
@@ -854,7 +872,7 @@
             } else {
                 playerContainer.innerHTML = `
                     <div class="placeholder">
-                        <i class="fas fa-file"></i>
+                        <i class="fas fa-book"></i>
                         <p>No file attached</p>
                         <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">This resource has no downloadable content.</p>
                     </div>
@@ -871,7 +889,6 @@
             document.getElementById('resourceModal').classList.remove('active');
             document.body.style.overflow = 'auto';
             
-            // Stop any playing media
             const player = document.querySelector('#modalPlayer video, #modalPlayer audio');
             if (player) {
                 player.pause();
@@ -893,22 +910,14 @@
             }
         });
 
-        // ==================== UTILITY FUNCTIONS ====================
-        function escapeHtml(str) {
-            if (!str) return '';
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
         // ==================== EVENT LISTENERS ====================
-        document.getElementById('searchInput').addEventListener('input', filterResources);
-        document.getElementById('categoryFilter').addEventListener('change', filterResources);
-        document.getElementById('gradeFilter').addEventListener('change', filterResources);
-        document.getElementById('typeFilter').addEventListener('change', filterResources);
+        document.getElementById('searchInput').addEventListener('input', filterBooks);
+        document.getElementById('categoryFilter').addEventListener('change', filterBooks);
+        document.getElementById('gradeFilter').addEventListener('change', filterBooks);
+        document.getElementById('typeFilter').addEventListener('change', filterBooks);
 
         // ==================== INITIALIZE ====================
-        document.addEventListener('DOMContentLoaded', fetchResources);
+        document.addEventListener('DOMContentLoaded', fetchBooks);
     </script>
 </body>
 </html>
