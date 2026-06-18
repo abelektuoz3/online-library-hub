@@ -72,7 +72,6 @@ console.log("✅ Allowed origins:", allowedOrigins);
 app.use(
     cors({
         origin: function (origin, callback) {
-            // Allow requests with no origin (like mobile apps or curl requests)
             if (!origin) return callback(null, true);
             if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== "production") {
                 callback(null, true);
@@ -129,10 +128,9 @@ const announcementRoutes = require("./routes/announcement");
 const adminRoutes = require("./routes/admin");
 const googleAuthRoutes = require("./routes/google-auth");
 const githubAuthRoutes = require("./routes/github-auth");
-const courseRoutes = require("./routes/courseRoutes");
+// REMOVED: const courseRoutes = require("./routes/courseRoutes");
 
 // ==================== PASSPORT STRATEGIES ====================
-// Initialize Passport strategies
 require("./config/passport")(passport);
 
 // ==================== API ROUTES ====================
@@ -141,7 +139,7 @@ app.use("/api/catalog", catalogRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/courses", courseRoutes); // ✅ ADDED: Course routes
+// REMOVED: app.use("/api/courses", courseRoutes);
 
 // ==================== OAUTH ROUTES ====================
 // GitHub Routes
@@ -325,7 +323,5 @@ app.listen(PORT, () => {
         `📚 Frontend: ${process.env.FRONTEND_URL || `http://localhost:${PORT}/index.html`}`
     );
     console.log(`🔌 API base: http://localhost:${PORT}/api`);
-    console.log(`📚 Course API: http://localhost:${PORT}/api/courses`);
-    console.log(`✅ CORS enabled (all origins allowed for testing)`);
     console.log(`📁 Uploads directory: ${UPLOADS_DIR}`);
 });
