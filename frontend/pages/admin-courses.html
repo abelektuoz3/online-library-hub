@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Courses | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../../style/style.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            color: #1a1a2e;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: all 0.2s;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+
+        .sidebar-header h2 span {
+            color: #2563eb;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.75rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #4b5563;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .nav-item.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .nav-item i {
+            width: 1.25rem;
+            font-size: 1rem;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover i,
+        .nav-item.active i {
+            color: currentColor;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            background: #f5f7fa;
+            min-height: 100vh;
+            transition: all 0.2s;
+        }
+
+        .top-bar {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title h1 {
+            font-size: 1.375rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title p {
+            color: #64748b;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #adminName {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .logout-btn {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fee2e2;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        .dashboard-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header-title i {
+            font-size: 1.5rem;
+            color: #2563eb;
+        }
+
+        .card-header-title h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .btn-add {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #1d4ed8;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 0 -1.5rem -1.5rem -1.5rem;
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 0.875rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+
+        td {
+            font-size: 0.875rem;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .btn-delete:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .btn-success-small {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn-success-small:hover {
+            background: #059669;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+
+        .modal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            margin-bottom: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .modal-content input:focus,
+        .modal-content select:focus,
+        .modal-content textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar-header h2,
+            .sidebar-nav span {
+                display: none;
+            }
+            .main-content {
+                margin-left: 70px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .sidebar-header h2 {
+                display: block;
+            }
+            .sidebar-nav span {
+                display: block;
+            }
+            .sidebar-nav {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0.75rem;
+                gap: 0.5rem;
+            }
+            .nav-item {
+                margin: 0;
+                padding: 0.5rem 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../../index.html" style="text-decoration: none; color: inherit">
+                    <h2>Library<span>Hub</span></h2>
+                </a>
+                <p style="font-size: 0.75rem; font-weight: 600; color: #64748b; margin-top: 0.25rem;">
+                    Admin Panel
+                </p>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-item" href="admin-dashboard.html">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a>
+                <a class="nav-item" href="admin-resources.html">
+                    <i class="fas fa-book"></i> <span>Resources</span>
+                </a>
+                <a class="nav-item" href="admin-users.html">
+                    <i class="fas fa-users"></i> <span>Users</span>
+                </a>
+                <a class="nav-item" href="admin-messages.html">
+                    <i class="fas fa-envelope"></i> <span>Messages</span>
+                </a>
+                <a class="nav-item" href="admin-announcements.html">
+                    <i class="fas fa-bullhorn"></i> <span>Announcements</span>
+                </a>
+                <a class="nav-item active" href="admin-courses.html">
+                    <i class="fas fa-graduation-cap"></i> <span>Courses</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>Courses</h1>
+                    <p>Manage learning courses</p>
+                </div>
+                <div class="user-info">
+                    <span id="adminName">Admin</span>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Courses Table -->
+            <div class="dashboard-card">
+                <div class="card-header-flex">
+                    <div class="card-header-title">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>All Courses</h3>
+                    </div>
+                    <button class="btn-add" id="addCourseBtn">
+                        <i class="fas fa-plus"></i> Add Course
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Subject</th>
+                                <th>Grade</th>
+                                <th>Lessons</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading courses...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Add Course</h3>
+            <input type="text" id="courseTitle" placeholder="Course Title *" />
+            <select id="courseSubject">
+                <option value="">Select Subject *</option>
+                <option value="math">Mathematics</option>
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+                <option value="english">English</option>
+                <option value="amharic">Amharic</option>
+                <option value="history">History</option>
+                <option value="geography">Geography</option>
+                <option value="cs">Computer Science</option>
+            </select>
+            <select id="courseGrade">
+                <option value="">Select Grade *</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+            </select>
+            <textarea id="courseDescription" placeholder="Description *" rows="3"></textarea>
+            <input type="text" id="courseThumbnail" placeholder="Thumbnail URL (optional)" />
+            <div style="display: flex; gap: 1rem;">
+                <input type="number" id="coursePrice" placeholder="Price (0 for free)" value="0" style="flex:1;" />
+                <input type="number" id="courseLessons" placeholder="Total Lessons" value="0" style="flex:1;" />
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="closeModalBtn">Cancel</button>
+                <button class="btn-primary" id="saveCourseBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../scripts/api-config.js"></script>
+    <script>
+        const API_BASE = window.API_BASE || "https://online-library-hub.onrender.com/api";
+        let editingCourseId = null;
+
+        function getToken() {
+            return localStorage.getItem("adminToken");
+        }
+
+        function getAdmin() {
+            const admin = localStorage.getItem("admin");
+            if (admin) {
+                try {
+                    return JSON.parse(admin);
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === "&") return "&amp;";
+                if (m === "<") return "&lt;";
+                if (m === ">") return "&gt;";
+                return m;
+            });
+        }
+
+        const subjectMap = {
+            'math': 'Mathematics',
+            'physics': 'Physics',
+            'chemistry': 'Chemistry',
+            'biology': 'Biology',
+            'english': 'English',
+            'amharic': 'Amharic',
+            'history': 'History',
+            'geography': 'Geography',
+            'cs': 'Computer Science'
+        };
+
+        async function checkAdminAccess() {
+            const token = getToken();
+            const admin = getAdmin();
+
+            if (!token || !admin || !admin.id) {
+                window.location.href = "../admin-login.html";
+                return false;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/verify`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!response.ok) {
+                    localStorage.removeItem("adminToken");
+                    localStorage.removeItem("admin");
+                    window.location.href = "../admin-login.html";
+                    return false;
+                }
+
+                document.getElementById("adminName").textContent = `👑 ${admin.name}`;
+                return true;
+            } catch (err) {
+                console.error("Admin verification error:", err);
+                window.location.href = "../admin-login.html";
+                return false;
+            }
+        }
+
+        async function loadCourses() {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/courses`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                const tbody = document.getElementById("coursesTableBody");
+
+                if (data.success && data.courses && data.courses.length) {
+                    tbody.innerHTML = data.courses
+                        .map((c) => {
+                            const courseId = c._id || c.id;
+                            const subjectDisplay = subjectMap[c.subject] || c.subject || 'General';
+                            return `
+                                <tr>
+                                    <td><strong>${escapeHtml(c.title)}</strong></td>
+                                    <td>${escapeHtml(subjectDisplay)}</td>
+                                    <td>${c.grade || 'N/A'}</td>
+                                    <td>${c.totalLessons || 0}</td>
+                                    <td>
+                                        <span class="badge ${c.published ? 'badge-success' : 'badge-warning'}">
+                                            ${c.published ? 'Published' : 'Draft'}
+                                        </span>
+                                    </td>
+                                    <td class="actions">
+                                        <button class="btn-success-small" onclick="togglePublish('${courseId}', ${!c.published})">
+                                            ${c.published ? 'Unpublish' : 'Publish'}
+                                        </button>
+                                        <button class="btn-icon btn-delete" onclick="deleteCourse('${courseId}')" title="Delete course">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join("");
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">No courses found</td></tr>';
+                }
+            } catch (err) {
+                console.error("Error loading courses:", err);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#ef4444;">Error loading courses</td></tr>';
+            }
+        }
+
+        async function togglePublish(id, publish) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/courses/${id}/publish`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ published: publish })
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    loadCourses();
+                    alert(`Course ${publish ? 'published' : 'unpublished'} successfully!`);
+                } else {
+                    alert(data.error || 'Failed to toggle publish status.');
+                }
+            } catch (error) {
+                console.error('Error toggling publish:', error);
+                alert('Error toggling publish status. Please try again.');
+            }
+        }
+
+        async function deleteCourse(id) {
+            if (!confirm('Delete this course?')) return;
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/courses/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    loadCourses();
+                    alert('Course deleted successfully!');
+                } else {
+                    alert(data.error || 'Failed to delete course.');
+                }
+            } catch (error) {
+                console.error('Error deleting course:', error);
+                alert('Error deleting course. Please try again.');
+            }
+        }
+
+        async function saveCourse() {
+            const token = getToken();
+            
+            if (!token) {
+                alert("Your admin session has expired. Please login again.");
+                window.location.href = "../admin-login.html";
+                return;
+            }
+
+            const title = document.getElementById("courseTitle").value.trim();
+            const subject = document.getElementById("courseSubject").value;
+            const grade = document.getElementById("courseGrade").value;
+            const description = document.getElementById("courseDescription").value.trim();
+            const thumbnail = document.getElementById("courseThumbnail").value.trim();
+            const price = parseFloat(document.getElementById("coursePrice").value) || 0;
+            const totalLessons = parseInt(document.getElementById("courseLessons").value) || 0;
+
+            if (!title || !subject || !grade || !description) {
+                alert("Please fill in title, subject, grade, and description.");
+                return;
+            }
+
+            const courseData = {
+                title,
+                subject,
+                grade: parseInt(grade),
+                description,
+                thumbnail: thumbnail || '',
+                price: price,
+                totalLessons: totalLessons,
+                published: false
+            };
+
+            const url = editingCourseId
+                ? `${API_BASE}/courses/${editingCourseId}`
+                : `${API_BASE}/courses`;
+            const method = editingCourseId ? "PUT" : "POST";
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(courseData)
+                });
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem("adminToken");
+                    localStorage.removeItem("admin");
+                    alert("Your session has expired. Please login again.");
+                    window.location.href = "../admin-login.html";
+                    return;
+                }
+
+                if (response.ok && data.success) {
+                    closeCourseModal();
+                    loadCourses();
+                    alert(data.message || "Course saved successfully!");
+                } else {
+                    alert(data.error || "Failed to save course. Please try again.");
+                }
+            } catch (err) {
+                console.error("Error saving course:", err);
+                alert("Server error. Please check the console for details.");
+            }
+        }
+
+        function closeCourseModal() {
+            document.getElementById("courseModal").classList.remove("active");
+            editingCourseId = null;
+            document.getElementById("courseTitle").value = "";
+            document.getElementById("courseSubject").value = "";
+            document.getElementById("courseGrade").value = "";
+            document.getElementById("courseDescription").value = "";
+            document.getElementById("courseThumbnail").value = "";
+            document.getElementById("coursePrice").value = "0";
+            document.getElementById("courseLessons").value = "0";
+            document.getElementById("modalTitle").textContent = "Add Course";
+        }
+
+        // Event Listeners
+        document.getElementById("logoutBtn").addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("admin");
+            window.location.href = "../admin-login.html";
+        });
+
+        document.getElementById("addCourseBtn").addEventListener("click", () => {
+            editingCourseId = null;
+            document.getElementById("modalTitle").textContent = "Add Course";
+            document.getElementById("courseModal").classList.add("active");
+        });
+
+        document.getElementById("saveCourseBtn").addEventListener("click", saveCourse);
+        document.getElementById("closeModalBtn").addEventListener("click", closeCourseModal);
+
+        // Initialize
+        (async () => {
+            const isAdmin = await checkAdminAccess();
+            if (isAdmin) {
+                await loadCourses();
+            }
+        })();
+    </script>
+</body>
+</html>

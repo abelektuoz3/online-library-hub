@@ -93,8 +93,8 @@ app.use(
     })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Serve uploaded files
 app.use("/uploads", express.static(UPLOADS_DIR));
@@ -129,6 +129,7 @@ const announcementRoutes = require("./routes/announcement");
 const adminRoutes = require("./routes/admin");
 const googleAuthRoutes = require("./routes/google-auth");
 const githubAuthRoutes = require("./routes/github-auth");
+const courseRoutes = require("./routes/courseRoutes");
 
 // ==================== PASSPORT STRATEGIES ====================
 // Initialize Passport strategies
@@ -140,6 +141,7 @@ app.use("/api/catalog", catalogRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/courses", courseRoutes); // ✅ ADDED: Course routes
 
 // ==================== OAUTH ROUTES ====================
 // GitHub Routes
@@ -323,6 +325,7 @@ app.listen(PORT, () => {
         `📚 Frontend: ${process.env.FRONTEND_URL || `http://localhost:${PORT}/index.html`}`
     );
     console.log(`🔌 API base: http://localhost:${PORT}/api`);
+    console.log(`📚 Course API: http://localhost:${PORT}/api/courses`);
     console.log(`✅ CORS enabled (all origins allowed for testing)`);
     console.log(`📁 Uploads directory: ${UPLOADS_DIR}`);
 });

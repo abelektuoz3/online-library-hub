@@ -8,3 +8,17 @@
 
 # Redirect root to index.html
 /  /index.html  200
+
+# Admin pages
+/admin-dashboard  /pages/admin-dashboard.html  200
+/admin-dashboard.html  /pages/admin-dashboard.html  200
+/admin-resources  /pages/admin-resources.html  200
+/admin-resources.html  /pages/admin-resources.html  200
+/admin-users  /pages/admin-users.html  200
+/admin-users.html  /pages/admin-users.html  200
+/admin-messages  /pages/admin-messages.html  200
+/admin-messages.html  /pages/admin-messages.html  200
+/admin-announcements  /pages/admin-announcements.html  200
+/admin-announcements.html  /pages/admin-announcements.html  200
+/admin-courses  /pages/admin-courses.html  200
+/admin-courses.html  /pages/admin-courses.html  200

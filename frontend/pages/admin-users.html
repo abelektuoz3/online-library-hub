@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard | Online Library Hub</title>
+    <title>Manage Users | Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -171,58 +171,6 @@
             border-color: #fca5a5;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            padding: 1.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-        }
-
-        .stat-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            transform: translateY(-2px);
-        }
-
-        .stat-info h3 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #1a1a2e;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-info p {
-            color: #64748b;
-            font-size: 0.8125rem;
-            font-weight: 500;
-        }
-
-        .stat-icon {
-            width: 44px;
-            height: 44px;
-            background: #eff6ff;
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-icon i {
-            font-size: 1.125rem;
-            color: #2563eb;
-        }
-
         .dashboard-card {
             background: white;
             border: 1px solid #e2e8f0;
@@ -258,46 +206,85 @@
             color: #1a1a2e;
         }
 
-        .admin-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+        .table-responsive {
+            overflow-x: auto;
+            margin: 0 -1.5rem -1.5rem -1.5rem;
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
         }
 
-        .admin-link-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            text-align: center;
-            text-decoration: none;
-            color: #1a1a2e;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 0.875rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+
+        td {
+            font-size: 0.875rem;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-active {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status-suspended {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            color: #64748b;
             transition: all 0.2s;
         }
 
-        .admin-link-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-color: #2563eb;
-        }
-
-        .admin-link-card i {
-            font-size: 2rem;
+        .btn-icon:hover {
+            background: #f1f5f9;
             color: #2563eb;
-            margin-bottom: 0.5rem;
-            display: block;
         }
 
-        .admin-link-card h4 {
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .admin-link-card p {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 0.25rem;
+        .btn-delete:hover {
+            background: #fef2f2;
+            color: #ef4444;
         }
 
         @media (max-width: 992px) {
@@ -310,9 +297,6 @@
             }
             .main-content {
                 margin-left: 70px;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -347,12 +331,6 @@
                 margin-left: 0;
                 padding: 1rem;
             }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .admin-links {
-                grid-template-columns: 1fr 1fr;
-            }
         }
     </style>
 </head>
@@ -369,13 +347,13 @@
                 </p>
             </div>
             <nav class="sidebar-nav">
-                <a class="nav-item active" href="admin-dashboard.html">
+                <a class="nav-item" href="admin-dashboard.html">
                     <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
                 </a>
                 <a class="nav-item" href="admin-resources.html">
                     <i class="fas fa-book"></i> <span>Resources</span>
                 </a>
-                <a class="nav-item" href="admin-users.html">
+                <a class="nav-item active" href="admin-users.html">
                     <i class="fas fa-users"></i> <span>Users</span>
                 </a>
                 <a class="nav-item" href="admin-messages.html">
@@ -395,8 +373,8 @@
             <!-- Top Bar -->
             <div class="top-bar">
                 <div class="page-title">
-                    <h1 id="pageTitle">Dashboard</h1>
-                    <p id="pageDescription">Overview of your library</p>
+                    <h1>Users</h1>
+                    <p>Manage registered users</p>
                 </div>
                 <div class="user-info">
                     <span id="adminName">Admin</span>
@@ -406,85 +384,35 @@
                 </div>
             </div>
 
-            <!-- Dashboard Content -->
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h3 id="totalUsers">-</h3>
-                        <p>Total Users</p>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h3 id="totalResources">-</h3>
-                        <p>Resources</p>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-book"></i></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <h3 id="unreadMessages">-</h3>
-                        <p>Unread Messages</p>
-                    </div>
-                    <div class="stat-icon"><i class="fas fa-envelope"></i></div>
-                </div>
-            </div>
-
-            <!-- Quick Access Links -->
+            <!-- Users Table -->
             <div class="dashboard-card">
                 <div class="card-header-flex">
                     <div class="card-header-title">
-                        <i class="fas fa-rocket"></i>
-                        <h3>Quick Access</h3>
-                    </div>
-                </div>
-                <div class="admin-links">
-                    <a href="admin-resources.html" class="admin-link-card">
-                        <i class="fas fa-book"></i>
-                        <h4>Resources</h4>
-                        <p>Manage library resources</p>
-                    </a>
-                    <a href="admin-users.html" class="admin-link-card">
                         <i class="fas fa-users"></i>
-                        <h4>Users</h4>
-                        <p>Manage registered users</p>
-                    </a>
-                    <a href="admin-messages.html" class="admin-link-card">
-                        <i class="fas fa-envelope"></i>
-                        <h4>Messages</h4>
-                        <p>View contact messages</p>
-                    </a>
-                    <a href="admin-announcements.html" class="admin-link-card">
-                        <i class="fas fa-bullhorn"></i>
-                        <h4>Announcements</h4>
-                        <p>Post updates</p>
-                    </a>
-                    <a href="admin-courses.html" class="admin-link-card">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h4>Courses</h4>
-                        <p>Manage courses</p>
-                    </a>
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-header-flex">
-                    <div class="card-header-title">
-                        <i class="fas fa-info-circle"></i>
-                        <h3>Admin Guidelines</h3>
+                        <h3>All Users</h3>
                     </div>
                 </div>
-                <p style="font-size: 0.875rem; color: #4b5563; line-height: 1.6; margin-bottom: 1rem;">
-                    Use the sidebar navigation to manage different layers of the Online Library Hub platform:
-                </p>
-                <ul style="font-size: 0.875rem; color: #4b5563; line-height: 2; padding-left: 1.5rem; margin-bottom: 1rem;">
-                    <li><strong>Catalog Resources:</strong> Add, edit, or delete books, e-books, and references.</li>
-                    <li><strong>Users:</strong> Access user profiles, suspend accounts, delete users, or promote other members to Administrator.</li>
-                    <li><strong>Contact Messages:</strong> Read and manage messages sent through the customer support form.</li>
-                    <li><strong>Announcements:</strong> Post updates that appear on the user dashboard.</li>
-                    <li><strong>Courses:</strong> Manage learning courses and materials.</li>
-                </ul>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Joined</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading users...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
@@ -509,6 +437,16 @@
             return null;
         }
 
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === "&") return "&amp;";
+                if (m === "<") return "&lt;";
+                if (m === ">") return "&gt;";
+                return m;
+            });
+        }
+
         async function checkAdminAccess() {
             const token = getToken();
             const admin = getAdmin();
@@ -530,10 +468,7 @@
                     return false;
                 }
 
-                const adminNameSpan = document.getElementById("adminName");
-                if (adminNameSpan && admin.name) {
-                    adminNameSpan.textContent = `👑 ${admin.name}`;
-                }
+                document.getElementById("adminName").textContent = `👑 ${admin.name}`;
                 return true;
             } catch (err) {
                 console.error("Admin verification error:", err);
@@ -542,23 +477,113 @@
             }
         }
 
-        async function loadStats() {
+        async function loadUsers() {
             const token = getToken();
             try {
-                const response = await fetch(`${API_BASE}/admin/stats`, {
+                const response = await fetch(`${API_BASE}/admin/users`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await response.json();
+                const tbody = document.getElementById("usersTableBody");
 
-                if (data.success) {
-                    document.getElementById("totalUsers").textContent = data.stats.totalUsers || 0;
-                    document.getElementById("totalResources").textContent = data.stats.totalResources || 0;
-                    document.getElementById("unreadMessages").textContent = data.stats.unreadMessages || 0;
+                if (data.success && data.users && data.users.length) {
+                    tbody.innerHTML = data.users
+                        .map((u) => {
+                            const userId = u._id || u.id;
+                            return `
+                                <tr>
+                                    <td><strong>${escapeHtml(u.name)}</strong></td>
+                                    <td>${escapeHtml(u.email)}</td>
+                                    <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+                                    <td>${u.role === "admin" ? "👑 Admin" : "👤 User"}</td>
+                                    <td><span class="status-badge ${u.isSuspended ? "status-suspended" : "status-active"}">${u.isSuspended ? "Suspended" : "Active"}</span></td>
+                                    <td>
+                                        ${u.role !== "admin" ? `<button class="btn-icon" onclick="makeAdmin('${userId}')" title="Make Admin"><i class="fas fa-crown"></i></button>` : ""}
+                                        ${u.role !== "admin" ? (u.isSuspended ? `<button class="btn-icon" onclick="toggleSuspension('${userId}', false)" title="Unsuspend user"><i class="fas fa-user-check"></i></button>` : `<button class="btn-icon btn-delete" onclick="toggleSuspension('${userId}', true)" title="Suspend user"><i class="fas fa-user-slash"></i></button>`) : ""}
+                                        <button class="btn-icon btn-delete" onclick="deleteUser('${userId}')" title="Delete user"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join("");
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">No users found</td></tr>';
                 }
             } catch (err) {
-                console.error("Error loading stats:", err);
+                console.error("Error loading users:", err);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#ef4444;">Error loading users</td></tr>';
             }
         }
+
+        window.makeAdmin = async function (userId) {
+            if (!confirm("Make this user an admin?")) return;
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}/make-admin`, {
+                    method: "PUT",
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    loadUsers();
+                    alert("User promoted to admin successfully!");
+                } else {
+                    alert(data.error || "Failed to promote user.");
+                }
+            } catch (err) {
+                console.error("Error making admin:", err);
+                alert("Error making admin. Please try again.");
+            }
+        };
+
+        window.toggleSuspension = async function (userId, suspend) {
+            const action = suspend ? "suspend" : "unsuspend";
+            if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}/suspension`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ suspended: suspend }),
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    loadUsers();
+                    alert(`User ${action}ed successfully!`);
+                } else {
+                    alert(data.error || `Failed to ${action} user.`);
+                }
+            } catch (err) {
+                console.error(`Error trying to ${action} user:`, err);
+                alert("Server error. Please try again.");
+            }
+        };
+
+        window.deleteUser = async function (userId) {
+            if (!confirm("Delete this user?")) return;
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    loadUsers();
+                    alert("User deleted successfully!");
+                } else {
+                    alert(data.error || "Failed to delete user.");
+                }
+            } catch (err) {
+                console.error("Error deleting user:", err);
+                alert("Error deleting user. Please try again.");
+            }
+        };
 
         // Logout
         document.getElementById("logoutBtn").addEventListener("click", (e) => {
@@ -572,7 +597,7 @@
         (async () => {
             const isAdmin = await checkAdminAccess();
             if (isAdmin) {
-                await loadStats();
+                await loadUsers();
             }
         })();
     </script>
