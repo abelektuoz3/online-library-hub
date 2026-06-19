@@ -12,24 +12,121 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
+            color: #1a1a2e;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-        .container {
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+        .logo a span { color: #2563eb; }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #2563eb; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
+        }
+        .btn-outline:hover { background: #eff6ff; }
+        .btn-primary-nav {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+        .btn-primary-nav:hover { background: #1d4ed8; }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        /* ===== MAIN ===== */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            max-width: 440px;
+            width: 100%;
             background: white;
             border-radius: 1rem;
-            padding: 2.5rem;
-            max-width: 440px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
         }
-        .logo { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
-        .logo span { color: #2563eb; }
-        .subtitle { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .card-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+        .card-header p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .info-box {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: #475569;
+            text-align: center;
+        }
+        .info-box strong { color: #1a1a2e; }
+        .info-box .status { font-size: 0.75rem; color: #64748b; display: block; margin-top: 0.25rem; }
+
         .otp-inputs {
             display: flex;
             gap: 0.75rem;
@@ -48,17 +145,15 @@
             transition: all 0.2s;
             font-family: 'Inter', sans-serif;
             background: white;
+            color: #1a1a2e;
         }
         .otp-inputs input:focus {
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
-        .otp-inputs input.error {
-            border-color: #ef4444;
-        }
-        .otp-inputs input.success {
-            border-color: #10b981;
-        }
+        .otp-inputs input.error { border-color: #ef4444; }
+        .otp-inputs input.success { border-color: #10b981; }
+
         .btn-verify {
             width: 100%;
             background: #2563eb;
@@ -74,10 +169,12 @@
         }
         .btn-verify:hover { background: #1d4ed8; }
         .btn-verify:disabled { background: #93c5fd; cursor: not-allowed; }
+
         .resend-link {
             margin-top: 1rem;
             font-size: 0.875rem;
             color: #64748b;
+            text-align: center;
         }
         .resend-link a {
             color: #2563eb;
@@ -86,36 +183,27 @@
             cursor: pointer;
         }
         .resend-link a:hover { text-decoration: underline; }
-        .error-message {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid #fca5a5;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            display: none;
+
+        .timer {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 0.5rem;
         }
-        .success-message {
-            background: #ecfdf5;
-            color: #065f46;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid #6ee7b7;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            display: none;
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
         }
-        .info-box {
-            background: #f8fafc;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 1rem;
+        .back-link a {
+            color: #64748b;
+            text-decoration: none;
             font-size: 0.875rem;
-            color: #475569;
         }
-        .info-box strong { color: #1a1a2e; }
+        .back-link a:hover { color: #2563eb; text-decoration: underline; }
+
         .spinner {
             display: inline-block;
             width: 20px;
@@ -128,47 +216,134 @@
             margin-right: 0.5rem;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .timer { font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; }
-        .back-link { margin-top: 1rem; font-size: 0.875rem; }
-        .back-link a { color: #64748b; text-decoration: none; }
-        .back-link a:hover { text-decoration: underline; }
+
+        .message {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .message.error {
+            display: block;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+        .message.success {
+            display: block;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .nav-links.active { display: flex; }
+            .card { padding: 1.5rem; }
+            .otp-inputs input { width: 42px; height: 50px; font-size: 1.25rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">Library<span>Hub</span></div>
-        <p class="subtitle">Enter the verification code sent to your email</p>
-        
-        <div id="errorMessage" class="error-message"></div>
-        <div id="successMessage" class="success-message"></div>
-        
-        <div class="info-box">
-            <strong>Email:</strong> <span id="userEmail">loading...</span>
-            <br>
-            <span id="userStatus" style="font-size: 0.75rem; color: #64748b;"></span>
-        </div>
 
-        <div class="otp-inputs" id="otpContainer">
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus>
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
-            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="pages/catalog.html">Catalog</a></li>
+                <li><a href="pages/login.html" class="btn-outline">Sign In</a></li>
+                <li><a href="pages/register.html" class="btn-primary-nav">Join Free</a></li>
+            </ul>
         </div>
+    </nav>
 
-        <button class="btn-verify" id="verifyBtn">Verify Code</button>
+    <!-- ===== MAIN ===== -->
+    <main>
+        <div class="card">
+            <div class="card-header">
+                <h1>Verify Your Email</h1>
+                <p>Enter the verification code sent to your email</p>
+            </div>
 
-        <div class="resend-link">
-            Didn't receive the code? <a id="resendBtn">Resend</a>
+            <div id="errorMessage" class="message error"></div>
+            <div id="successMessage" class="message success"></div>
+
+            <div class="info-box">
+                <strong id="userEmail">loading...</strong>
+                <span class="status" id="userStatus"></span>
+            </div>
+
+            <div class="otp-inputs" id="otpContainer">
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus>
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            </div>
+
+            <button class="btn-verify" id="verifyBtn">Verify Code</button>
+
+            <div class="resend-link">
+                Didn't receive the code? <a id="resendBtn">Resend</a>
+            </div>
+            <div class="timer" id="timerDisplay"></div>
+
+            <div class="back-link">
+                <a href="pages/login.html"><i class="fas fa-arrow-left"></i> Back to Login</a>
+            </div>
         </div>
-        <div class="timer" id="timerDisplay"></div>
-        <div class="back-link">
-            <a href="pages/login.html">← Back to Login</a>
-        </div>
-    </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
 
     <script>
+        // ==================== NAVBAR TOGGLE ====================
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // ==================== CURRENT YEAR ====================
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
         // ==================== GET EMAIL FROM URL ====================
         const urlParams = new URLSearchParams(window.location.search);
         const email = urlParams.get('email');
@@ -176,7 +351,6 @@
         const isNew = urlParams.get('isNew') === 'true';
 
         const API_BASE = window.API_BASE || 'https://online-library-hub.onrender.com/api';
-        const FRONTEND_URL = window.FRONTEND_URL || 'https://online-library-hub.netlify.app';
 
         let otpAttempts = 0;
         let timerInterval = null;
@@ -185,7 +359,7 @@
         // ==================== DISPLAY USER INFO ====================
         document.getElementById('userEmail').textContent = email || 'Unknown';
         if (isNew) {
-            document.getElementById('userStatus').textContent = '🆕 New account being created - Please verify your email';
+            document.getElementById('userStatus').textContent = '🆕 New account - Please verify your email';
         } else {
             document.getElementById('userStatus').textContent = '🔐 Existing account - Please verify to login';
         }

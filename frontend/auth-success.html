@@ -12,25 +12,112 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
+            color: #1a1a2e;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-        .container {
+        .logo a {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-decoration: none;
+        }
+        .logo a span { color: #2563eb; }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.75rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #2563eb; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            color: #2563eb !important;
+        }
+        .btn-outline:hover { background: #eff6ff; }
+        .btn-primary-nav {
+            background: #2563eb;
+            color: white !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+        .btn-primary-nav:hover { background: #1d4ed8; }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+
+        /* ===== MAIN ===== */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            max-width: 440px;
+            width: 100%;
             background: white;
             border-radius: 1rem;
-            padding: 3rem;
-            max-width: 420px;
-            width: 90%;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .icon { font-size: 4rem; margin-bottom: 1rem; display: block; color: #10b981; }
-        h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
-        p { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.6; }
-        .btn {
+        .icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .card h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 0.5rem;
+        }
+        .card p {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .card .btn {
             display: inline-block;
             padding: 0.75rem 2rem;
             border-radius: 0.5rem;
@@ -43,15 +130,158 @@
             background: #2563eb;
             color: white;
         }
-        .btn:hover { background: #1d4ed8; }
+        .card .btn:hover { background: #1d4ed8; }
+        .card .btn-outline-card {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            margin-left: 0.5rem;
+        }
+        .card .btn-outline-card:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+        .card .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+        .card .divider::before,
+        .card .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .card .divider span { padding: 0 0.75rem; }
+        .card .info-box {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+        .card .info-box strong { color: #1a1a2e; }
+
+        .buttons-row {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 1.5rem;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .nav-links.active { display: flex; }
+            .card { padding: 1.5rem; }
+            .buttons-row { flex-direction: column; }
+            .buttons-row .btn { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <span class="icon">✅</span>
-        <h1>Registration Successful!</h1>
-        <p>Your account has been created. Please check your email for the verification code to complete your login.</p>
-        <a href="/auth-callback.html" class="btn">Verify Email</a>
-    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">Library<span>Hub</span></a>
+            </div>
+            <button class="hamburger" id="hamburger">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="pages/catalog.html">Catalog</a></li>
+                <li><a href="pages/login.html" class="btn-outline">Sign In</a></li>
+                <li><a href="pages/register.html" class="btn-primary-nav">Join Free</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main>
+        <div class="card">
+            <span class="icon">✅</span>
+            <h1>Registration Successful!</h1>
+            <p>Your account has been created. Please check your email for the verification code to complete your login.</p>
+
+            <div class="info-box">
+                <strong id="userEmail">Loading...</strong>
+                <br>
+                <span style="font-size: 0.75rem; color: #64748b;">A verification code has been sent to your email</span>
+            </div>
+
+            <div class="buttons-row">
+                <a href="/auth-callback.html" class="btn">
+                    <i class="fas fa-envelope"></i> Verify Email
+                </a>
+                <a href="pages/login.html" class="btn btn-outline-card">
+                    <i class="fas fa-arrow-left"></i> Back to Login
+                </a>
+            </div>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0;">
+                Didn't receive the code? Check your spam folder or
+                <a href="/auth-callback.html" style="color: #2563eb; text-decoration: none; font-weight: 600;">resend</a>
+            </p>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // ==================== NAVBAR TOGGLE ====================
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // ==================== CURRENT YEAR ====================
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // ==================== GET EMAIL FROM URL ====================
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        if (email) {
+            document.getElementById('userEmail').textContent = email;
+        }
+    </script>
 </body>
 </html>
