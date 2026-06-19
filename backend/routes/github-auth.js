@@ -16,6 +16,9 @@ router.get('/callback',
     }),
     function(req, res) {
         try {
+            // Check if user is new (passed from passport strategy)
+            const isNewUser = req.user.isNewUser || false;
+            
             // Generate JWT token
             const token = jwt.sign(
                 { 
@@ -27,12 +30,20 @@ router.get('/callback',
                 { expiresIn: '7d' }
             );
 
-            // Redirect to frontend with token
             const frontendUrl = process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app';
-            res.redirect(`${frontendUrl}/auth-success?token=${token}`);
+            
+            // Redirect based on whether user is new or existing
+            if (isNewUser) {
+                // New user - redirect to auth-success (registration)
+                res.redirect(`${frontendUrl}/auth-success.html?token=${token}`);
+            } else {
+                // Existing user - redirect to auth-callback (login)
+                res.redirect(`${frontendUrl}/auth-callback.html?token=${token}`);
+            }
         } catch (error) {
             console.error('GitHub callback error:', error);
-            res.redirect(`${process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app'}/login?error=github_auth_failed`);
+            const frontendUrl = process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app';
+            res.redirect(`${frontendUrl}/login?error=github_auth_failed`);
         }
     }
 );

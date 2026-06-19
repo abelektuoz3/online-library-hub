@@ -54,13 +54,12 @@ router.post('/register', async (req, res) => {
             name: trimmedName,
             email: normalizedEmail,
             password: password,
-            isVerified: false  // User must verify email before logging in
+            isVerified: false
         });
         await user.save();
 
         console.log(`✅ User created: ${normalizedEmail} (unverified)`);
 
-        // ---- Send success response (no token yet - needs verification) ----
         res.json({
             success: true,
             message: 'Account created successfully. Please verify your email with the OTP sent to your inbox.',
@@ -97,7 +96,9 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             console.log('❌ User not found');
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(404).json({ 
+                error: 'Account not found. Please sign up first.' 
+            });
         }
 
         console.log(`👤 User found: ${user.name}, isVerified: ${user.isVerified}`);
@@ -134,7 +135,6 @@ router.post('/login', async (req, res) => {
 
         console.log('✅ Login successful');
 
-        // ---- Send success response ----
         res.json({
             success: true,
             token: token,

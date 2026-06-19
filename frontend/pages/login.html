@@ -637,19 +637,14 @@
       }
 
       // ==================== SOCIAL LOGIN ====================
-      document
-        .getElementById("googleLoginBtn")
-        ?.addEventListener("click", function () {
-          const backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
-          window.location.href = backendBase + "/auth/google";
-        });
+document.getElementById("googleLoginBtn")?.addEventListener("click", function () {
+    // Use the full backend URL
+    window.location.href = "https://online-library-hub.onrender.com/api/auth/google";
+});
 
-      document
-        .getElementById("githubLoginBtn")
-        ?.addEventListener("click", function () {
-          const backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
-          window.location.href = backendBase + "/auth/github";
-        });
+document.getElementById("githubLoginBtn")?.addEventListener("click", function () {
+    window.location.href = "https://online-library-hub.onrender.com/api/auth/github";
+});
 
       // ==================== INIT ====================
       document.addEventListener("DOMContentLoaded", function () {

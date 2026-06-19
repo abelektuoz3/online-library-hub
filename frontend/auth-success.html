@@ -3,53 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Successful - Online Library Hub</title>
+    <title>Registration Successful | Online Library Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
         .container {
-            text-align: center;
             background: white;
-            padding: 50px 60px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 450px;
+            border-radius: 1rem;
+            padding: 3rem;
+            max-width: 420px;
             width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        
-        .success-icon {
-            font-size: 64px;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        h1 {
-            color: #2d3748;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        p {
-            color: #718096;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-        
+        .icon { font-size: 4rem; margin-bottom: 1rem; display: block; }
+        .icon.success { color: #10b981; }
+        .icon.error { color: #ef4444; }
+        .icon.loading { color: #667eea; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        p { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.6; }
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
@@ -59,140 +43,110 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         .progress-bar {
             width: 100%;
             height: 4px;
             background: #e2e8f0;
             border-radius: 2px;
-            margin-top: 20px;
+            margin-top: 1.5rem;
             overflow: hidden;
         }
-        
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #667eea, #764ba2);
             width: 0%;
             animation: progress 2s ease-in-out forwards;
         }
-        
-        @keyframes progress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-        
-        .error-message {
-            color: #e53e3e;
-            background: #fff5f5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #feb2b2;
-        }
-
+        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
         .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
-            text-decoration: none;
             display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
         }
-
-        .btn:hover {
-            background: #5a67d8;
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #f1f5f9; color: #475569; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #fca5a5;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
         }
+        .buttons { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1rem; }
     </style>
 </head>
 <body>
-    <div class="container" id="mainContainer">
-        <!-- Content will be dynamically inserted by JavaScript -->
-    </div>
-    
+    <div class="container" id="mainContainer"></div>
+
     <script>
-        // Get token from URL
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         const error = urlParams.get('error');
-        
-        console.log('🔐 Auth success page loaded');
-        console.log('Token present:', !!token);
-        console.log('Error present:', !!error);
-        
         const container = document.getElementById('mainContainer');
-        
-        // Handle errors first
+
         if (error) {
-            console.error('❌ Authentication error:', error);
             const errorMessages = {
-                'github_auth_failed': 'GitHub authentication failed. Please try again.',
-                'google_auth_failed': 'Google authentication failed. Please try again.',
-                'no_token': 'No authentication token received. Please try again.',
-                'invalid_token': 'Invalid authentication token. Please try again.'
+                'github_auth_failed': 'GitHub registration failed. Please try again.',
+                'google_auth_failed': 'Google registration failed. Please try again.',
+                'no_token': 'No authentication token received.',
+                'invalid_token': 'Invalid authentication token.',
+                'email_exists': 'Email already exists. Please login instead.'
             };
-            
-            const errorMessage = errorMessages[error] || 'Authentication failed. Please try again.';
-            
+            const errorMessage = errorMessages[error] || 'Registration failed. Please try again.';
             container.innerHTML = `
-                <span class="success-icon">❌</span>
-                <h1>Authentication Failed</h1>
+                <span class="icon error">❌</span>
+                <h1>Registration Failed</h1>
                 <div class="error-message">${errorMessage}</div>
-                <a href="/login.html" class="btn">Go to Login</a>
+                <div class="buttons">
+                    <a href="pages/register.html" class="btn btn-primary">Try Again</a>
+                    <a href="index.html" class="btn btn-secondary">Go to Home</a>
+                </div>
             `;
         } else if (token) {
-            // Success - store token and redirect
             try {
-                // Store token
                 localStorage.setItem('authToken', token);
+                localStorage.setItem('token', token);
+                localStorage.setItem('isNewUser', 'true');
                 console.log('✅ Token stored successfully');
-                
-                // Show success message with spinner
                 container.innerHTML = `
-                    <span class="success-icon">✅</span>
-                    <h1>Authentication Successful!</h1>
-                    <p>You have been successfully authenticated. Redirecting you to your dashboard...</p>
+                    <span class="icon success">🎉</span>
+                    <h1>Account Created Successfully!</h1>
+                    <p>Your account has been created. Redirecting you to your dashboard...</p>
                     <div class="spinner"></div>
-                    <div class="progress-bar">
-                        <div class="progress-fill"></div>
-                    </div>
-                    <p style="font-size: 14px; margin-top: 20px; color: #a0aec0;">
-                        You will be redirected automatically in a few seconds.
-                    </p>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                    <p style="font-size: 0.75rem; margin-top: 1rem; color: #94a3b8;">Redirecting in a few seconds...</p>
                 `;
-                
-                // Redirect to dashboard after 2.5 seconds
-                setTimeout(function() {
-                    console.log('🔄 Redirecting to dashboard...');
-                    window.location.href = '/dashboard.html';
-                }, 2500);
-                
+                setTimeout(() => { window.location.href = 'pages/dashboard.html'; }, 2500);
             } catch (err) {
                 console.error('Error storing token:', err);
                 container.innerHTML = `
-                    <span class="success-icon">⚠️</span>
+                    <span class="icon error">⚠️</span>
                     <h1>Error</h1>
-                    <p>There was an error processing your authentication.</p>
-                    <a href="/login.html" class="btn">Go to Login</a>
+                    <p>There was an error processing your registration.</p>
+                    <div class="buttons">
+                        <a href="pages/register.html" class="btn btn-primary">Try Again</a>
+                    </div>
                 `;
             }
         } else {
-            // No token received
-            console.warn('⚠️ No token received in URL');
             container.innerHTML = `
-                <span class="success-icon">⚠️</span>
-                <h1>No Authentication Token</h1>
-                <p>We couldn't find an authentication token. Please try logging in again.</p>
-                <a href="/login.html" class="btn">Go to Login</a>
+                <span class="icon error">⚠️</span>
+                <h1>No Registration Data</h1>
+                <p>We couldn't find any registration data. Please try again.</p>
+                <div class="buttons">
+                    <a href="pages/register.html" class="btn btn-primary">Try Again</a>
+                    <a href="index.html" class="btn btn-secondary">Go to Home</a>
+                </div>
             `;
         }
     </script>

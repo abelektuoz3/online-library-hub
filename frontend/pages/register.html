@@ -912,15 +912,14 @@
       }
 
       // ==================== SOCIAL LOGIN ====================
-      document.getElementById("googleRegisterBtn")?.addEventListener("click", function () {
-        var backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
-        window.location.href = backendBase + "/auth/google";
-      });
+      // ==================== SOCIAL LOGIN ====================
+document.getElementById("googleRegisterBtn")?.addEventListener("click", function () {
+    window.location.href = "https://online-library-hub.onrender.com/api/auth/google";
+});
 
-      document.getElementById("githubRegisterBtn")?.addEventListener("click", function () {
-        var backendBase = window.BACKEND_BASE || "https://online-library-hub.onrender.com";
-        window.location.href = backendBase + "/auth/github";
-      });
+document.getElementById("githubRegisterBtn")?.addEventListener("click", function () {
+    window.location.href = "https://online-library-hub.onrender.com/api/auth/github";
+});
 
       // ==================== INIT ====================
       document.addEventListener("DOMContentLoaded", function () {
