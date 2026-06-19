@@ -545,15 +545,15 @@ A huge thank you to all the amazing people who have contributed to this project!
 - **Abel Eskinder**
 
 ### Group Members
-1. [Name/Username] - [Role/Contribution]
-2. [Name/Username] - [Role/Contribution]
-3. [Name/Username] - [Role/Contribution]
-4. [Name/Username] - [Role/Contribution]
-5. [Name/Username] - [Role/Contribution]
-6. [Name/Username] - [Role/Contribution]
-7. [Name/Username] - [Role/Contribution]
-8. [Name/Username] - [Role/Contribution]
-9. [Name/Username] - [Role/Contribution]
+1. Yabsra Chalachew
+2. Dawit Israel 
+3. Mekdelawit
+4. Adoniyas samson
+5. Addisu
+6. Daniel Gebru
+7. Meskerem Wondoson
+8. Fromsi Mengesha
+9. Eyerusalem Ataklti
 
 ### Want to Contribute?
 
