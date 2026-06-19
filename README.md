@@ -547,9 +547,9 @@ A huge thank you to all the amazing people who have contributed to this project!
 ### Group Members
 1. Yabsra Chalachew
 2. Dawit Israel 
-3. Mekdelawit
+3. Mekidelawit abayineh
 4. Adoniyas samson
-5. Addisu
+5. Addisu temesgen
 6. Daniel Gebru
 7. Meskerem Wondoson
 8. Fromsi Mengesha
