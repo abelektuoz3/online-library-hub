@@ -14,212 +14,164 @@ const getEmailStyles = () => `
             box-sizing: border-box;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #f5f7fa;
             margin: 0;
             padding: 0;
         }
         .email-wrapper {
-            max-width: 560px;
+            max-width: 520px;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
         .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 30px 30px;
+            background: #ffffff;
+            padding: 32px 30px 20px;
             text-align: center;
-            position: relative;
+            border-bottom: 1px solid #e8ecf1;
         }
         .email-header .logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.5px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+            letter-spacing: -0.3px;
         }
         .email-header .logo span {
-            color: rgba(255, 255, 255, 0.8);
+            color: #2563eb;
         }
-        .email-header .tagline {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            margin-top: 6px;
+        .email-header .subtitle {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
             font-weight: 400;
-            letter-spacing: 1px;
-        }
-        .email-header .header-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-            display: block;
         }
         .email-body {
-            padding: 40px 35px 35px;
+            padding: 28px 30px 20px;
         }
         .email-body h2 {
             color: #1a1a2e;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
             line-height: 1.3;
         }
         .email-body p {
             color: #4a5568;
             font-size: 15px;
             line-height: 1.7;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .email-body .greeting {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 15px;
             color: #1a1a2e;
         }
-        .otp-container {
-            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-            border-radius: 12px;
-            padding: 28px 20px;
-            text-align: center;
-            margin: 24px 0 20px;
-            border: 2px dashed #c7d2fe;
-        }
-        .otp-container .otp-label {
-            font-size: 13px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-        }
-        .otp-container .otp-code {
-            font-size: 42px;
-            font-weight: 800;
-            color: #1a1a2e;
-            letter-spacing: 12px;
-            font-family: 'Courier New', monospace;
-            margin: 8px 0;
-            background: white;
-            padding: 12px 20px;
+        .otp-box {
+            background: #f7f9fc;
             border-radius: 8px;
-            display: inline-block;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0 16px;
+            border: 1px solid #e8ecf1;
         }
-        .otp-container .otp-expiry {
+        .otp-box .otp-label {
             font-size: 12px;
-            color: #94a3b8;
-            margin-top: 8px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
-        .email-divider {
+        .otp-box .otp-code {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a2e;
+            letter-spacing: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 6px 0 4px;
+        }
+        .otp-box .otp-expiry {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .divider {
             border: none;
-            border-top: 1px solid #e2e8f0;
-            margin: 24px 0;
+            border-top: 1px solid #e8ecf1;
+            margin: 20px 0;
+        }
+        .btn-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
         }
         .email-footer {
-            padding: 20px 35px 30px;
+            padding: 16px 30px 24px;
             text-align: center;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e8ecf1;
             background: #fafbfc;
         }
         .email-footer p {
-            color: #94a3b8;
+            color: #9ca3af;
             font-size: 12px;
             line-height: 1.6;
             margin: 0;
         }
         .email-footer .footer-links {
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .email-footer .footer-links a {
-            color: #667eea;
+            color: #6b7280;
             text-decoration: none;
             font-size: 12px;
-            margin: 0 8px;
+            margin: 0 6px;
         }
         .email-footer .footer-links a:hover {
+            color: #2563eb;
             text-decoration: underline;
         }
-        .btn-primary {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #ffffff !important;
-            padding: 12px 32px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-        .security-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f1f5f9;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 12px;
-        }
         @media (max-width: 480px) {
-            .email-wrapper { border-radius: 0; }
-            .email-body { padding: 25px 20px; }
-            .email-header { padding: 30px 20px 25px; }
-            .otp-container .otp-code { font-size: 32px; letter-spacing: 8px; }
-            .email-footer { padding: 15px 20px 20px; }
+            .email-body { padding: 20px 16px; }
+            .email-header { padding: 24px 16px 16px; }
+            .otp-box .otp-code { font-size: 28px; letter-spacing: 6px; }
+            .email-footer { padding: 12px 16px 16px; }
         }
     </style>
 `;
 
 // ==================== EMAIL TEMPLATE BUILDER ====================
-function buildEmailTemplate(content, isReset = false) {
-    const icon = isReset ? '🔐' : '📚';
-    const title = isReset ? 'Password Reset Request' : 'Verify Your Email Address';
-    const tagline = isReset ? 'Secure your account' : 'Complete your registration';
-    
+function buildEmailTemplate(content) {
     return `
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${title}</title>
+            <title>Online Library Hub</title>
             ${getEmailStyles()}
         </head>
-        <body style="background-color: #f5f7fa; padding: 30px 0;">
+        <body style="background-color: #f5f7fa; padding: 24px 0;">
             <div class="email-wrapper">
-                <!-- Header -->
                 <div class="email-header">
-                    <span class="header-icon">${icon}</span>
                     <div class="logo">Library<span>Hub</span></div>
-                    <div class="tagline">${tagline}</div>
+                    <div class="subtitle">Online Library Hub</div>
                 </div>
-                
-                <!-- Body -->
                 <div class="email-body">
                     ${content}
                 </div>
-                
-                <!-- Footer -->
                 <div class="email-footer">
-                    <p>
-                        <strong>Online Library Hub</strong> — Your digital learning companion
-                    </p>
+                    <p>Online Library Hub</p>
                     <div class="footer-links">
                         <a href="https://online-library-hub.netlify.app">Home</a>
                         <a href="https://online-library-hub.netlify.app/pages/catalog.html">Catalog</a>
                         <a href="https://online-library-hub.netlify.app/pages/contact.html">Contact</a>
                     </div>
-                    <p style="margin-top: 12px; font-size: 11px; color: #cbd5e1;">
-                        &copy; ${new Date().getFullYear()} Online Library Hub. All rights reserved.
+                    <p style="margin-top: 8px; font-size: 11px; color: #d1d5db;">
+                        &copy; ${new Date().getFullYear()} Online Library Hub
                     </p>
-                    <div class="security-badge">
-                        🔒 This is an automated message. Do not reply.
-                    </div>
                 </div>
             </div>
         </body>
@@ -312,73 +264,43 @@ async function sendOTPEmail(toEmail, toName, otp, type = 'verify') {
     const isReset = type === 'reset';
     
     if (isReset) {
-        subject = '🔐 Reset Your Password - Online Library Hub';
+        subject = 'Reset your password - Online Library Hub';
         contentHtml = `
-            <h2>Forgot your password? No worries!</h2>
-            <p class="greeting">Hello ${toName || 'User'},</p>
-            <p>We received a request to reset your password for your <strong>Online Library Hub</strong> account.</p>
-            <p>Use the verification code below to reset your password. This code is valid for <strong>10 minutes</strong>.</p>
+            <h2>Reset your password</h2>
+            <p class="greeting">Hi ${toName || 'there'},</p>
+            <p>We got a request to reset your password. Use the code below to create a new one.</p>
             
-            <div class="otp-container">
-                <div class="otp-label">🔑 Verification Code</div>
+            <div class="otp-box">
+                <div class="otp-label">Your verification code</div>
                 <div class="otp-code">${otp}</div>
-                <div class="otp-expiry">⏱️ Expires in 10 minutes</div>
+                <div class="otp-expiry">Expires in 10 minutes</div>
             </div>
             
-            <p style="font-size: 14px; color: #64748b;">
-                <strong>💡 Security Tip:</strong> Never share this code with anyone. Our team will never ask for it.
-            </p>
-            
-            <hr class="email-divider">
-            
-            <p style="font-size: 13px; color: #94a3b8;">
-                If you didn't request this password reset, please ignore this email or 
-                <a href="https://online-library-hub.netlify.app/pages/contact.html" style="color: #667eea; text-decoration: none;">contact support</a>.
+            <p style="font-size: 14px; color: #6b7280;">
+                If you didn't request this, you can safely ignore this email.
             </p>
         `;
     } else {
-        subject = '📚 Verify Your Email - Online Library Hub';
+        subject = 'Verify your email - Online Library Hub';
         contentHtml = `
-            <h2>Welcome to Online Library Hub! 🎉</h2>
-            <p class="greeting">Hello ${toName || 'User'},</p>
-            <p>Thanks for joining <strong>Online Library Hub</strong> — your digital gateway to thousands of learning resources!</p>
-            <p>To complete your registration and start exploring, please verify your email address using the code below.</p>
+            <h2>Verify your email address</h2>
+            <p class="greeting">Hi ${toName || 'there'},</p>
+            <p>Thanks for signing up! Enter the code below to verify your email and get started.</p>
             
-            <div class="otp-container">
-                <div class="otp-label">✅ Verification Code</div>
+            <div class="otp-box">
+                <div class="otp-label">Your verification code</div>
                 <div class="otp-code">${otp}</div>
-                <div class="otp-expiry">⏱️ Expires in 10 minutes</div>
+                <div class="otp-expiry">Expires in 10 minutes</div>
             </div>
             
-            <p style="text-align: center; margin: 20px 0;">
-                <a href="https://online-library-hub.netlify.app/pages/otp-verification.html" class="btn-primary">
-                    Verify Your Email
-                </a>
-            </p>
-            
-            <p style="font-size: 14px; color: #64748b;">
-                <strong>📖 What's next?</strong> After verification, you'll get access to:
-            </p>
-            <ul style="color: #4a5568; font-size: 14px; line-height: 1.8; padding-left: 20px; margin-bottom: 16px;">
-                <li>📚 Thousands of e-books and resources</li>
-                <li>🎓 Interactive learning courses</li>
-                <li>👥 Community discussions and study groups</li>
-                <li>📊 Track your learning progress</li>
-            </ul>
-            
-            <hr class="email-divider">
-            
-            <p style="font-size: 13px; color: #94a3b8;">
-                If you didn't create an account, please ignore this email or 
-                <a href="https://online-library-hub.netlify.app/pages/contact.html" style="color: #667eea; text-decoration: none;">contact support</a>.
+            <p style="font-size: 14px; color: #6b7280;">
+                If you didn't create an account, you can ignore this email.
             </p>
         `;
     }
     
-    // Wrap content in full template
-    const fullHtml = buildEmailTemplate(contentHtml, isReset);
+    const fullHtml = buildEmailTemplate(contentHtml);
     
-    // Try to send via Brevo if API key exists
     if (process.env.BREVO_API_KEY && process.env.SENDER_EMAIL) {
         console.log('📧 Attempting to send real email via Brevo...');
         try {
@@ -395,12 +317,6 @@ async function sendOTPEmail(toEmail, toName, otp, type = 'verify') {
         console.log('⚠️ Email not sent - missing BREVO_API_KEY or SENDER_EMAIL in .env');
         console.log('📝 Please use this OTP code for testing:', otp);
         console.log('💡 To fix: Add BREVO_API_KEY and SENDER_EMAIL to your .env file');
-        console.log('📧 Email preview:');
-        console.log('========================================');
-        console.log(`Subject: ${subject}`);
-        console.log('----------------------------------------');
-        console.log(fullHtml);
-        console.log('========================================');
         return { success: true, message: 'OTP generated (check console for code)', otp: otp, fallback: true };
     }
 }
@@ -409,52 +325,33 @@ async function sendOTPEmail(toEmail, toName, otp, type = 'verify') {
 async function sendWelcomeEmail(toEmail, toName) {
     console.log(`📧 Welcome email would be sent to: ${toEmail} (${toName})`);
     
-    const subject = '🎉 Welcome to Online Library Hub!';
+    const subject = 'Welcome to Online Library Hub';
     const contentHtml = `
-        <h2>Welcome aboard, ${toName || 'Reader'}! 🚀</h2>
-        <p class="greeting">Hello ${toName || 'User'},</p>
-        <p>Your email has been successfully verified. Welcome to the <strong>Online Library Hub</strong> community!</p>
+        <h2>Welcome to LibraryHub</h2>
+        <p class="greeting">Hi ${toName || 'there'},</p>
+        <p>Your account is all set. Here's what you can do next:</p>
         
-        <div style="background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid #667eea;">
-            <p style="margin: 0; font-weight: 600; color: #1a1a2e;">🎯 Your Learning Journey Starts Here</p>
-            <p style="margin: 6px 0 0; font-size: 14px; color: #4a5568;">
-                Start exploring thousands of resources, join study groups, and track your progress.
-            </p>
-        </div>
+        <ul style="color: #4a5568; font-size: 14px; line-height: 2; padding-left: 20px; margin: 12px 0 16px;">
+            <li>Browse the catalog and find resources</li>
+            <li>Join study groups and discussions</li>
+            <li>Track your learning progress</li>
+            <li>Connect with other learners</li>
+        </ul>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0;">
-            <div style="background: #f8fafc; padding: 14px; border-radius: 8px; text-align: center;">
-                <div style="font-size: 24px;">📚</div>
-                <div style="font-size: 13px; font-weight: 600; color: #1a1a2e; margin-top: 4px;">Browse Catalog</div>
-            </div>
-            <div style="background: #f8fafc; padding: 14px; border-radius: 8px; text-align: center;">
-                <div style="font-size: 24px;">🎓</div>
-                <div style="font-size: 13px; font-weight: 600; color: #1a1a2e; margin-top: 4px;">Start Learning</div>
-            </div>
-            <div style="background: #f8fafc; padding: 14px; border-radius: 8px; text-align: center;">
-                <div style="font-size: 24px;">👥</div>
-                <div style="font-size: 13px; font-weight: 600; color: #1a1a2e; margin-top: 4px;">Join Community</div>
-            </div>
-            <div style="background: #f8fafc; padding: 14px; border-radius: 8px; text-align: center;">
-                <div style="font-size: 24px;">📊</div>
-                <div style="font-size: 13px; font-weight: 600; color: #1a1a2e; margin-top: 4px;">Track Progress</div>
-            </div>
-        </div>
-        
-        <p style="text-align: center; margin: 20px 0;">
-            <a href="https://online-library-hub.netlify.app/pages/dashboard.html" class="btn-primary">
-                🚀 Go to Dashboard
+        <p style="text-align: center; margin: 20px 0 12px;">
+            <a href="https://online-library-hub.netlify.app/pages/dashboard.html" style="display: inline-block; background: #2563eb; color: #ffffff; padding: 10px 28px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px;">
+                Go to Dashboard
             </a>
         </p>
         
-        <hr class="email-divider">
+        <hr class="divider">
         
-        <p style="font-size: 13px; color: #94a3b8; text-align: center;">
-            Have questions? <a href="https://online-library-hub.netlify.app/pages/contact.html" style="color: #667eea; text-decoration: none;">Contact our team</a>
+        <p style="font-size: 13px; color: #6b7280; text-align: center;">
+            Questions? <a href="https://online-library-hub.netlify.app/pages/contact.html" style="color: #2563eb; text-decoration: none;">Contact us</a>
         </p>
     `;
     
-    const fullHtml = buildEmailTemplate(contentHtml, false);
+    const fullHtml = buildEmailTemplate(contentHtml);
     
     if (process.env.BREVO_API_KEY && process.env.SENDER_EMAIL) {
         try {
@@ -467,12 +364,6 @@ async function sendWelcomeEmail(toEmail, toName) {
         }
     } else {
         console.log('📝 Welcome email not sent (no API key), but user is verified');
-        console.log('📧 Email preview:');
-        console.log('========================================');
-        console.log(`Subject: ${subject}`);
-        console.log('----------------------------------------');
-        console.log(fullHtml);
-        console.log('========================================');
         return { success: true, fallback: true };
     }
 }
