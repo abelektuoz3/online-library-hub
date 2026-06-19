@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Online Library Hub](https://your-image-url-here.com/your-image.png)
+![Online Library Hub](https://github.com/abelektuoz3/online-library-hub/blob/main/online-library-logo.png)
 
 **A modern, full-featured digital library platform for students and learners**
 
@@ -541,59 +541,19 @@ We welcome contributions to the Online Library Hub project! Here's how you can h
 
 A huge thank you to all the amazing people who have contributed to this project!
 
-### Project Lead
+### Project Leader
+- **Abel Eskinder**
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <a href="https://github.com/abel-eskinder">
-          <img src="https://github.com/abel-eskinder.png" width="100px;" alt="Abel Eskinder"/>
-          <br />
-          <sub><b>Abel Eskinder</b></sub>
-        </a>
-        <br />
-        <sub>Project Lead & Developer</sub>
-      </td>
-    </tr>
-  </table>
-</div>
-
-### Contributors
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <a href="https://github.com/your-username">
-          <img src="https://github.com/your-username.png" width="80px;" alt="Contributor Name"/>
-          <br />
-          <sub><b>Contributor Name</b></sub>
-        </a>
-        <br />
-        <sub>Role/Contribution</sub>
-      </td>
-      <td align="center">
-        <a href="https://github.com/your-username">
-          <img src="https://github.com/your-username.png" width="80px;" alt="Contributor Name"/>
-          <br />
-          <sub><b>Contributor Name</b></sub>
-        </a>
-        <br />
-        <sub>Role/Contribution</sub>
-      </td>
-      <td align="center">
-        <a href="https://github.com/your-username">
-          <img src="https://github.com/your-username.png" width="80px;" alt="Contributor Name"/>
-          <br />
-          <sub><b>Contributor Name</b></sub>
-        </a>
-        <br />
-        <sub>Role/Contribution</sub>
-      </td>
-    </tr>
-  </table>
-</div>
+### Group Members
+1. [Name/Username] - [Role/Contribution]
+2. [Name/Username] - [Role/Contribution]
+3. [Name/Username] - [Role/Contribution]
+4. [Name/Username] - [Role/Contribution]
+5. [Name/Username] - [Role/Contribution]
+6. [Name/Username] - [Role/Contribution]
+7. [Name/Username] - [Role/Contribution]
+8. [Name/Username] - [Role/Contribution]
+9. [Name/Username] - [Role/Contribution]
 
 ### Want to Contribute?
 
