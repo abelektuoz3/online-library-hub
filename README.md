@@ -153,65 +153,85 @@ online-library-hub/
 │
 ├── backend/
 │   ├── config/
-│   │   ├── db.js                # MongoDB connection
-│   │   ├── passport.js          # OAuth strategies
-│   │   └── multer.js            # File upload config
+│   │   ├── db.js                # MongoDB connection configuration
+│   │   ├── multer.js            # Multer/GridFS configuration for file uploads
+│   │   └── passport.js          # Google & GitHub OAuth strategy setup
 │   │
 │   ├── middleware/
-│   │   └── auth.js              # Authentication middleware
+│   │   └── upload.js            # Middleware handling file uploads
 │   │
 │   ├── models/
-│   │   ├── Admin.js             # Admin schema
-│   │   ├── Announcement.js      # Announcement schema
-│   │   ├── Book.js              # Book/resource schema
-│   │   ├── Contact.js           # Contact message schema
-│   │   ├── Course.js            # Course schema
-│   │   ├── Feedback.js          # User feedback schema
-│   │   └── User.js              # User schema
+│   │   ├── Admin.js             # Schema defining administrative accounts
+│   │   ├── Announcement.js      # Schema defining platform announcements
+│   │   ├── Book.js              # Schema defining books and resource elements
+│   │   ├── Contact.js           # Schema for user contact/inquiry messages
+│   │   ├── Course.js            # Schema for structured interactive courses
+│   │   ├── Feedback.js          # Schema for user feedback submissions
+│   │   └── User.js              # Schema defining learner accounts
 │   │
 │   ├── routes/
-│   │   ├── admin.js             # Admin routes
-│   │   ├── announcement.js      # Announcement routes
-│   │   ├── auth.js              # Authentication routes
-│   │   ├── catalog.js           # Catalog routes
-│   │   ├── contact.js           # Contact routes
-│   │   ├── github-auth.js       # GitHub OAuth routes
-│   │   └── google-auth.js       # Google OAuth routes
+│   │   ├── admin.js             # Route endpoints for administrator tasks
+│   │   ├── announcement.js      # Route endpoints for system-wide announcements
+│   │   ├── auth.js              # Route endpoints for standard credentials and OTP validation
+│   │   ├── catalog.js           # Route endpoints for catalogs and downloads
+│   │   ├── contact.js           # Route endpoints processing contact inquiries
+│   │   ├── github-auth.js       # Route endpoints for GitHub login redirect and callback
+│   │   └── google-auth.js       # Route endpoints for Google login redirect and callback
 │   │
 │   ├── utils/
-│   │   └── email.js             # Email sending utilities
+│   │   └── email.js             # Central utility for SMTP emails and Brevo integration
 │   │
-│   ├── uploads/                 # Uploaded files storage
-│   ├── .env                     # Environment variables
-│   ├── package.json             # Backend dependencies
-│   └── server.js                # Main server file
+│   ├── .env                     # Local environment configurations (ignored by Git)
+│   ├── package.json             # Backend dependencies and startup scripts
+│   ├── render.yaml              # Render deployment blueprints
+│   └── server.js                # Core entry point starting the Express application
 │
 ├── frontend/
 │   ├── pages/
-│   │   ├── admin/               # Admin pages
-│   │   │   ├── admin-dashboard.html
-│   │   │   ├── admin-resources.html
-│   │   │   ├── admin-users.html
-│   │   │   ├── admin-messages.html
-│   │   │   └── admin-announcements.html
-│   │   ├── catalog.html         # Catalog page
-│   │   ├── login.html           # Login page
-│   │   ├── register.html        # Registration page
-│   │   ├── dashboard.html       # User dashboard
-│   │   ├── contact.html         # Contact page
-│   │   └── ...
+│   │   ├── about.html           # Platform informational page
+│   │   ├── admin-announcements.html  # Manage announcements view
+│   │   ├── admin-courses.html        # Create and manage courses view
+│   │   ├── admin-dashboard.html      # Main admin statistics view
+│   │   ├── admin-login.html          # Administrator login portal
+│   │   ├── admin-messages.html       # Message inbox view for admins
+│   │   ├── admin-register.html       # Create new administrators view
+│   │   ├── admin-resources.html      # Add, edit, delete books view
+│   │   ├── admin-users.html          # View/suspend user accounts view
+│   │   ├── catalog.html         # Public resource catalog view
+│   │   ├── contact.html         # Public feedback and inquiry page
+│   │   ├── dashboard.html       # Personal student workspace and progress tracker
+│   │   ├── faq.html             # FAQs page
+│   │   ├── forgot-password.html # Recover password page
+│   │   ├── login.html           # User login portal page
+│   │   ├── otp-verification.html# Two-factor verification/registration entry page
+│   │   ├── register.html        # Account creation page for learners
+│   │   ├── reset-password.html  # Secure password reset page
+│   │   ├── setup-admn.html      # Initialization view for system setup
+│   │   └── study-tool.html      # Study tools workspace with a Pomodoro timer and notepad
 │   │
-│   ├── scripts/                 # JavaScript files
-│   ├── style/                   # CSS stylesheets
-│   ├── index.html               # Homepage
-│   ├── auth-callback.html       # OAuth login callback
-│   ├── auth-success.html        # OAuth registration success
-│   ├── _redirects               # Netlify redirects
-│   └── netlify.toml             # Netlify configuration
+│   ├── scripts/
+│   │   ├── api-config.js        # Host definition configurations choosing production vs local
+│   │   ├── catalog.js           # Interactive grid logic for catalog actions
+│   │   ├── faq.js               # Event bindings for accordion interactions
+│   │   ├── main.js              # Central scripts (theme settings, navbar, dynamic user data)
+│   │   ├── timer.js             # Client functionality for study clocks and Pomodoro trackers
+│   │   └── validation.js        # Form validation checks and rules
+│   │
+│   ├── style/
+│   │   ├── catalog.css          # Rules defining catalog grid and filters layout
+│   │   ├── forms.css            # Common layouts for forms, login pages, and inputs
+│   │   └── style.css            # Primary core stylesheet with typography, headers, and dashboard widgets
+│   │
+│   ├── _redirects               # SPA URL redirects configured for Netlify
+│   ├── auth-callback.html       # Landing handler verifying successful OAuth credentials
+│   ├── auth-success.html        # Callback destination for success notifications
+│   ├── index.html               # Main homepage portal
+│   ├── netlify.toml             # Configuration instructions for deploying frontend on Netlify
+│   └── oauth-verify.html        # Verification workflow page for OAuth logins
 │
-├── .gitignore
-├── package.json
-└── README.md
+├── .gitignore               # List of ignored patterns for Git tracking
+├── README.md                # Document containing workspace info and startup manuals
+└── online-library-logo.png  # Application branding logo image
 ```
 
 ---
