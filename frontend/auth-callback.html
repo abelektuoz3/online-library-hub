@@ -331,7 +331,7 @@
         <p>&copy; <span id="current-year"></span> Online Library Hub. All rights reserved.</p>
     </footer>
 
-    <script>
+        <script>
         // ==================== NAVBAR TOGGLE ====================
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
@@ -361,7 +361,7 @@
         if (isNew) {
             document.getElementById('userStatus').textContent = '🆕 New account - Please verify your email';
         } else {
-            document.getElementById('userStatus').textContent = '🔐 Existing account - Please verify to login';
+            document.getElementById('userStatus').textContent = '☑ Existing account - Please verify to login';
         }
 
         // ==================== OTP INPUT HANDLING ====================
@@ -369,6 +369,10 @@
         const verifyBtn = document.getElementById('verifyBtn');
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
+
+        // HIDE MESSAGES ON PAGE LOAD
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
 
         inputs.forEach((input, index) => {
             input.addEventListener('input', function() {
