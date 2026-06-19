@@ -14,7 +14,6 @@ module.exports = function(passport) {
         try {
             console.log('GitHub Profile:', profile);
             
-            // Check if user exists by email or githubId
             let user = await User.findOne({ 
                 $or: [
                     { githubId: profile.id },
@@ -25,31 +24,26 @@ module.exports = function(passport) {
             let isNewUser = false;
 
             if (!user) {
-                // Create new user (Registration)
                 isNewUser = true;
                 user = new User({
                     githubId: profile.id,
                     name: profile.displayName || profile.username,
                     email: profile.emails?.[0]?.value || `${profile.username}@github.user`,
                     password: Math.random().toString(36).slice(-16),
-                    isVerified: true,
+                    isVerified: false, // Not verified until OTP is confirmed
                     authProvider: 'github'
                 });
                 await user.save();
                 console.log('✅ New GitHub user created:', user.email);
             } else if (!user.githubId) {
-                // Link GitHub account to existing user (Login)
                 user.githubId = profile.id;
-                user.isVerified = true;
                 user.authProvider = 'github';
                 await user.save();
                 console.log('✅ GitHub linked to existing user:', user.email);
             } else {
-                // Existing user logging in
                 console.log('✅ Existing GitHub user logged in:', user.email);
             }
 
-            // Attach isNewUser flag to user object for the callback
             user.isNewUser = isNewUser;
             return done(null, user);
         } catch (error) {
@@ -69,7 +63,6 @@ module.exports = function(passport) {
         try {
             console.log('Google Profile:', profile);
             
-            // Check if user exists by email or googleId
             let user = await User.findOne({ 
                 $or: [
                     { googleId: profile.id },
@@ -80,31 +73,26 @@ module.exports = function(passport) {
             let isNewUser = false;
 
             if (!user) {
-                // Create new user (Registration)
                 isNewUser = true;
                 user = new User({
                     googleId: profile.id,
                     name: profile.displayName || profile.name?.givenName || 'User',
                     email: profile.emails?.[0]?.value,
                     password: Math.random().toString(36).slice(-16),
-                    isVerified: true,
+                    isVerified: false, // Not verified until OTP is confirmed
                     authProvider: 'google'
                 });
                 await user.save();
                 console.log('✅ New Google user created:', user.email);
             } else if (!user.googleId) {
-                // Link Google account to existing user (Login)
                 user.googleId = profile.id;
-                user.isVerified = true;
                 user.authProvider = 'google';
                 await user.save();
                 console.log('✅ Google linked to existing user:', user.email);
             } else {
-                // Existing user logging in
                 console.log('✅ Existing Google user logged in:', user.email);
             }
 
-            // Attach isNewUser flag to user object for the callback
             user.isNewUser = isNewUser;
             return done(null, user);
         } catch (error) {

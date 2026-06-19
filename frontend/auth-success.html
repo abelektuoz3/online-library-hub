@@ -27,37 +27,9 @@
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .icon { font-size: 4rem; margin-bottom: 1rem; display: block; }
-        .icon.success { color: #10b981; }
-        .icon.error { color: #ef4444; }
-        .icon.loading { color: #667eea; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .icon { font-size: 4rem; margin-bottom: 1rem; display: block; color: #10b981; }
         h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
         p { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.6; }
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            margin-top: 1.5rem;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 0%;
-            animation: progress 2s ease-in-out forwards;
-        }
-        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
         .btn {
             display: inline-block;
             padding: 0.75rem 2rem;
@@ -68,87 +40,18 @@
             cursor: pointer;
             border: none;
             font-size: 0.875rem;
+            background: #2563eb;
+            color: white;
         }
-        .btn-primary { background: #2563eb; color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-secondary { background: #f1f5f9; color: #475569; }
-        .btn-secondary:hover { background: #e2e8f0; }
-        .error-message {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid #fca5a5;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-        }
-        .buttons { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1rem; }
+        .btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
-    <div class="container" id="mainContainer"></div>
-
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        const error = urlParams.get('error');
-        const container = document.getElementById('mainContainer');
-
-        if (error) {
-            const errorMessages = {
-                'github_auth_failed': 'GitHub registration failed. Please try again.',
-                'google_auth_failed': 'Google registration failed. Please try again.',
-                'no_token': 'No authentication token received.',
-                'invalid_token': 'Invalid authentication token.',
-                'email_exists': 'Email already exists. Please login instead.'
-            };
-            const errorMessage = errorMessages[error] || 'Registration failed. Please try again.';
-            container.innerHTML = `
-                <span class="icon error">❌</span>
-                <h1>Registration Failed</h1>
-                <div class="error-message">${errorMessage}</div>
-                <div class="buttons">
-                    <a href="pages/register.html" class="btn btn-primary">Try Again</a>
-                    <a href="index.html" class="btn btn-secondary">Go to Home</a>
-                </div>
-            `;
-        } else if (token) {
-            try {
-                localStorage.setItem('authToken', token);
-                localStorage.setItem('token', token);
-                localStorage.setItem('isNewUser', 'true');
-                console.log('✅ Token stored successfully');
-                container.innerHTML = `
-                    <span class="icon success">🎉</span>
-                    <h1>Account Created Successfully!</h1>
-                    <p>Your account has been created. Redirecting you to your dashboard...</p>
-                    <div class="spinner"></div>
-                    <div class="progress-bar"><div class="progress-fill"></div></div>
-                    <p style="font-size: 0.75rem; margin-top: 1rem; color: #94a3b8;">Redirecting in a few seconds...</p>
-                `;
-                setTimeout(() => { window.location.href = 'pages/dashboard.html'; }, 2500);
-            } catch (err) {
-                console.error('Error storing token:', err);
-                container.innerHTML = `
-                    <span class="icon error">⚠️</span>
-                    <h1>Error</h1>
-                    <p>There was an error processing your registration.</p>
-                    <div class="buttons">
-                        <a href="pages/register.html" class="btn btn-primary">Try Again</a>
-                    </div>
-                `;
-            }
-        } else {
-            container.innerHTML = `
-                <span class="icon error">⚠️</span>
-                <h1>No Registration Data</h1>
-                <p>We couldn't find any registration data. Please try again.</p>
-                <div class="buttons">
-                    <a href="pages/register.html" class="btn btn-primary">Try Again</a>
-                    <a href="index.html" class="btn btn-secondary">Go to Home</a>
-                </div>
-            `;
-        }
-    </script>
+    <div class="container">
+        <span class="icon">✅</span>
+        <h1>Registration Successful!</h1>
+        <p>Your account has been created. Please check your email for the verification code to complete your login.</p>
+        <a href="/auth-callback.html" class="btn">Verify Email</a>
+    </div>
 </body>
 </html>

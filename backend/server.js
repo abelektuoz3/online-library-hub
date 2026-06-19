@@ -117,6 +117,7 @@ app.get("/scripts/api-config.js", (req, res) => {
 // ==================== OTP STORES ====================
 global.verificationOtpStore = {};
 global.resetOtpStore = {};
+global.oauthOtpStore = {}; // ← ADDED for OAuth OTP
 
 console.log("✅ OTP stores initialized");
 
@@ -128,7 +129,6 @@ const announcementRoutes = require("./routes/announcement");
 const adminRoutes = require("./routes/admin");
 const googleAuthRoutes = require("./routes/google-auth");
 const githubAuthRoutes = require("./routes/github-auth");
-// REMOVED: const courseRoutes = require("./routes/courseRoutes");
 
 // ==================== PASSPORT STRATEGIES ====================
 require("./config/passport")(passport);
@@ -139,7 +139,6 @@ app.use("/api/catalog", catalogRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/admin", adminRoutes);
-// REMOVED: app.use("/api/courses", courseRoutes);
 
 // ==================== OAUTH ROUTES ====================
 // GitHub Routes

@@ -1,6 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const { sendOTPEmail } = require('../utils/email');
 const router = express.Router();
 
 // ==================== INITIATE GOOGLE AUTH ====================
@@ -11,39 +13,48 @@ router.get('/',
 // ==================== GOOGLE CALLBACK ====================
 router.get('/callback',
     passport.authenticate('google', { 
-        failureRedirect: `${process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app'}/login?error=google_auth_failed`,
+        failureRedirect: `${process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app'}/pages/login?error=google_auth_failed`,
         failureMessage: true
     }),
-    function(req, res) {
+    async function(req, res) {
         try {
             // Check if user is new (passed from passport strategy)
             const isNewUser = req.user.isNewUser || false;
+            const userEmail = req.user.email;
+            const userName = req.user.name || 'User';
             
-            // Generate JWT token
-            const token = jwt.sign(
-                { 
-                    id: req.user.id, 
-                    email: req.user.email, 
-                    role: req.user.role || 'user' 
-                },
-                process.env.JWT_SECRET,
-                { expiresIn: '7d' }
-            );
-
-            const frontendUrl = process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app';
+            // Generate OTP for email verification
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
             
-            // Redirect based on whether user is new or existing
-            if (isNewUser) {
-                // New user - redirect to auth-success (registration)
-                res.redirect(`${frontendUrl}/auth-success.html?token=${token}`);
-            } else {
-                // Existing user - redirect to auth-callback (login)
-                res.redirect(`${frontendUrl}/auth-callback.html?token=${token}`);
+            // Store OTP in global store with user info
+            if (!global.oauthOtpStore) {
+                global.oauthOtpStore = {};
             }
+            global.oauthOtpStore[userEmail] = {
+                otp: otp,
+                expiresAt: Date.now() + 10 * 60 * 1000,
+                userId: req.user.id,
+                isNewUser: isNewUser
+            };
+            
+            console.log(`🔐 OAuth OTP generated for ${userEmail}: ${otp}`);
+            
+            // Send OTP email
+            const emailSent = await sendOTPEmail(userEmail, userName, otp, 'verify');
+            
+            if (!emailSent) {
+                console.error('Failed to send OTP email');
+                return res.redirect(`${process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app'}/pages/login?error=otp_send_failed`);
+            }
+            
+            // Redirect to auth-callback with email
+            const frontendUrl = process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app';
+            res.redirect(`${frontendUrl}/auth-callback.html?email=${encodeURIComponent(userEmail)}&provider=google&isNew=${isNewUser}`);
+            
         } catch (error) {
             console.error('Google callback error:', error);
             const frontendUrl = process.env.FRONTEND_URL || 'https://online-library-hub.netlify.app';
-            res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+            res.redirect(`${frontendUrl}/pages/login?error=google_auth_failed`);
         }
     }
 );

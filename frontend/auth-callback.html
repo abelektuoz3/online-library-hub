@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completing Login | Online Library Hub</title>
+    <title>Verify OTP | Online Library Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
@@ -21,58 +21,71 @@
         .container {
             background: white;
             border-radius: 1rem;
-            padding: 3rem;
-            max-width: 420px;
+            padding: 2.5rem;
+            max-width: 440px;
             width: 90%;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .icon { font-size: 4rem; margin-bottom: 1rem; display: block; }
-        .icon.success { color: #10b981; }
-        .icon.error { color: #ef4444; }
-        .icon.loading { color: #667eea; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
-        p { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.6; }
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
+        .logo { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.5rem; }
+        .logo span { color: #2563eb; }
+        .subtitle { color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .otp-inputs {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+        .otp-inputs input {
             width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            margin-top: 1.5rem;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 0%;
-            animation: progress 2s ease-in-out forwards;
-        }
-        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 2rem;
-            border-radius: 0.5rem;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
             font-weight: 600;
-            text-decoration: none;
-            transition: background 0.3s;
-            cursor: pointer;
-            border: none;
-            font-size: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            outline: none;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            background: white;
         }
-        .btn-primary { background: #2563eb; color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-secondary { background: #f1f5f9; color: #475569; }
-        .btn-secondary:hover { background: #e2e8f0; }
+        .otp-inputs input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .otp-inputs input.error {
+            border-color: #ef4444;
+        }
+        .otp-inputs input.success {
+            border-color: #10b981;
+        }
+        .btn-verify {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-verify:hover { background: #1d4ed8; }
+        .btn-verify:disabled { background: #93c5fd; cursor: not-allowed; }
+        .resend-link {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        .resend-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .resend-link a:hover { text-decoration: underline; }
         .error-message {
             background: #fef2f2;
             color: #dc2626;
@@ -81,72 +94,310 @@
             border: 1px solid #fca5a5;
             margin-bottom: 1rem;
             font-size: 0.875rem;
+            display: none;
         }
-        .buttons { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1rem; }
+        .success-message {
+            background: #ecfdf5;
+            color: #065f46;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #6ee7b7;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .info-box {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+        .info-box strong { color: #1a1a2e; }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .timer { font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; }
+        .back-link { margin-top: 1rem; font-size: 0.875rem; }
+        .back-link a { color: #64748b; text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="container" id="mainContainer"></div>
+    <div class="container">
+        <div class="logo">Library<span>Hub</span></div>
+        <p class="subtitle">Enter the verification code sent to your email</p>
+        
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
+        <div class="info-box">
+            <strong>Email:</strong> <span id="userEmail">loading...</span>
+            <br>
+            <span id="userStatus" style="font-size: 0.75rem; color: #64748b;"></span>
+        </div>
+
+        <div class="otp-inputs" id="otpContainer">
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus>
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+            <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric">
+        </div>
+
+        <button class="btn-verify" id="verifyBtn">Verify Code</button>
+
+        <div class="resend-link">
+            Didn't receive the code? <a id="resendBtn">Resend</a>
+        </div>
+        <div class="timer" id="timerDisplay"></div>
+        <div class="back-link">
+            <a href="pages/login.html">← Back to Login</a>
+        </div>
+    </div>
 
     <script>
+        // ==================== GET EMAIL FROM URL ====================
         const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        const error = urlParams.get('error');
-        const container = document.getElementById('mainContainer');
+        const email = urlParams.get('email');
+        const provider = urlParams.get('provider') || 'oauth';
+        const isNew = urlParams.get('isNew') === 'true';
 
-        if (error) {
-            const errorMessages = {
-                'github_auth_failed': 'GitHub authentication failed. Please try again.',
-                'google_auth_failed': 'Google authentication failed. Please try again.',
-                'no_token': 'No authentication token received.',
-                'invalid_token': 'Invalid authentication token.',
-                'account_not_found': 'Account not found. Please sign up first.'
-            };
-            const errorMessage = errorMessages[error] || 'Authentication failed. Please try again.';
-            container.innerHTML = `
-                <span class="icon error">❌</span>
-                <h1>Login Failed</h1>
-                <div class="error-message">${errorMessage}</div>
-                <div class="buttons">
-                    <a href="pages/login.html" class="btn btn-primary">Go to Login</a>
-                    <a href="index.html" class="btn btn-secondary">Go to Home</a>
-                </div>
-            `;
-        } else if (token) {
-            try {
-                localStorage.setItem('authToken', token);
-                localStorage.setItem('token', token);
-                console.log('✅ Token stored successfully');
-                container.innerHTML = `
-                    <span class="icon success">✅</span>
-                    <h1>Login Successful!</h1>
-                    <p>Welcome back! Redirecting you to your dashboard...</p>
-                    <div class="spinner"></div>
-                    <div class="progress-bar"><div class="progress-fill"></div></div>
-                    <p style="font-size: 0.75rem; margin-top: 1rem; color: #94a3b8;">Redirecting in a few seconds...</p>
-                `;
-                setTimeout(() => { window.location.href = 'pages/dashboard.html'; }, 2500);
-            } catch (err) {
-                console.error('Error storing token:', err);
-                container.innerHTML = `
-                    <span class="icon error">⚠️</span>
-                    <h1>Error</h1>
-                    <p>There was an error processing your login.</p>
-                    <div class="buttons">
-                        <a href="pages/login.html" class="btn btn-primary">Go to Login</a>
-                    </div>
-                `;
-            }
+        const API_BASE = window.API_BASE || 'https://online-library-hub.onrender.com/api';
+        const FRONTEND_URL = window.FRONTEND_URL || 'https://online-library-hub.netlify.app';
+
+        let otpAttempts = 0;
+        let timerInterval = null;
+        let timeLeft = 120;
+
+        // ==================== DISPLAY USER INFO ====================
+        document.getElementById('userEmail').textContent = email || 'Unknown';
+        if (isNew) {
+            document.getElementById('userStatus').textContent = '🆕 New account being created - Please verify your email';
         } else {
-            container.innerHTML = `
-                <span class="icon error">⚠️</span>
-                <h1>No Login Data</h1>
-                <p>We couldn't find any login data. Please try again.</p>
-                <div class="buttons">
-                    <a href="pages/login.html" class="btn btn-primary">Go to Login</a>
-                    <a href="index.html" class="btn btn-secondary">Go to Home</a>
-                </div>
-            `;
+            document.getElementById('userStatus').textContent = '🔐 Existing account - Please verify to login';
+        }
+
+        // ==================== OTP INPUT HANDLING ====================
+        const inputs = document.querySelectorAll('.otp-inputs input');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+                if (this.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+                this.classList.remove('error');
+                hideMessages();
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus();
+                }
+                if (e.key === 'Enter') {
+                    verifyOTP();
+                }
+            });
+
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+
+        // ==================== MESSAGE HELPERS ====================
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        // ==================== GET OTP VALUE ====================
+        function getOTP() {
+            let otp = '';
+            inputs.forEach(input => { otp += input.value; });
+            return otp;
+        }
+
+        function clearOTP() {
+            inputs.forEach(input => { input.value = ''; });
+            inputs[0].focus();
+        }
+
+        // ==================== VERIFY OTP ====================
+        async function verifyOTP() {
+            const otp = getOTP();
+            
+            if (otp.length !== 6) {
+                showError('Please enter the complete 6-digit verification code.');
+                inputs.forEach(input => {
+                    if (input.value === '') input.classList.add('error');
+                });
+                return;
+            }
+
+            if (!email) {
+                showError('Email address not found. Please try logging in again.');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify-oauth-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('token', data.token);
+                    if (data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        if (data.user.isNewUser) {
+                            localStorage.setItem('isNewUser', 'true');
+                        }
+                    }
+                    
+                    showSuccess('✅ Verification successful! Redirecting...');
+                    inputs.forEach(input => input.classList.add('success'));
+                    
+                    setTimeout(() => {
+                        window.location.href = '/pages/dashboard.html';
+                    }, 1500);
+                    
+                } else {
+                    otpAttempts++;
+                    showError(data.message || 'Invalid verification code. Please try again.');
+                    inputs.forEach(input => input.classList.add('error'));
+                    
+                    if (otpAttempts >= 5) {
+                        showError('Too many failed attempts. Please request a new code.');
+                        verifyBtn.disabled = true;
+                    }
+                    
+                    setTimeout(() => {
+                        inputs.forEach(input => input.classList.remove('error'));
+                        clearOTP();
+                    }, 2000);
+                }
+
+            } catch (error) {
+                console.error('OTP verification error:', error);
+                showError('Server error. Please try again.');
+            }
+
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Verify Code';
+        }
+
+        // ==================== RESEND OTP ====================
+        async function resendOTP() {
+            if (!email) {
+                showError('Email address not found. Please try logging in again.');
+                return;
+            }
+
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.style.pointerEvents = 'none';
+            resendBtn.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/resend-oauth-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess('✅ New verification code sent to your email!');
+                    clearOTP();
+                    otpAttempts = 0;
+                    verifyBtn.disabled = false;
+                    startTimer();
+                } else {
+                    showError(data.message || 'Failed to resend code. Please try again.');
+                }
+            } catch (error) {
+                console.error('Resend OTP error:', error);
+                showError('Server error. Please try again.');
+            }
+
+            setTimeout(() => {
+                resendBtn.style.pointerEvents = 'auto';
+                resendBtn.style.opacity = '1';
+            }, 30000);
+        }
+
+        // ==================== TIMER ====================
+        function startTimer() {
+            timeLeft = 120;
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Resend available in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = 'You can request a new code now.';
+                    document.getElementById('resendBtn').style.pointerEvents = 'auto';
+                    document.getElementById('resendBtn').style.opacity = '1';
+                }
+            }, 1000);
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        verifyBtn.addEventListener('click', verifyOTP);
+        document.getElementById('resendBtn').addEventListener('click', resendOTP);
+
+        inputs.forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') verifyOTP();
+            });
+        });
+
+        // ==================== INIT ====================
+        if (!email) {
+            showError('Email address not found. Please try logging in again.');
+        } else {
+            inputs[0].focus();
+            startTimer();
         }
     </script>
 </body>

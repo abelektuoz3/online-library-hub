@@ -13,43 +13,35 @@ router.post('/register', async (req, res) => {
     try {
         const { name, email, password, confirm_password } = req.body;
 
-        // ---- Validate required fields ----
         if (!name || !email || !password || !confirm_password) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
-        // ---- Trim inputs ----
         const trimmedName = name.trim();
         const normalizedEmail = email.toLowerCase().trim();
 
-        // ---- Validate name ----
         if (trimmedName.length < 2) {
             return res.status(400).json({ error: 'Name must be at least 2 characters' });
         }
 
-        // ---- Validate email format ----
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(normalizedEmail)) {
             return res.status(400).json({ error: 'Please enter a valid email address' });
         }
 
-        // ---- Validate password length ----
         if (password.length < 4) {
             return res.status(400).json({ error: 'Password must be at least 4 characters' });
         }
 
-        // ---- Validate passwords match ----
         if (password !== confirm_password) {
             return res.status(400).json({ error: 'Passwords do not match' });
         }
 
-        // ---- Check for existing user ----
         const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already registered' });
         }
 
-        // ---- Create and save user (unverified initially) ----
         const user = new User({
             name: trimmedName,
             email: normalizedEmail,
@@ -84,15 +76,12 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // ---- Validate required fields ----
         if (!email || !password) {
             return res.status(400).json({ error: 'Email and password are required' });
         }
 
-        // ---- Normalize email ----
         const normalizedEmail = email.toLowerCase().trim();
 
-        // ---- Find user ----
         const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             console.log('❌ User not found');
@@ -103,7 +92,6 @@ router.post('/login', async (req, res) => {
 
         console.log(`👤 User found: ${user.name}, isVerified: ${user.isVerified}`);
 
-        // ---- Check if email is verified ----
         if (!user.isVerified) {
             console.log('❌ Email not verified');
             return res.status(401).json({ 
@@ -113,20 +101,17 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // ---- Compare password ----
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             console.log('❌ Password mismatch');
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // ---- Check if account is suspended ----
         if (user.isSuspended) {
             console.log('❌ Account suspended');
             return res.status(403).json({ error: 'Your account has been suspended. Please contact the library administrator.' });
         }
 
-        // ---- Generate JWT ----
         const token = jwt.sign(
             { id: user.id, email: user.email },
             process.env.JWT_SECRET,
@@ -153,6 +138,140 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// ==================== VERIFY OTP (for OAuth login) ====================
+router.post('/verify-oauth-otp', async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and OTP are required'
+            });
+        }
+
+        const record = global.oauthOtpStore?.[email];
+        
+        if (!record) {
+            return res.status(400).json({
+                success: false,
+                message: 'No OTP found. Please try logging in again.'
+            });
+        }
+
+        if (Date.now() > record.expiresAt) {
+            delete global.oauthOtpStore[email];
+            return res.status(400).json({
+                success: false,
+                message: 'OTP has expired. Please try logging in again.'
+            });
+        }
+
+        if (record.otp !== otp) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid OTP. Please try again.'
+            });
+        }
+
+        const user = await User.findById(record.userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Mark user as verified
+        user.isVerified = true;
+        await user.save();
+
+        const token = jwt.sign(
+            { id: user._id, email: user.email, role: user.role || 'user' },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        delete global.oauthOtpStore[email];
+
+        res.json({
+            success: true,
+            message: 'OTP verified successfully',
+            token: token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role || 'user',
+                isNewUser: record.isNewUser || false,
+                isVerified: true
+            }
+        });
+
+    } catch (error) {
+        console.error('OTP verification error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during OTP verification'
+        });
+    }
+});
+
+// ==================== RESEND OTP (for OAuth login) ====================
+router.post('/resend-oauth-otp', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email is required'
+            });
+        }
+
+        const record = global.oauthOtpStore?.[email];
+        if (!record) {
+            return res.status(400).json({
+                success: false,
+                message: 'No OTP found. Please try logging in again.'
+            });
+        }
+
+        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+        record.otp = newOtp;
+        record.expiresAt = Date.now() + 10 * 60 * 1000;
+
+        const user = await User.findById(record.userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const emailSent = await sendOTPEmail(email, user.name || 'User', newOtp, 'verify');
+        
+        if (!emailSent) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send OTP email'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'New OTP sent to your email'
+        });
+
+    } catch (error) {
+        console.error('Resend OTP error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while resending OTP'
+        });
+    }
+});
+
 // ==================== RESEND VERIFICATION OTP ====================
 router.post('/resend-verification', async (req, res) => {
     console.log('\n📧 Resend verification requested for:', req.body.email);
@@ -175,10 +294,8 @@ router.post('/resend-verification', async (req, res) => {
             return res.status(400).json({ error: 'Email is already verified. You can login.' });
         }
 
-        // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Store OTP in global verification store
         if (!global.verificationOtpStore) {
             global.verificationOtpStore = {};
         }
@@ -189,7 +306,6 @@ router.post('/resend-verification', async (req, res) => {
 
         console.log(`🔐 Generated new OTP for ${normalizedEmail}: ${otp}`);
 
-        // Send email with OTP
         const { sendOTPEmail } = require('../utils/email');
         await sendOTPEmail(normalizedEmail, user.name, otp, 'verify');
 
@@ -218,12 +334,10 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(404).json({ error: 'No account found with this email address' });
         }
         
-        // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
         console.log(`🔐 Generated reset OTP for ${normalizedEmail}: ${otp}`);
         
-        // Store OTP in global reset store
         if (!global.resetOtpStore) {
             global.resetOtpStore = {};
         }
@@ -232,7 +346,6 @@ router.post('/forgot-password', async (req, res) => {
             expiresAt: Date.now() + 10 * 60 * 1000
         };
         
-        // Send email with OTP
         const { sendOTPEmail } = require('../utils/email');
         await sendOTPEmail(normalizedEmail, user.name, otp, 'reset');
         
@@ -260,7 +373,6 @@ router.post('/reset-password', async (req, res) => {
         
         const normalizedEmail = email.toLowerCase().trim();
         
-        // Verify OTP
         const record = global.resetOtpStore?.[normalizedEmail];
         
         if (!record) {
@@ -276,7 +388,6 @@ router.post('/reset-password', async (req, res) => {
             return res.status(400).json({ error: 'Invalid reset code. Please try again.' });
         }
         
-        // Update password
         const bcrypt = require('bcryptjs');
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         
@@ -287,7 +398,6 @@ router.post('/reset-password', async (req, res) => {
         
         console.log(`✅ Password updated for ${normalizedEmail}`);
         
-        // Clear OTP
         delete global.resetOtpStore[normalizedEmail];
         
         res.json({ success: true, message: 'Password reset successful. You can now login with your new password.' });
@@ -312,7 +422,6 @@ router.get('/verify', async (req, res) => {
             return res.status(401).json({ error: 'User not found' });
         }
 
-        // Check if email is verified
         if (!user.isVerified) {
             return res.status(401).json({ 
                 error: 'Email not verified',
@@ -365,13 +474,11 @@ router.post('/change-password', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Verify current password
         const isMatch = await user.comparePassword(currentPassword);
         if (!isMatch) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
 
-        // Update password
         user.password = newPassword;
         await user.save();
 
